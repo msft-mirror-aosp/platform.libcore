@@ -19,6 +19,20 @@
 // TODO(b/138434658): Move the apex declaration back to external/icu
 // The apex is declared in libcore/ to workaround new dependency from external/icu
 // to system/sepolicy in a downstream branch.
+package {
+    // See: http://go/android-license-faq
+    // A large-scale-change added 'default_applicable_licenses' to import
+    // all of the 'license_kinds' from "libcore_license"
+    // to get the below license kinds:
+    //   SPDX-license-identifier-Apache-2.0
+    //   SPDX-license-identifier-GPL
+    //   SPDX-license-identifier-GPL-2.0
+    //   SPDX-license-identifier-LGPL
+    //   SPDX-license-identifier-MIT
+    //   SPDX-license-identifier-W3C
+    default_applicable_licenses: ["libcore_license"],
+}
+
 apex {
     name: "com.android.i18n",
     defaults: ["com.android.i18n-defaults"],

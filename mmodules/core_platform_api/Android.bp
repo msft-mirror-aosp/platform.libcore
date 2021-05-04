@@ -19,6 +19,20 @@
 // The API specification .txt files managed by this only contain the additional
 // classes/members that are in the intra-core API but which are not in the public
 // API.
+package {
+    // See: http://go/android-license-faq
+    // A large-scale-change added 'default_applicable_licenses' to import
+    // all of the 'license_kinds' from "libcore_license"
+    // to get the below license kinds:
+    //   SPDX-license-identifier-Apache-2.0
+    //   SPDX-license-identifier-GPL
+    //   SPDX-license-identifier-GPL-2.0
+    //   SPDX-license-identifier-LGPL
+    //   SPDX-license-identifier-MIT
+    //   SPDX-license-identifier-W3C
+    default_applicable_licenses: ["libcore_license"],
+}
+
 droidstubs {
     name: "art-module-platform-api-stubs-source",
     srcs: [
