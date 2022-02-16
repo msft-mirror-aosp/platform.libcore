@@ -68,7 +68,6 @@ package java.text;
  * <code>formatToCharacterIterator</code>.
  *
  * @author      Mark Davis
- * @since 1.1
  * @see         java.text.Format
  */
 public class FieldPosition {

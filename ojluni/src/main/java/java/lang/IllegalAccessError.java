@@ -34,7 +34,7 @@ package java.lang;
  * incompatibly changed.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public class IllegalAccessError extends IncompatibleClassChangeError {
     private static final long serialVersionUID = -8988904074992417891L;

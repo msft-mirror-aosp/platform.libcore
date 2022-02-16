@@ -31,7 +31,6 @@ import java.math.BigInteger;
  * The interface to an RSA public key.
  *
  * @author Jan Luehe
- * @since 1.2
  *
  */
 

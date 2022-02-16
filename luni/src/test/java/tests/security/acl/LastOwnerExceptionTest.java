@@ -31,7 +31,6 @@ import java.security.acl.LastOwnerException;
  *
  */
 public class LastOwnerExceptionTest extends TestCase {
-    @SuppressWarnings("removal")
     public void testLastOwnerException() {
         assertNotNull(new LastOwnerException());
         assertNull(new LastOwnerException().getMessage());

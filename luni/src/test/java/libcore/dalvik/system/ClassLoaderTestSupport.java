@@ -65,7 +65,7 @@ class ClassLoaderTestSupport {
                 if (file.isDirectory()) {
                     cleanUpDir(file);
                 } else {
-                    file.delete();
+                    assertTrue(file.delete());
                 }
             }
         }

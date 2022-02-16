@@ -35,6 +35,7 @@ import android.compat.annotation.UnsupportedAppUsage;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 @libcore.api.IntraCoreApi
 public abstract class NetworkSecurityPolicy {
 
@@ -48,6 +49,7 @@ public abstract class NetworkSecurityPolicy {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @libcore.api.IntraCoreApi
     public NetworkSecurityPolicy() {
     }
@@ -60,6 +62,7 @@ public abstract class NetworkSecurityPolicy {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @libcore.api.IntraCoreApi
     public static NetworkSecurityPolicy getInstance() {
         return instance;
@@ -73,6 +76,7 @@ public abstract class NetworkSecurityPolicy {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setInstance(NetworkSecurityPolicy policy) {
         if (policy == null) {
             throw new NullPointerException("policy == null");
@@ -105,6 +109,7 @@ public abstract class NetworkSecurityPolicy {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public abstract boolean isCleartextTrafficPermitted();
 
     /**
@@ -120,6 +125,7 @@ public abstract class NetworkSecurityPolicy {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public abstract boolean isCleartextTrafficPermitted(String hostname);
 
     /**
@@ -136,6 +142,7 @@ public abstract class NetworkSecurityPolicy {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @libcore.api.IntraCoreApi
     public abstract boolean isCertificateTransparencyVerificationRequired(String hostname);
 

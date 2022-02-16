@@ -35,7 +35,6 @@ package java.security.interfaces;
  *
  * @author Benjamin Renaud
  * @author Josh Bloch
- * @since 1.1
  */
 public interface DSAKey {
 
