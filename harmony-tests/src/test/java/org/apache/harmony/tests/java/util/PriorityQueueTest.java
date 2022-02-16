@@ -774,7 +774,7 @@ public class PriorityQueueTest extends TestCase {
             assertNull(returnArray[i]);
         }
         try {
-            integerQueue.toArray((Object[]) null);
+            integerQueue.toArray(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             // expected

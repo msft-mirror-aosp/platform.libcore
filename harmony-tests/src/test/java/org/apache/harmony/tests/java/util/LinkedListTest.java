@@ -646,7 +646,7 @@ public class LinkedListTest extends junit.framework.TestCase {
             assertTrue("Lists are not equal", li.next() == ri.next());
 
         try {
-            ll.toArray((Object[]) null);
+            ll.toArray(null);
             fail("NullPointerException expected");
         } catch (NullPointerException e) {
             //expected
