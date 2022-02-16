@@ -32,7 +32,6 @@ package java.security.cert;
  * of the certificate.
  *
  * @author Hemma Prafullchandra
- * @since 1.2
  */
 public class CertificateExpiredException extends CertificateException {
 

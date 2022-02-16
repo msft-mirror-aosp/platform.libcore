@@ -35,7 +35,6 @@ import java.io.IOException;
  *
  * @see         Checksum
  * @author      David Connelly
- * @since 1.1
  */
 public
 class CheckedInputStream extends FilterInputStream {

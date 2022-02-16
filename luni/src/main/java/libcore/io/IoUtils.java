@@ -43,6 +43,7 @@ import static android.system.OsConstants.O_RDONLY;
 
 /** @hide */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class IoUtils {
     private IoUtils() {
     }
@@ -64,6 +65,7 @@ public final class IoUtils {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static int acquireRawFd(@NonNull FileDescriptor fd) {
         Objects.requireNonNull(fd);
 
@@ -149,6 +151,7 @@ public final class IoUtils {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setFdOwner(@NonNull FileDescriptor fd, @NonNull Object owner) {
         Objects.requireNonNull(fd);
         Objects.requireNonNull(owner);
@@ -176,6 +179,7 @@ public final class IoUtils {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void close(@Nullable FileDescriptor fd) throws IOException {
         IoBridge.closeAndSignalBlockedThreads(fd);
     }
@@ -189,6 +193,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void closeQuietly(@Nullable AutoCloseable closeable) {
         if (closeable != null) {
             try {
@@ -209,6 +214,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void closeQuietly(@Nullable FileDescriptor fd) {
         try {
             IoUtils.close(fd);
@@ -225,6 +231,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void closeQuietly(@Nullable Socket socket) {
         if (socket != null) {
             try {
@@ -247,6 +254,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setBlocking(@NonNull FileDescriptor fd, boolean blocking) throws IOException {
         try {
             int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
@@ -272,6 +280,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @NonNull byte[] readFileAsByteArray(@NonNull String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
     }
@@ -287,6 +296,7 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @NonNull String readFileAsString(@NonNull String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toString(StandardCharsets.UTF_8);
     }
