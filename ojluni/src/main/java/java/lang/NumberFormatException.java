@@ -32,7 +32,7 @@ package java.lang;
  *
  * @author  unascribed
  * @see     java.lang.Integer#parseInt(String)
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class NumberFormatException extends IllegalArgumentException {
@@ -56,28 +56,12 @@ class NumberFormatException extends IllegalArgumentException {
     }
 
     /**
-     * Factory method for making a {@code NumberFormatException}
+     * Factory method for making a <code>NumberFormatException</code>
      * given the specified input which caused the error.
      *
      * @param   s   the input causing the error
      */
     static NumberFormatException forInputString(String s) {
         return new NumberFormatException("For input string: \"" + s + "\"");
-    }
-
-    /**
-     * Factory method for making a {@code NumberFormatException}
-     * given the specified input which caused the error.
-     *
-     * @param   s   the input causing the error
-     * @param   beginIndex   the beginning index, inclusive.
-     * @param   endIndex     the ending index, exclusive.
-     * @param   errorIndex   the index of the first error in s
-     */
-    static NumberFormatException forCharSequence(CharSequence s,
-            int beginIndex, int endIndex, int errorIndex) {
-        return new NumberFormatException("Error at index "
-                + (errorIndex - beginIndex) + " in: \""
-                + s.subSequence(beginIndex, endIndex) + "\"");
     }
 }

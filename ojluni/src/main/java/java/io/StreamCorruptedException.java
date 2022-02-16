@@ -30,7 +30,7 @@ package java.io;
  * violates internal consistency checks.
  *
  * @author  unascribed
- * @since   1.1
+ * @since   JDK1.1
  */
 public class StreamCorruptedException extends ObjectStreamException {
 
