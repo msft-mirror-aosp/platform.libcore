@@ -31,6 +31,7 @@ import libcore.util.Nullable;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 @SystemApi(client = MODULE_LIBRARIES)
 public final class VMStack {
 
@@ -110,6 +111,7 @@ public final class VMStack {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @SystemApi(client = MODULE_LIBRARIES)
     @FastNative
     native public static @Nullable AnnotatedStackTraceElement[]

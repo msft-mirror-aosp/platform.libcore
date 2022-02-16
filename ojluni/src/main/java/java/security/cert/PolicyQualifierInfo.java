@@ -27,7 +27,7 @@ package java.security.cert;
 
 import java.io.IOException;
 
-import sun.security.util.HexDumpEncoder;
+import sun.misc.HexDumpEncoder;
 import sun.security.util.DerValue;
 
 /**
@@ -161,7 +161,7 @@ public class PolicyQualifierInfo {
         if (pqiString != null)
             return pqiString;
         HexDumpEncoder enc = new HexDumpEncoder();
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("PolicyQualifierInfo: [\n");
         sb.append("  qualifierID: " + mId + "\n");
         sb.append("  qualifier: " +

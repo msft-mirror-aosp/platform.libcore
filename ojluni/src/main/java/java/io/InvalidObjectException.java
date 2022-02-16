@@ -30,10 +30,10 @@ package java.io;
  * tests.  The argument should provide the reason for the failure.
  *
  * @see ObjectInputValidation
- * @since 1.1
+ * @since JDK1.1
  *
  * @author  unascribed
- * @since   1.1
+ * @since   JDK1.1
  */
 public class InvalidObjectException extends ObjectStreamException {
 

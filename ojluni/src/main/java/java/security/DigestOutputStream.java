@@ -51,7 +51,6 @@ import java.io.ByteArrayOutputStream;
  * @see DigestInputStream
  *
  * @author Benjamin Renaud
- * @since 1.2
  */
 public class DigestOutputStream extends FilterOutputStream {
 

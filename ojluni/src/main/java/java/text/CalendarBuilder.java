@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,7 +26,6 @@
 package java.text;
 
 import java.util.Calendar;
-import java.util.StringJoiner;
 import static java.util.GregorianCalendar.*;
 
 /**
@@ -147,13 +146,19 @@ class CalendarBuilder {
     }
 
     public String toString() {
-        StringJoiner sj = new StringJoiner(",", "CalendarBuilder:[", "]");
+        StringBuilder sb = new StringBuilder();
+        sb.append("CalendarBuilder:[");
         for (int i = 0; i < field.length; i++) {
             if (isSet(i)) {
-                sj.add(i + "=" + field[MAX_FIELD + i]);
+                sb.append(i).append('=').append(field[MAX_FIELD + i]).append(',');
             }
         }
-        return sj.toString();
+        int lastIndex = sb.length() - 1;
+        if (sb.charAt(lastIndex) == ',') {
+            sb.setLength(lastIndex);
+        }
+        sb.append(']');
+        return sb.toString();
     }
 
     static int toISODayOfWeek(int calendarDayOfWeek) {
