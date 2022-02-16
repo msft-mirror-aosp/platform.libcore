@@ -26,51 +26,50 @@
 package sun.invoke.util;
 
 public enum Wrapper {
-    //        wrapperType      simple     primitiveType  simple     char  emptyArray     format
-    BOOLEAN(  Boolean.class,   "Boolean", boolean.class, "boolean", 'Z', new boolean[0], Format.unsigned( 1)),
+    //        wrapperType    primitiveType  char            zero         emptyArray          format
+    BOOLEAN(  Boolean.class, boolean.class, 'Z',      (Boolean)false, new boolean[0], Format.unsigned( 1)),
     // These must be in the order defined for widening primitive conversions in JLS 5.1.2
-    // Avoid boxing integral types here to defer initialization of internal caches
-    BYTE   (     Byte.class,      "Byte",    byte.class,    "byte", 'B', new    byte[0], Format.signed(   8)),
-    SHORT  (    Short.class,     "Short",   short.class,   "short", 'S', new   short[0], Format.signed(  16)),
-    CHAR   (Character.class, "Character",    char.class,    "char", 'C', new    char[0], Format.unsigned(16)),
-    INT    (  Integer.class,   "Integer",     int.class,     "int", 'I', new     int[0], Format.signed(  32)),
-    LONG   (     Long.class,      "Long",    long.class,    "long", 'J', new    long[0], Format.signed(  64)),
-    FLOAT  (    Float.class,     "Float",   float.class,   "float", 'F', new   float[0], Format.floating(32)),
-    DOUBLE (   Double.class,    "Double",  double.class,  "double", 'D', new  double[0], Format.floating(64)),
-    OBJECT (   Object.class,    "Object",  Object.class,  "Object", 'L', new  Object[0], Format.other(    1)),
+    BYTE   (     Byte.class,    byte.class, 'B',       (Byte)(byte)0, new    byte[0], Format.signed(   8)),
+    SHORT  (    Short.class,   short.class, 'S',     (Short)(short)0, new   short[0], Format.signed(  16)),
+    CHAR   (Character.class,    char.class, 'C',  (Character)(char)0, new    char[0], Format.unsigned(16)),
+    INT    (  Integer.class,     int.class, 'I', (Integer)/*(int)*/0, new     int[0], Format.signed(  32)),
+    LONG   (     Long.class,    long.class, 'J',       (Long)(long)0, new    long[0], Format.signed(  64)),
+    FLOAT  (    Float.class,   float.class, 'F',     (Float)(float)0, new   float[0], Format.floating(32)),
+    DOUBLE (   Double.class,  double.class, 'D',   (Double)(double)0, new  double[0], Format.floating(64)),
+    OBJECT (   Object.class,  Object.class, 'L',                null, new  Object[0], Format.other(    1)),
     // VOID must be the last type, since it is "assignable" from any other type:
-    VOID   (     Void.class,      "Void",    void.class,    "void", 'V',           null, Format.other(    0)),
+    VOID   (     Void.class,    void.class, 'V',                null,           null, Format.other(    0)),
     ;
-
-    public static final int COUNT = 10;
 
     private final Class<?> wrapperType;
     private final Class<?> primitiveType;
     private final char     basicTypeChar;
+    private final Object   zero;
     private final Object   emptyArray;
     private final int      format;
     private final String   wrapperSimpleName;
     private final String   primitiveSimpleName;
 
-    private Wrapper(Class<?> wtype, String wtypeName, Class<?> ptype, String ptypeName, char tchar, Object emptyArray, int format) {
+    private Wrapper(Class<?> wtype, Class<?> ptype, char tchar, Object zero, Object emptyArray, int format) {
         this.wrapperType = wtype;
         this.primitiveType = ptype;
         this.basicTypeChar = tchar;
+        this.zero = zero;
         this.emptyArray = emptyArray;
         this.format = format;
-        this.wrapperSimpleName = wtypeName;
-        this.primitiveSimpleName = ptypeName;
+        this.wrapperSimpleName = wtype.getSimpleName();
+        this.primitiveSimpleName = ptype.getSimpleName();
     }
 
     /** For debugging, give the details of this wrapper. */
     public String detailString() {
         return wrapperSimpleName+
                 java.util.Arrays.asList(wrapperType, primitiveType,
-                basicTypeChar, zero(),
+                basicTypeChar, zero,
                 "0x"+Integer.toHexString(format));
     }
 
-    private abstract static class Format {
+    private static abstract class Format {
         static final int SLOT_SHIFT = 0, SIZE_SHIFT = 2, KIND_SHIFT = 12;
         static final int
                 SIGNED   = (-1) << KIND_SHIFT,
@@ -162,10 +161,7 @@ public enum Wrapper {
         return true;
     }
 
-    static {
-        assert(checkConvertibleFrom());
-        assert(COUNT == Wrapper.values().length);
-    }
+    static { assert(checkConvertibleFrom()); }
     private static boolean checkConvertibleFrom() {
         // Check the matrix for correct classification of widening conversions.
         for (Wrapper w : values()) {
@@ -226,39 +222,13 @@ public enum Wrapper {
      *  type.  (For void, it is what a reflective method returns
      *  instead of no value at all.)
      */
-    public Object zero() {
-        switch (this) {
-            case BOOLEAN:
-                return Boolean.FALSE;
-            case INT:
-                return (Integer)0;
-            case BYTE:
-                return (Byte)(byte)0;
-            case CHAR:
-                return (Character)(char)0;
-            case SHORT:
-                return (Short)(short)0;
-            case LONG:
-                return (Long)(long)0;
-            case FLOAT:
-                return FLOAT_ZERO;
-            case DOUBLE:
-                return DOUBLE_ZERO;
-            case VOID:
-            case OBJECT:
-            default:
-                return null;
-        }
-    }
-
-    private static final Object DOUBLE_ZERO = (Double)(double)0;
-    private static final Object FLOAT_ZERO = (Float)(float)0;
+    public Object zero() { return zero; }
 
     /** Produce a zero value for the given wrapper type T.
      *  The optional argument must a type compatible with this wrapper.
      *  Equivalent to {@code this.cast(this.zero(), type)}.
      */
-    public <T> T zero(Class<T> type) { return convert(zero(), type); }
+    public <T> T zero(Class<T> type) { return convert(zero, type); }
 
     /** Return the wrapper that wraps values of the given type.
      *  The type may be {@code Object}, meaning the {@code OBJECT} wrapper.
@@ -271,25 +241,6 @@ public enum Wrapper {
         if (type.isPrimitive())
             throw new InternalError(); // redo hash function
         throw newIllegalArgumentException("not primitive: "+type);
-    }
-
-    /** Return the wrapper that corresponds to the provided basic type char.
-     *  The basic type char must be for one of the eight primitive types, or void.
-     *  @throws IllegalArgumentException for unexpected types
-     */
-    public static Wrapper forPrimitiveType(char basicTypeChar) {
-        switch (basicTypeChar) {
-            case 'I': return INT;
-            case 'J': return LONG;
-            case 'S': return SHORT;
-            case 'B': return BYTE;
-            case 'C': return CHAR;
-            case 'F': return FLOAT;
-            case 'D': return DOUBLE;
-            case 'Z': return BOOLEAN;
-            case 'V': return VOID;
-            default: throw newIllegalArgumentException("not primitive: " + basicTypeChar);
-        }
     }
 
     static Wrapper findPrimitiveType(Class<?> type) {
@@ -522,7 +473,7 @@ public enum Wrapper {
             }
         } else if (x == null) {
             @SuppressWarnings("unchecked")
-            T z = (T) zero();
+            T z = (T) zero;
             return z;
         }
         @SuppressWarnings("unchecked")
@@ -537,6 +488,12 @@ public enum Wrapper {
      * If the target type is a primitive, change it to a wrapper.
      */
     static <T> Class<T> forceType(Class<?> type, Class<T> exampleType) {
+        boolean z = (type == exampleType ||
+               type.isPrimitive() && forPrimitiveType(type) == findWrapperType(exampleType) ||
+               exampleType.isPrimitive() && forPrimitiveType(exampleType) == findWrapperType(type) ||
+               type == Object.class && !exampleType.isPrimitive());
+        if (!z)
+            System.out.println(type+" <= "+exampleType);
         assert(type == exampleType ||
                type.isPrimitive() && forPrimitiveType(type) == findWrapperType(exampleType) ||
                exampleType.isPrimitive() && forPrimitiveType(exampleType) == findWrapperType(type) ||

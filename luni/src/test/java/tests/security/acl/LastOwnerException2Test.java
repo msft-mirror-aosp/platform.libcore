@@ -26,7 +26,6 @@ public class LastOwnerException2Test extends TestCase {
     /**
      * java.security.acl.LastOwnerException#LastOwnerException()
      */
-    @SuppressWarnings("removal")
     public void test_Constructor() {
         // Test for method java.security.acl.LastOwnerException()
         try {

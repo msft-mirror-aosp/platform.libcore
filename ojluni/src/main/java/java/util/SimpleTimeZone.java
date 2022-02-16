@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -41,7 +41,6 @@ package java.util;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import sun.util.calendar.CalendarSystem;
 import sun.util.calendar.CalendarUtils;
 import sun.util.calendar.BaseCalendar;
@@ -548,11 +547,12 @@ public class SimpleTimeZone extends TimeZone {
 
       computeOffset:
         if (useDaylight) {
-            Cache cache = this.cache;
-            if (cache != null) {
-                if (date >= cache.start && date < cache.end) {
-                    offset += dstSavings;
-                    break computeOffset;
+            synchronized (this) {
+                if (cacheStart != 0) {
+                    if (date >= cacheStart && date < cacheEnd) {
+                        offset += dstSavings;
+                        break computeOffset;
+                    }
                 }
             }
             BaseCalendar cal = date >= GregorianCalendar.DEFAULT_GREGORIAN_CUTOVER ?
@@ -670,13 +670,14 @@ public class SimpleTimeZone extends TimeZone {
     }
 
     private int getOffset(BaseCalendar cal, BaseCalendar.Date cdate, int year, long time) {
-        Cache cache = this.cache;
-        if (cache != null) {
-            if (time >= cache.start && time < cache.end) {
-                return rawOffset + dstSavings;
-            }
-            if (year == cache.year) {
-                return rawOffset;
+        synchronized (this) {
+            if (cacheStart != 0) {
+                if (time >= cacheStart && time < cacheEnd) {
+                    return rawOffset + dstSavings;
+                }
+                if (year == cacheYear) {
+                    return rawOffset;
+                }
             }
         }
 
@@ -687,7 +688,11 @@ public class SimpleTimeZone extends TimeZone {
             if (time >= start && time < end) {
                 offset += dstSavings;
             }
-            this.cache = new Cache(year, start, end);
+            synchronized (this) {
+                cacheYear = year;
+                cacheStart = start;
+                cacheEnd = end;
+            }
         } else {
             if (time < end) {
                 // TODO: support Gregorian cutover. The previous year
@@ -705,7 +710,12 @@ public class SimpleTimeZone extends TimeZone {
                 }
             }
             if (start <= end) {
-                this.cache = new Cache((long) startYear - 1, start, end);
+                synchronized (this) {
+                    // The start and end transitions are in multiple years.
+                    cacheYear = (long) startYear - 1;
+                    cacheStart = start;
+                    cacheEnd = end;
+                }
             }
         }
         return offset;
@@ -865,7 +875,7 @@ public class SimpleTimeZone extends TimeZone {
      * Generates the hash code for the SimpleDateFormat object.
      * @return the hash code for this object
      */
-    public int hashCode()
+    public synchronized int hashCode()
     {
         return startMonth ^ startDay ^ startDayOfWeek ^ startTime ^
             endMonth ^ endDay ^ endDayOfWeek ^ endTime ^ rawOffset;
@@ -1115,8 +1125,8 @@ public class SimpleTimeZone extends TimeZone {
      * be streamed out for compatibility with JDK 1.1.
      */
     private final byte monthLength[] = staticMonthLength;
-    private static final byte staticMonthLength[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    private static final byte staticLeapMonthLength[] = {31,29,31,30,31,30,31,31,30,31,30,31};
+    private final static byte staticMonthLength[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    private final static byte staticLeapMonthLength[] = {31,29,31,30,31,30,31,31,30,31,30,31};
 
     /**
      * Variables specifying the mode of the start rule.  Takes the following
@@ -1190,27 +1200,19 @@ public class SimpleTimeZone extends TimeZone {
 
     /**
      * Cache values representing a single period of daylight saving
-     * time. Cache.start is the start time (inclusive) of daylight
-     * saving time and Cache.end is the end time (exclusive).
+     * time. When the cache values are valid, cacheStart is the start
+     * time (inclusive) of daylight saving time and cacheEnd is the
+     * end time (exclusive).
      *
-     * Cache.year has a year value if both Cache.start and Cache.end are
-     * in the same year. Cache.year is set to startYear - 1 if
-     * Cache.start and Cache.end are in different years.
-     * Cache.year is a long to support Integer.MIN_VALUE - 1 (JCK requirement).
+     * cacheYear has a year value if both cacheStart and cacheEnd are
+     * in the same year. cacheYear is set to startYear - 1 if
+     * cacheStart and cacheEnd are in different years. cacheStart is 0
+     * if the cache values are void. cacheYear is a long to support
+     * Integer.MIN_VALUE - 1 (JCK requirement).
      */
-    private static final class Cache {
-        final long year;
-        final long start;
-        final long end;
-
-        Cache(long year, long start, long end) {
-            this.year = year;
-            this.start = start;
-            this.end = end;
-        }
-    }
-
-    private transient volatile Cache cache;
+    private transient long cacheYear;
+    private transient long cacheStart;
+    private transient long cacheEnd;
 
     /**
      * Constants specifying values of startMode and endMode.
@@ -1276,11 +1278,9 @@ public class SimpleTimeZone extends TimeZone {
      */
     private int serialVersionOnStream = currentSerialVersion;
 
-    // Maximum number of rules.
-    private static final int MAX_RULE_NUM = 6;
-
-    private void invalidateCache() {
-        cache = null;
+    synchronized private void invalidateCache() {
+        cacheYear = startYear - 1;
+        cacheStart = cacheEnd = 0;
     }
 
     //----------------------------------------------------------------------
@@ -1569,7 +1569,7 @@ public class SimpleTimeZone extends TimeZone {
      */
     private byte[] packRules()
     {
-        byte[] rules = new byte[MAX_RULE_NUM];
+        byte[] rules = new byte[6];
         rules[0] = (byte)startDay;
         rules[1] = (byte)startDayOfWeek;
         rules[2] = (byte)endDay;
@@ -1594,7 +1594,7 @@ public class SimpleTimeZone extends TimeZone {
         endDayOfWeek   = rules[3];
 
         // As of serial version 2, include time modes
-        if (rules.length >= MAX_RULE_NUM) {
+        if (rules.length >= 6) {
             startTimeMode = rules[4];
             endTimeMode   = rules[5];
         }
@@ -1691,13 +1691,9 @@ public class SimpleTimeZone extends TimeZone {
             // store the actual rules (which have not be made compatible with 1.1)
             // in the optional area.  Read them in here and parse them.
             int length = stream.readInt();
-            if (length <= MAX_RULE_NUM) {
-                byte[] rules = new byte[length];
-                stream.readFully(rules);
-                unpackRules(rules);
-            } else {
-                throw new InvalidObjectException("Too many rules: " + length);
-            }
+            byte[] rules = new byte[length];
+            stream.readFully(rules);
+            unpackRules(rules);
         }
 
         if (serialVersionOnStream >= 2) {
