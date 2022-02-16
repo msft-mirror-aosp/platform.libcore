@@ -16,8 +16,6 @@
 
 package dalvik.system;
 
-import sun.invoke.util.Wrapper;
-
 import java.lang.invoke.MethodType;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -35,6 +33,12 @@ public class EmulatedStackFrame {
      * return value.
      */
     private final MethodType type;
+
+    /**
+     * The type of the callsite that produced this stack frame. This contains the types of
+     * the original arguments, before any conversions etc. were performed.
+     */
+    private final MethodType callsiteType;
 
     /**
      * All reference arguments and reference return values that belong to this argument array.
@@ -76,8 +80,10 @@ public class EmulatedStackFrame {
      */
     private final byte[] stackFrame;
 
-    private EmulatedStackFrame(MethodType type, Object[] references, byte[] stackFrame) {
+    private EmulatedStackFrame(MethodType type, MethodType callsiteType, Object[] references,
+                               byte[] stackFrame) {
         this.type = type;
+        this.callsiteType = callsiteType;
         this.references = references;
         this.stackFrame = stackFrame;
     }
@@ -86,6 +92,11 @@ public class EmulatedStackFrame {
      * Returns the {@code MethodType} that the frame was created for.
      */
     public final MethodType getMethodType() { return type; }
+
+    /**
+     * Returns the {@code MethodType} corresponding to the callsite of the
+     */
+    public final MethodType getCallsiteType() { return callsiteType; }
 
     /**
      * Represents a range of arguments on an {@code EmulatedStackFrame}.
@@ -99,8 +110,6 @@ public class EmulatedStackFrame {
         public final int stackFrameStart;
         public final int numBytes;
 
-        private static Range EMPTY_RANGE = new Range(0, 0, 0, 0);
-
         private Range(int referencesStart, int numReferences, int stackFrameStart, int numBytes) {
             this.referencesStart = referencesStart;
             this.numReferences = numReferences;
@@ -108,29 +117,18 @@ public class EmulatedStackFrame {
             this.numBytes = numBytes;
         }
 
-        /** Creates a {@code Range} spanning all arguments.
-         * @param frameType the type of the frame.
-         */
         public static Range all(MethodType frameType) {
             return of(frameType, 0, frameType.parameterCount());
         }
 
-        /** Creates a {@code Range} spanning specified arguments.
-         * @param frameType the type of the frame.
-         * @param startArg the first argument in the range to be created.
-         * @param endArg the argument ending the range to be created.
-         */
         public static Range of(MethodType frameType, int startArg, int endArg) {
-            if (startArg >= endArg) {
-                return EMPTY_RANGE;
-            }
+            final Class<?>[] ptypes = frameType.ptypes();
 
             int referencesStart = 0;
             int numReferences = 0;
             int stackFrameStart = 0;
             int numBytes = 0;
 
-            final Class<?>[] ptypes = frameType.ptypes();
             for (int i = 0; i < startArg; ++i) {
                 Class<?> cl = ptypes[i];
                 if (!cl.isPrimitive()) {
@@ -150,14 +148,6 @@ public class EmulatedStackFrame {
             }
 
             return new Range(referencesStart, numReferences, stackFrameStart, numBytes);
-        }
-
-        /** Creates a {@code Range} covering all arguments starting from specified position.
-         * @param frameType the type of the frame.
-         * @param startArg the first argument in the range to be created.
-         */
-        public static Range from(MethodType frameType, int startArg) {
-            return of(frameType, startArg, frameType.parameterCount());
         }
     }
 
@@ -182,21 +172,8 @@ public class EmulatedStackFrame {
             frameSize += getSize(rtype);
         }
 
-        return new EmulatedStackFrame(frameType, new Object[numRefs], new byte[frameSize]);
-    }
-
-    /**
-     * Convert parameter index to index within references array.
-     */
-    int getReferenceIndex(int parameterIndex) {
-        final Class [] ptypes = type.ptypes();
-        int refIndex = 0;
-        for (int i = 0; i < parameterIndex; ++i) {
-            if (!ptypes[i].isPrimitive()) {
-                refIndex += 1;
-            }
-        }
-        return refIndex;
+        return new EmulatedStackFrame(frameType, frameType, new Object[numRefs],
+                new byte[frameSize]);
     }
 
     /**
@@ -207,11 +184,12 @@ public class EmulatedStackFrame {
         if (idx < 0 || idx >= ptypes.length) {
             throw new IllegalArgumentException("Invalid index: " + idx);
         }
+
         if (reference != null && !ptypes[idx].isInstance(reference)) {
             throw new IllegalStateException("reference is not of type: " + type.ptypes()[idx]);
         }
-        int referenceIndex = getReferenceIndex(idx);
-        references[referenceIndex] = reference;
+
+        references[idx] = reference;
     }
 
     /**
@@ -222,8 +200,8 @@ public class EmulatedStackFrame {
             throw new IllegalArgumentException("Argument: " + idx +
                     " is of type " + type.ptypes()[idx] + " expected " + referenceType + "");
         }
-        int referenceIndex = getReferenceIndex(idx);
-        return (T) references[referenceIndex];
+
+        return (T) references[idx];
     }
 
     /**
@@ -355,14 +333,13 @@ public class EmulatedStackFrame {
 
         public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
                                          int referencesOffset, int frameOffset) {
-            if (frame != stackFrame) {
-                // Re-initialize storage if not re-attaching to the same stackFrame.
-                frame = stackFrame;
-                frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
-                numArgs = frame.type.ptypes().length;
+            frame = stackFrame;
+            frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
+            numArgs = frame.type.ptypes().length;
+            if (frameOffset != 0) {
+                frameBuf.position(frameOffset);
             }
 
-            frameBuf.position(frameOffset);
             this.referencesOffset = referencesOffset;
             this.argumentIdx = argumentIdx;
 
@@ -410,36 +387,26 @@ public class EmulatedStackFrame {
             }
         }
 
-        public static void copyNext(
-                StackFrameReader reader, StackFrameWriter writer, Class<?> type) {
-            switch (Wrapper.basicTypeChar(type)) {
-                case 'L':
-                    writer.putNextReference(reader.nextReference(type), type);
-                    break;
-                case 'Z':
-                    writer.putNextBoolean(reader.nextBoolean());
-                    break;
-                case 'B':
-                    writer.putNextByte(reader.nextByte());
-                    break;
-                case 'C':
-                    writer.putNextChar(reader.nextChar());
-                    break;
-                case 'S':
-                    writer.putNextShort(reader.nextShort());
-                    break;
-                case 'I':
-                    writer.putNextInt(reader.nextInt());
-                    break;
-                case 'J':
-                    writer.putNextLong(reader.nextLong());
-                    break;
-                case 'F':
-                    writer.putNextFloat(reader.nextFloat());
-                    break;
-                case 'D':
-                    writer.putNextDouble(reader.nextDouble());
-                    break;
+        public static void copyNext(StackFrameReader reader, StackFrameWriter writer,
+                                    Class<?> type) {
+            if (!type.isPrimitive()) {
+                writer.putNextReference(reader.nextReference(type), type);
+            } else if (type == boolean.class) {
+                writer.putNextBoolean(reader.nextBoolean());
+            } else if (type == byte.class) {
+                writer.putNextByte(reader.nextByte());
+            } else if (type == char.class) {
+                writer.putNextChar(reader.nextChar());
+            } else if (type == short.class) {
+                writer.putNextShort(reader.nextShort());
+            } else if (type == int.class) {
+                writer.putNextInt(reader.nextInt());
+            } else if (type == long.class) {
+                writer.putNextLong(reader.nextLong());
+            } else if (type == float.class) {
+                writer.putNextFloat(reader.nextFloat());
+            } else if (type == double.class) {
+                writer.putNextDouble(reader.nextDouble());
             }
         }
     }
@@ -561,54 +528,6 @@ public class EmulatedStackFrame {
             checkReadType(expectedType);
             argumentIdx++;
             return (T) frame.references[referencesOffset++];
-        }
-    }
-
-    /**
-     * Provides sequential and non-sequential read access to an emulated stack frame. Allows reads
-     * to argument slots as well as to return value slots.
-     */
-    public static class RandomOrderStackFrameReader extends StackFrameReader {
-        int [] frameOffsets;
-        int [] referencesOffsets;
-
-        private void buildTables(MethodType methodType) {
-            final Class<?> [] ptypes = methodType.parameterArray();
-            frameOffsets = new int [ptypes.length];
-            referencesOffsets = new int [ptypes.length];
-            int frameOffset = 0;
-            int referenceOffset = 0;
-            for (int i = 0; i < ptypes.length; ++i) {
-                frameOffsets[i] = frameOffset;
-                referencesOffsets[i] = referenceOffset;
-
-                final Class<?> ptype = ptypes[i];
-                if (ptype.isPrimitive()) {
-                    frameOffset += getSize(ptype);
-                } else {
-                    referenceOffset += 1;
-                }
-            }
-        }
-
-        @Override
-        public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
-                int referencesOffset, int frameOffset) {
-            super.attach(stackFrame, argumentIdx, referencesOffset, frameOffset);
-            buildTables(stackFrame.getMethodType());
-            return this;
-        }
-
-        /**
-         * Position to read argument at specific index.
-         * @param argumentIndex the index of the next argument to be read.
-         * @return this reader.
-         */
-        public RandomOrderStackFrameReader moveTo(int argumentIndex) {
-            referencesOffset = referencesOffsets[argumentIndex];
-            frameBuf.position(frameOffsets[argumentIndex]);
-            argumentIdx = argumentIndex;
-            return this;
         }
     }
 }

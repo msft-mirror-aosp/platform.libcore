@@ -465,6 +465,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static final int NO_DEXOPT_NEEDED = 0;
 
     /**
@@ -495,6 +496,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static final int DEX2OAT_FOR_FILTER = 3;
 
 
@@ -542,6 +544,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static native int getDexOptNeeded(@NonNull String fileName,
             @NonNull String instructionSet, @NonNull String compilerFilter, @Nullable String classLoaderContext,
             boolean newProfile, boolean downgrade)
@@ -567,6 +570,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static final class OptimizationInfo {
         // The human readable refined optimization status of the validity of the odex file.
         private final String status;
@@ -587,6 +591,7 @@ public final class DexFile {
          * @hide
          */
         @SystemApi(client = MODULE_LIBRARIES)
+        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         public @NonNull String getStatus() {
             return status;
         }
@@ -599,6 +604,7 @@ public final class DexFile {
          * @hide
          */
         @SystemApi(client = MODULE_LIBRARIES)
+        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         public @NonNull String getReason() {
             return reason;
         }
@@ -615,6 +621,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @NonNull OptimizationInfo getDexFileOptimizationInfo(
             @NonNull String fileName, @NonNull String instructionSet) throws FileNotFoundException {
         String[] status = getDexFileOptimizationStatus(fileName, instructionSet);
@@ -648,6 +655,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static native @Nullable String[] getDexFileOutputPaths(@NonNull String fileName, @NonNull String instructionSet)
         throws FileNotFoundException;
 
@@ -660,6 +668,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public native static boolean isValidCompilerFilter(@NonNull String filter);
 
     /**
@@ -671,6 +680,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public native static boolean isProfileGuidedCompilerFilter(@NonNull String filter);
 
     /**
@@ -696,6 +706,7 @@ public final class DexFile {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public native static @NonNull String getSafeModeCompilerFilter(@NonNull String filter);
 
     /**
