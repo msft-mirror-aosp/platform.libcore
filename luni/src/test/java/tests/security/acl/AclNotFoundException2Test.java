@@ -26,7 +26,6 @@ public class AclNotFoundException2Test extends TestCase {
     /**
      * java.security.acl.AclNotFoundException#AclNotFoundException()
      */
-    @SuppressWarnings("removal")
     public void test_Constructor() {
         // Test for method java.security.acl.AclNotFoundException()
         try {
