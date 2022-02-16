@@ -20,6 +20,8 @@ import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
 
 import android.annotation.SystemApi;
 
+import libcore.api.CorePlatformApi;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -31,6 +33,7 @@ import libcore.util.Nullable;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@CorePlatformApi(status = CorePlatformApi.Status.STABLE)
 public interface Dns extends com.android.okhttp.internalandroidapi.Dns {
     /**
      * Returns the IP addresses of {@code hostname}, in the order they should
@@ -41,5 +44,6 @@ public interface Dns extends com.android.okhttp.internalandroidapi.Dns {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @NonNull List<@NonNull InetAddress> lookup(@Nullable String hostname) throws UnknownHostException;
 }

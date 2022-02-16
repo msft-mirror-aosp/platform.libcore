@@ -16,7 +16,6 @@
 
 package libcore.java.text;
 
-import android.icu.util.VersionInfo;
 import libcore.util.Nullable;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
@@ -593,10 +592,7 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         String timeZonePattern = "zzzz";
         int timeZoneStyle = TimeZone.LONG;
         doTestFormat(Locale.ENGLISH, timeZoneStyle, timeZonePattern, "Coordinated Universal Time");
-        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern,
-            VersionInfo.ICU_VERSION.getMajor() >= 70
-                ? "temps universel coordonné"
-                : "Temps universel coordonné");
+        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern, "Temps universel coordonné");
         doTestFormat(Locale.SIMPLIFIED_CHINESE, timeZoneStyle, timeZonePattern, "协调世界时");
     }
 
@@ -636,9 +632,7 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         doUtcParsingTest(Locale.ENGLISH, timeZonePattern, timeZoneStyle,
                 "Coordinated Universal Time");
         doUtcParsingTest(Locale.FRENCH, timeZonePattern, timeZoneStyle,
-            VersionInfo.ICU_VERSION.getMajor() >= 70
-                ? "temps universel coordonné"
-                : "Temps universel coordonné");
+                "Temps universel coordonné");
         doUtcParsingTest(Locale.SIMPLIFIED_CHINESE, timeZonePattern, timeZoneStyle,
                 "协调世界时");
     }

@@ -56,10 +56,10 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 
-import libcore.icu.DecimalFormatData;
 import libcore.icu.LocaleData;
-import jdk.internal.math.DoubleConsts;
-import jdk.internal.math.FormattedFloatingDecimal;
+import sun.misc.FpUtils;
+import sun.misc.DoubleConsts;
+import sun.misc.FormattedFloatingDecimal;
 
 // Android-changed: Use localized exponent separator for %e.
 /**
@@ -2284,13 +2284,8 @@ public final class Formatter implements Closeable, Flushable {
 
     private static char getZero(Locale l) {
         if ((l != null) && !l.equals(Locale.US)) {
-            // Android-changed: Improve the performance by 10x http://b/197788756
-            // Unclear if this mapping is needed but inherited from DecimalFormatSymbols
-            l = LocaleData.mapInvalidAndNullLocales(l);
-            DecimalFormatData decimalFormatData = DecimalFormatData.getInstance(l);
-            return decimalFormatData.getZeroDigit();
-            // DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
-            //  return dfs.getZeroDigit();
+            DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
+            return dfs.getZeroDigit();
         } else {
             return '0';
         }
@@ -3381,10 +3376,10 @@ public final class Formatter implements Closeable, Flushable {
 
                 // BEGIN Android-changed: Use localized exponent separator for %e.
                 Locale separatorLocale = (l != null) ? l : Locale.getDefault();
-                DecimalFormatData formatData = DecimalFormatData.getInstance(separatorLocale);
+                LocaleData localeData = LocaleData.get(separatorLocale);
                 sb.append(f.contains(Flags.UPPERCASE) ?
-                        formatData.getExponentSeparator().toUpperCase(separatorLocale) :
-                        formatData.getExponentSeparator().toLowerCase(separatorLocale));
+                        localeData.exponentSeparator.toUpperCase(separatorLocale) :
+                        localeData.exponentSeparator.toLowerCase(separatorLocale));
                 // END Android-changed: Use localized exponent separator for %e.
 
                 Flags flags = f.dup().remove(Flags.GROUP);
@@ -4410,13 +4405,8 @@ public final class Formatter implements Closeable, Flushable {
 
         private char getZero(Locale l) {
             if ((l != null) &&  !l.equals(locale())) {
-                // Android-changed: Improve the performance by 10x http://b/197788756
-                // Unclear if this mapping is needed but inherited from DecimalFormatSymbols
-                l = LocaleData.mapInvalidAndNullLocales(l);
-                DecimalFormatData decimalFormatData = DecimalFormatData.getInstance(l);
-                return decimalFormatData.getZeroDigit();
-                //  DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
-                //  return dfs.getZeroDigit();
+                DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
+                return dfs.getZeroDigit();
             }
             return zero;
         }
