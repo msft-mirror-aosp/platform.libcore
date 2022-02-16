@@ -28,7 +28,7 @@ package java.io;
  * The Character Encoding is not supported.
  *
  * @author  Asmus Freytag
- * @since   1.1
+ * @since   JDK1.1
  */
 public class UnsupportedEncodingException
     extends IOException

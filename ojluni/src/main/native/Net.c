@@ -23,9 +23,13 @@
  * questions.
  */
 
-// Android-changed: Point to correct location of header. http://b/119426171
+// Android-changed: Fuchsia: Point to correct location of header. http://b/119426171
 // #include <sys/poll.h>
+#if defined(__Fuchsia__)
 #include <poll.h>
+#else
+#include <sys/poll.h>
+#endif
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <string.h>
