@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2006, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -176,10 +176,6 @@ class SecurityManager {
 
     public void checkPropertyAccess(String key) { }
 
-    /**
-     * @deprecated this method is deprecated.
-     */
-    @Deprecated
     public boolean checkTopLevelWindow(Object window) {
         return true;
     }
@@ -196,10 +192,6 @@ class SecurityManager {
 
     public void checkSetFactory() { }
 
-    /**
-     * @deprecated this method is deprecated.
-     */
-    @Deprecated
     public void checkMemberAccess(Class<?> clazz, int which) { }
 
     public void checkSecurityAccess(String target) { }

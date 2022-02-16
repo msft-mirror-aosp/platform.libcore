@@ -35,8 +35,6 @@
 
 package java.util.concurrent.atomic;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoubleBinaryOperator;
@@ -121,31 +119,30 @@ abstract class Striped64 extends Number {
      * JVM intrinsics note: It would be possible to use a release-only
      * form of CAS here, if it were provided.
      */
-    @jdk.internal.vm.annotation.Contended
+    // Android-removed: @Contended, this hint is not used by the Android runtime.
+    // @jdk.internal.vm.annotation.Contended
     static final class Cell {
         volatile long value;
         Cell(long x) { value = x; }
         final boolean cas(long cmp, long val) {
-            return VALUE.compareAndSet(this, cmp, val);
+            return U.compareAndSwapLong(this, VALUE, cmp, val);
         }
         final void reset() {
-            VALUE.setVolatile(this, 0L);
+            U.putLongVolatile(this, VALUE, 0L);
         }
         final void reset(long identity) {
-            VALUE.setVolatile(this, identity);
-        }
-        final long getAndSet(long val) {
-            return (long)VALUE.getAndSet(this, val);
+            U.putLongVolatile(this, VALUE, identity);
         }
 
-        // VarHandle mechanics
-        private static final VarHandle VALUE;
+        // Unsafe mechanics
+        private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+        private static final long VALUE;
         static {
             try {
-                MethodHandles.Lookup l = MethodHandles.lookup();
-                VALUE = l.findVarHandle(Cell.class, "value", long.class);
+                VALUE = U.objectFieldOffset
+                    (Cell.class.getDeclaredField("value"));
             } catch (ReflectiveOperationException e) {
-                throw new ExceptionInInitializerError(e);
+                throw new Error(e);
             }
         }
     }
@@ -179,18 +176,14 @@ abstract class Striped64 extends Number {
      * CASes the base field.
      */
     final boolean casBase(long cmp, long val) {
-        return BASE.compareAndSet(this, cmp, val);
-    }
-
-    final long getAndSetBase(long val) {
-        return (long)BASE.getAndSet(this, val);
+        return U.compareAndSwapLong(this, BASE, cmp, val);
     }
 
     /**
      * CASes the cellsBusy field from 0 to 1 to acquire lock.
      */
     final boolean casCellsBusy() {
-        return CELLSBUSY.compareAndSet(this, 0, 1);
+        return U.compareAndSwapInt(this, CELLSBUSY, 0, 1);
     }
 
     /**
@@ -198,7 +191,7 @@ abstract class Striped64 extends Number {
      * Duplicated from ThreadLocalRandom because of packaging restrictions.
      */
     static final int getProbe() {
-        return (int) THREAD_PROBE.get(Thread.currentThread());
+        return U.getInt(Thread.currentThread(), PROBE);
     }
 
     /**
@@ -210,7 +203,7 @@ abstract class Striped64 extends Number {
         probe ^= probe << 13;   // xorshift
         probe ^= probe >>> 17;
         probe ^= probe << 5;
-        THREAD_PROBE.set(Thread.currentThread(), probe);
+        U.putInt(Thread.currentThread(), PROBE, probe);
         return probe;
     }
 
@@ -236,9 +229,9 @@ abstract class Striped64 extends Number {
         }
         boolean collide = false;                // True if last slot nonempty
         done: for (;;) {
-            Cell[] cs; Cell c; int n; long v;
-            if ((cs = cells) != null && (n = cs.length) > 0) {
-                if ((c = cs[(n - 1) & h]) == null) {
+            Cell[] as; Cell a; int n; long v;
+            if ((as = cells) != null && (n = as.length) > 0) {
+                if ((a = as[(n - 1) & h]) == null) {
                     if (cellsBusy == 0) {       // Try to attach new Cell
                         Cell r = new Cell(x);   // Optimistically create
                         if (cellsBusy == 0 && casCellsBusy()) {
@@ -260,17 +253,17 @@ abstract class Striped64 extends Number {
                 }
                 else if (!wasUncontended)       // CAS already known to fail
                     wasUncontended = true;      // Continue after rehash
-                else if (c.cas(v = c.value,
+                else if (a.cas(v = a.value,
                                (fn == null) ? v + x : fn.applyAsLong(v, x)))
                     break;
-                else if (n >= NCPU || cells != cs)
+                else if (n >= NCPU || cells != as)
                     collide = false;            // At max size or stale
                 else if (!collide)
                     collide = true;
                 else if (cellsBusy == 0 && casCellsBusy()) {
                     try {
-                        if (cells == cs)        // Expand table unless stale
-                            cells = Arrays.copyOf(cs, n << 1);
+                        if (cells == as)        // Expand table unless stale
+                            cells = Arrays.copyOf(as, n << 1);
                     } finally {
                         cellsBusy = 0;
                     }
@@ -279,9 +272,9 @@ abstract class Striped64 extends Number {
                 }
                 h = advanceProbe(h);
             }
-            else if (cellsBusy == 0 && cells == cs && casCellsBusy()) {
+            else if (cellsBusy == 0 && cells == as && casCellsBusy()) {
                 try {                           // Initialize table
-                    if (cells == cs) {
+                    if (cells == as) {
                         Cell[] rs = new Cell[2];
                         rs[h & 1] = new Cell(x);
                         cells = rs;
@@ -320,9 +313,9 @@ abstract class Striped64 extends Number {
         }
         boolean collide = false;                // True if last slot nonempty
         done: for (;;) {
-            Cell[] cs; Cell c; int n; long v;
-            if ((cs = cells) != null && (n = cs.length) > 0) {
-                if ((c = cs[(n - 1) & h]) == null) {
+            Cell[] as; Cell a; int n; long v;
+            if ((as = cells) != null && (n = as.length) > 0) {
+                if ((a = as[(n - 1) & h]) == null) {
                     if (cellsBusy == 0) {       // Try to attach new Cell
                         Cell r = new Cell(Double.doubleToRawLongBits(x));
                         if (cellsBusy == 0 && casCellsBusy()) {
@@ -344,16 +337,16 @@ abstract class Striped64 extends Number {
                 }
                 else if (!wasUncontended)       // CAS already known to fail
                     wasUncontended = true;      // Continue after rehash
-                else if (c.cas(v = c.value, apply(fn, v, x)))
+                else if (a.cas(v = a.value, apply(fn, v, x)))
                     break;
-                else if (n >= NCPU || cells != cs)
+                else if (n >= NCPU || cells != as)
                     collide = false;            // At max size or stale
                 else if (!collide)
                     collide = true;
                 else if (cellsBusy == 0 && casCellsBusy()) {
                     try {
-                        if (cells == cs)        // Expand table unless stale
-                            cells = Arrays.copyOf(cs, n << 1);
+                        if (cells == as)        // Expand table unless stale
+                            cells = Arrays.copyOf(as, n << 1);
                     } finally {
                         cellsBusy = 0;
                     }
@@ -362,9 +355,9 @@ abstract class Striped64 extends Number {
                 }
                 h = advanceProbe(h);
             }
-            else if (cellsBusy == 0 && cells == cs && casCellsBusy()) {
+            else if (cellsBusy == 0 && cells == as && casCellsBusy()) {
                 try {                           // Initialize table
-                    if (cells == cs) {
+                    if (cells == as) {
                         Cell[] rs = new Cell[2];
                         rs[h & 1] = new Cell(Double.doubleToRawLongBits(x));
                         cells = rs;
@@ -380,30 +373,22 @@ abstract class Striped64 extends Number {
         }
     }
 
-    // VarHandle mechanics
-    private static final VarHandle BASE;
-    private static final VarHandle CELLSBUSY;
-    private static final VarHandle THREAD_PROBE;
+    // Unsafe mechanics
+    private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+    private static final long BASE;
+    private static final long CELLSBUSY;
+    private static final long PROBE;
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            BASE = l.findVarHandle(Striped64.class,
-                    "base", long.class);
-            CELLSBUSY = l.findVarHandle(Striped64.class,
-                    "cellsBusy", int.class);
-            l = java.security.AccessController.doPrivileged(
-                    new java.security.PrivilegedAction<>() {
-                        public MethodHandles.Lookup run() {
-                            try {
-                                return MethodHandles.privateLookupIn(Thread.class, MethodHandles.lookup());
-                            } catch (ReflectiveOperationException e) {
-                                throw new ExceptionInInitializerError(e);
-                            }
-                        }});
-            THREAD_PROBE = l.findVarHandle(Thread.class,
-                    "threadLocalRandomProbe", int.class);
+            BASE = U.objectFieldOffset
+                (Striped64.class.getDeclaredField("base"));
+            CELLSBUSY = U.objectFieldOffset
+                (Striped64.class.getDeclaredField("cellsBusy"));
+
+            PROBE = U.objectFieldOffset
+                (Thread.class.getDeclaredField("threadLocalRandomProbe"));
         } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new Error(e);
         }
     }
 
