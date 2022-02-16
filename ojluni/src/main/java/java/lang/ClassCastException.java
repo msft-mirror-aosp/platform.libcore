@@ -35,7 +35,7 @@ package java.lang;
  * </pre></blockquote>
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class ClassCastException extends RuntimeException {

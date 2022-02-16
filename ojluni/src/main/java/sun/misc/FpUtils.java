@@ -25,8 +25,8 @@
 
 package sun.misc;
 
-import jdk.internal.math.DoubleConsts;
-import jdk.internal.math.FloatConsts;
+import sun.misc.FloatConsts;
+import sun.misc.DoubleConsts;
 
 /**
  * The class {@code FpUtils} contains static utility methods for

@@ -722,7 +722,7 @@ public class ArrayDequeTest extends JSR166TestCase {
         ArrayDeque l = new ArrayDeque();
         l.add(new Object());
         try {
-            l.toArray((Object[]) null);
+            l.toArray(null);
             shouldThrow();
         } catch (NullPointerException success) {}
     }

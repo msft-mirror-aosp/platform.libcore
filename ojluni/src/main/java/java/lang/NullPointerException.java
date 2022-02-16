@@ -47,7 +47,7 @@ package java.lang;
  * stack trace was not writable}.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class NullPointerException extends RuntimeException {

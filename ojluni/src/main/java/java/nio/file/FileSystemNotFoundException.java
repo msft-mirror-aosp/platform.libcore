@@ -27,8 +27,6 @@ package java.nio.file;
 
 /**
  * Runtime exception thrown when a file system cannot be found.
- *
- * @since 1.7
  */
 
 public class FileSystemNotFoundException
