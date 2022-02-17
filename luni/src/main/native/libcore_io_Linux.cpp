@@ -57,6 +57,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/macros.h>
+#include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <log/log.h>
 #include <nativehelper/JNIPlatformHelp.h>
@@ -2321,13 +2322,18 @@ static jint Linux_sendmsg(JNIEnv* env, jobject, jobject javaFd, jobject structMs
         return -1;
     }
 
+    // Determine if the socket address is an internet address. We need to do this before invoking
+    // NET_FAILURE_RETRY(sendmsg) because that can throw and we can't call env->IsInstanceOf
+    // with a pending exception (b/194980932).
+    const bool isInetSocketAddressClass =
+            env->IsInstanceOf(sockAddrObj, JniConstants::GetInetSocketAddressClass(env));
+
     sockaddr* _sa = sa_len ? reinterpret_cast<sockaddr*>(&ss) : NULL;
     scopedMsghdrValue.setMsgNameAndLen(_sa, sa_len);
     rc  = NET_FAILURE_RETRY(env, ssize_t, sendmsg, javaFd, \
                                  &(scopedMsghdrValue.getObject()), flags);
 
-    if (sockAddrObj &&
-        !env->IsInstanceOf(sockAddrObj, JniConstants::GetInetSocketAddressClass(env))) {
+    if (sockAddrObj && !isInetSocketAddressClass) {
         // non InetSockAddress case, return now;
         return rc;
     }
@@ -2645,8 +2651,17 @@ static jobject Linux_statvfs(JNIEnv* env, jobject, jstring javaPath) {
 
 static jstring Linux_strerror(JNIEnv* env, jobject, jint errnum) {
     char buffer[BUFSIZ];
+#ifdef ANDROID_HOST_MUSL
+    /* musl only provides the posix version of strerror_r that returns int */
+    int ret = strerror_r(errnum, buffer, sizeof(buffer));
+    if (ret != 0) {
+      return env->NewStringUTF(android::base::StringPrintf("Unknown error %d", errnum).c_str());
+    }
+    return env->NewStringUTF(buffer);
+#else
     const char* message = strerror_r(errnum, buffer, sizeof(buffer));
     return env->NewStringUTF(message);
+#endif
 }
 
 static jstring Linux_strsignal(JNIEnv* env, jobject, jint signal) {
