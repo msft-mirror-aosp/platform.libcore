@@ -34,7 +34,7 @@ package java.lang;
  * incompatibly changed.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 
 

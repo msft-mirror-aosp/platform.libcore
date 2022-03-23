@@ -74,12 +74,11 @@ class ZipConstants64 {
     static final int  ZIP64_EXTLEN = 16;      // uncompressed size, 8-byte
 
     /*
-     * Language encoding flag (general purpose flag bit 11)
-     *
-     * If this bit is set the filename and comment fields for this
-     * entry must be encoded using UTF-8.
+     * Language encoding flag EFS
      */
-    static final int USE_UTF8 = 0x800;
+    static final int EFS = 0x800;       // If this bit is set the filename and
+                                        // comment fields for this file must be
+                                        // encoded using UTF-8.
 
     /*
      * Constants below are defined here (instead of in ZipConstants)

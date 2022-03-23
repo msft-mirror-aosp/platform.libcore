@@ -50,10 +50,9 @@ Java_java_nio_MappedByteBuffer_isLoaded0(JNIEnv *env, jobject obj, jlong address
     int i = 0;
     void *a = (void *) jlong_to_ptr(address);
 #ifdef __linux__
-    // Android-changed: fix mismatched type in sizeof.
-    unsigned char *vec = (unsigned char *)malloc(numPages * sizeof(*vec));
+    unsigned char *vec = (unsigned char *)malloc(numPages * sizeof(char));
 #else
-    char *vec = (char *)malloc(numPages * sizeof(*vec));
+    char *vec = (char *)malloc(numPages * sizeof(char));
 #endif
 
     if (vec == NULL) {

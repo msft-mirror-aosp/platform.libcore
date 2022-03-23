@@ -138,7 +138,7 @@ public abstract class BlockingQueueTest extends JSR166TestCase {
     public void testToArray_NullArray() {
         final Collection q = emptyCollection();
         try {
-            q.toArray((Object[]) null);
+            q.toArray(null);
             shouldThrow();
         } catch (NullPointerException success) {}
     }

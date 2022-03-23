@@ -38,9 +38,13 @@ public class FileKey {
 
     private FileKey() { }
 
-    public static FileKey create(FileDescriptor fd) throws IOException {
+    public static FileKey create(FileDescriptor fd) {
         FileKey fk = new FileKey();
-        fk.init(fd);
+        try {
+            fk.init(fd);
+        } catch (IOException ioe) {
+            throw new Error(ioe);
+        }
         return fk;
     }
 

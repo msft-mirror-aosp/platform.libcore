@@ -32,7 +32,6 @@ import java.io.IOException;
  * This class implements a stream filter for writing compressed data in
  * the GZIP file format.
  * @author      David Connelly
- * @since 1.1
  *
  */
 public
@@ -45,26 +44,19 @@ class GZIPOutputStream extends DeflaterOutputStream {
     /*
      * GZIP header magic number.
      */
-    private static final int GZIP_MAGIC = 0x8b1f;
+    private final static int GZIP_MAGIC = 0x8b1f;
 
     /*
      * Trailer size in bytes.
      *
      */
-    private static final int TRAILER_SIZE = 8;
+    private final static int TRAILER_SIZE = 8;
 
     /**
      * Creates a new output stream with the specified buffer size.
      *
      * <p>The new output stream instance is created as if by invoking
      * the 3-argument constructor GZIPOutputStream(out, size, false).
-     *
-     * Android-note: Android limits the number of UnbufferedIO operations that can be performed, so
-     * consider using buffered inputs with this class. More information can be found in the
-     * <a href="https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder#detectUnbufferedIo()">
-     * UnbufferedIO</a> and
-     * <a href="https://developer.android.com/reference/android/os/StrictMode"> StrictMode</a>
-     * documentation.
      *
      * @param out the output stream
      * @param size the output buffer size

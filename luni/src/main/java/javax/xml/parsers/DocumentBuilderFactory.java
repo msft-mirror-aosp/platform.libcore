@@ -307,10 +307,21 @@ public abstract class DocumentBuilderFactory {
      * </p>
      *
      * <p>
-     * Earlier versions of this documentation have mandated support for the
-     * {@link javax.xml.XMLConstants#FEATURE_SECURE_PROCESSING} feature, but this is not a
-     * supported feature on any version of Android.
-     * </p>
+     * All implementations are required to support the {@link javax.xml.XMLConstants#FEATURE_SECURE_PROCESSING} feature.
+     * When the feature is:</p>
+     * <ul>
+     *   <li>
+     *     <code>true</code>: the implementation will limit XML processing to conform to implementation limits.
+     *     Examples include entity expansion limits and XML Schema constructs that would consume large amounts of resources.
+     *     If XML processing is limited for security reasons, it will be reported via a call to the registered
+     *    {@link org.xml.sax.ErrorHandler#fatalError(SAXParseException exception)}.
+     *     See {@link  DocumentBuilder#setErrorHandler(org.xml.sax.ErrorHandler errorHandler)}.
+     *   </li>
+     *   <li>
+     *     <code>false</code>: the implementation will processing XML according to the XML specifications without
+     *     regard to possible implementation limits.
+     *   </li>
+     * </ul>
      *
      * @param name Feature name.
      * @param value Is feature state <code>true</code> or <code>false</code>.

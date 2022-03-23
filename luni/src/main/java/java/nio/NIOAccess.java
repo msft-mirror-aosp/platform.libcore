@@ -29,6 +29,7 @@ import android.compat.annotation.UnsupportedAppUsage;
  */
 // @VisibleForTesting : was default
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class NIOAccess {
 
     private NIOAccess() {}
@@ -60,6 +61,7 @@ public final class NIOAccess {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static Object getBaseArray(Buffer b) {
         return b.hasArray() ? b.array() : null;
     }
@@ -78,6 +80,7 @@ public final class NIOAccess {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static int getBaseArrayOffset(Buffer b) {
         return b.hasArray() ? ((b.arrayOffset() + b.position) << b._elementSizeShift) : 0;
     }

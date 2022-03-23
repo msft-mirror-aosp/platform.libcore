@@ -132,7 +132,7 @@ public class CollectionCertStoreParameters
      * @return a formatted string describing the parameters
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("CollectionCertStoreParameters: [\n");
         sb.append("  collection: " + coll + "\n");
         sb.append("]");
