@@ -26,8 +26,6 @@
 
 package java.lang.reflect;
 
-import java.util.StringJoiner;
-
 /**
  * The Modifier class provides {@code static} methods and
  * constants to decode class and member access modifiers.  The sets of
@@ -51,7 +49,8 @@ public class Modifier {
      *  packages
      *
     static {
-        ReflectionFactory factory = AccessController.doPrivileged(
+        sun.reflect.ReflectionFactory factory =
+            AccessController.doPrivileged(
                 new ReflectionFactory.GetReflectionFactoryAction());
         factory.setLangReflectAccess(new java.lang.reflect.ReflectAccess());
     }
@@ -242,24 +241,27 @@ public class Modifier {
      * represented by {@code mod}
      */
     public static String toString(int mod) {
-        StringJoiner sj = new StringJoiner(" ");
+        StringBuilder sb = new StringBuilder();
+        int len;
 
-        if ((mod & PUBLIC) != 0)        sj.add("public");
-        if ((mod & PROTECTED) != 0)     sj.add("protected");
-        if ((mod & PRIVATE) != 0)       sj.add("private");
+        if ((mod & PUBLIC) != 0)        sb.append("public ");
+        if ((mod & PROTECTED) != 0)     sb.append("protected ");
+        if ((mod & PRIVATE) != 0)       sb.append("private ");
 
         /* Canonical order */
-        if ((mod & ABSTRACT) != 0)      sj.add("abstract");
-        if ((mod & STATIC) != 0)        sj.add("static");
-        if ((mod & FINAL) != 0)         sj.add("final");
-        if ((mod & TRANSIENT) != 0)     sj.add("transient");
-        if ((mod & VOLATILE) != 0)      sj.add("volatile");
-        if ((mod & SYNCHRONIZED) != 0)  sj.add("synchronized");
-        if ((mod & NATIVE) != 0)        sj.add("native");
-        if ((mod & STRICT) != 0)        sj.add("strictfp");
-        if ((mod & INTERFACE) != 0)     sj.add("interface");
+        if ((mod & ABSTRACT) != 0)      sb.append("abstract ");
+        if ((mod & STATIC) != 0)        sb.append("static ");
+        if ((mod & FINAL) != 0)         sb.append("final ");
+        if ((mod & TRANSIENT) != 0)     sb.append("transient ");
+        if ((mod & VOLATILE) != 0)      sb.append("volatile ");
+        if ((mod & SYNCHRONIZED) != 0)  sb.append("synchronized ");
+        if ((mod & NATIVE) != 0)        sb.append("native ");
+        if ((mod & STRICT) != 0)        sb.append("strictfp ");
+        if ((mod & INTERFACE) != 0)     sb.append("interface ");
 
-        return sj.toString();
+        if ((len = sb.length()) > 0)    /* trim trailing space */
+            return sb.toString().substring(0, len-1);
+        return "";
     }
 
     /*

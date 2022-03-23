@@ -33,6 +33,7 @@
 package sun.security.pkcs;
 
 @android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 @libcore.api.Hide
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class ParsingException extends java.io.IOException {
