@@ -868,7 +868,7 @@ public class ArrayDequeTest extends TestCase {
         assertEquals(5, testQue.size());
         assertEquals(testObjOne, testQue.peek());
         try {
-            testQue.toArray((Object[]) null);
+            testQue.toArray(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             // expected

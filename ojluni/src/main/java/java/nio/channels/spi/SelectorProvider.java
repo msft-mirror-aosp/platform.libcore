@@ -46,7 +46,7 @@ import sun.security.action.GetPropertyAction;
  * #provider() provider} method.  The first invocation of that method will locate
  * the default provider as specified below.
  *
- * <p> The system-wide default provider is used by the static {@code open}
+ * <p> The system-wide default provider is used by the static <tt>open</tt>
  * methods of the {@link java.nio.channels.DatagramChannel#open
  * DatagramChannel}, {@link java.nio.channels.Pipe#open Pipe}, {@link
  * java.nio.channels.Selector#open Selector}, {@link
@@ -54,7 +54,7 @@ import sun.security.action.GetPropertyAction;
  * java.nio.channels.SocketChannel#open SocketChannel} classes.  It is also
  * used by the {@link java.lang.System#inheritedChannel System.inheritedChannel()}
  * method. A program may make use of a provider other than the default provider
- * by instantiating that provider and then directly invoking the {@code open}
+ * by instantiating that provider and then directly invoking the <tt>open</tt>
  * methods defined in this class.
  *
  * <p> All of the methods in this class are safe for use by multiple concurrent
@@ -71,23 +71,17 @@ public abstract class SelectorProvider {
     private static final Object lock = new Object();
     private static SelectorProvider provider = null;
 
-    private static Void checkPermission() {
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null)
-            sm.checkPermission(new RuntimePermission("selectorProvider"));
-        return null;
-    }
-    private SelectorProvider(Void ignore) { }
-
     /**
      * Initializes a new instance of this class.
      *
      * @throws  SecurityException
      *          If a security manager has been installed and it denies
-     *          {@link RuntimePermission}{@code ("selectorProvider")}
+     *          {@link RuntimePermission}<tt>("selectorProvider")</tt>
      */
     protected SelectorProvider() {
-        this(checkPermission());
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null)
+            sm.checkPermission(new RuntimePermission("selectorProvider"));
     }
 
     private static boolean loadProviderFromProperty() {
@@ -95,10 +89,9 @@ public abstract class SelectorProvider {
         if (cn == null)
             return false;
         try {
-            @SuppressWarnings("deprecation")
-            Object tmp = Class.forName(cn, true,
-                                       ClassLoader.getSystemClassLoader()).newInstance();
-            provider = (SelectorProvider)tmp;
+            Class<?> c = Class.forName(cn, true,
+                                       ClassLoader.getSystemClassLoader());
+            provider = (SelectorProvider)c.newInstance();
             return true;
         } catch (ClassNotFoundException x) {
             throw new ServiceConfigurationError(null, x);
@@ -143,7 +136,7 @@ public abstract class SelectorProvider {
      * <ol>
      *
      *   <li><p> If the system property
-     *   {@code java.nio.channels.spi.SelectorProvider} is defined then it is
+     *   <tt>java.nio.channels.spi.SelectorProvider</tt> is defined then it is
      *   taken to be the fully-qualified name of a concrete provider class.
      *   The class is loaded and instantiated; if this process fails then an
      *   unspecified error is thrown.  </p></li>
@@ -151,8 +144,8 @@ public abstract class SelectorProvider {
      *   <li><p> If a provider class has been installed in a jar file that is
      *   visible to the system class loader, and that jar file contains a
      *   provider-configuration file named
-     *   {@code java.nio.channels.spi.SelectorProvider} in the resource
-     *   directory {@code META-INF/services}, then the first class name
+     *   <tt>java.nio.channels.spi.SelectorProvider</tt> in the resource
+     *   directory <tt>META-INF/services</tt>, then the first class name
      *   specified in that file is taken.  The class is loaded and
      *   instantiated; if this process fails then an unspecified error is
      *   thrown.  </p></li>
@@ -173,7 +166,7 @@ public abstract class SelectorProvider {
             if (provider != null)
                 return provider;
             return AccessController.doPrivileged(
-                new PrivilegedAction<>() {
+                new PrivilegedAction<SelectorProvider>() {
                     public SelectorProvider run() {
                             if (loadProviderFromProperty())
                                 return provider;
@@ -306,14 +299,14 @@ public abstract class SelectorProvider {
      * returned. Subsequent invocations of this method return the same
      * channel. </p>
      *
-     * @return  The inherited channel, if any, otherwise {@code null}.
+     * @return  The inherited channel, if any, otherwise <tt>null</tt>.
      *
      * @throws  IOException
      *          If an I/O error occurs
      *
      * @throws  SecurityException
      *          If a security manager has been installed and it denies
-     *          {@link RuntimePermission}{@code ("inheritedChannel")}
+     *          {@link RuntimePermission}<tt>("inheritedChannel")</tt>
      *
      * @since 1.5
      */

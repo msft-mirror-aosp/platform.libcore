@@ -30,7 +30,6 @@ package java.util.zip;
  * which manipulate ZIP files.
  *
  * @author      David Connelly
- * @since 1.1
  */
 interface ZipConstants {
     /*
