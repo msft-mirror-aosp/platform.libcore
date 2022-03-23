@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,132 +17,99 @@
 package libcore.javax.xml.transform.stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Reader;
+import javax.xml.transform.stream.StreamSource;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.File;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamSource;
-
 @RunWith(JUnit4.class)
 public class StreamSourceTest {
 
-  @Test
-  public void constructor() {
-    StreamSource ss = new StreamSource();
-    assertNull(ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertNull(ss.getReader());
-    assertNull(ss.getSystemId());
-  }
+    private StreamSource source;
 
-  @Test
-  public void constructorWithFile() throws IOException {
-    final String PREFIX = "StreamSourceTest";
-    File file = File.createTempFile(PREFIX, null);
-    StreamSource ss = new StreamSource(file);
-    assertNull(ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertNull(ss.getReader());
-    assertTrue("SystemId is " + ss.getSystemId(), ss.getSystemId().contains(PREFIX));
-    if (file.exists()) {
-      file.delete();
+    @Before
+    public void setUp() {
+        source = new StreamSource();
     }
-  }
 
-  @Test
-  public void constructorWithInputStreamAndSystemId() {
-    final String SYSTEM_ID = "System 65";
-    ByteArrayInputStream is = new ByteArrayInputStream(new byte[] { (byte) 0 });
-    StreamSource ss = new StreamSource(is, SYSTEM_ID);
-    assertEquals(is, ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertNull(ss.getReader());
-    assertEquals(SYSTEM_ID, ss.getSystemId());
-  }
-
-  @Test
-  public void constructorWithSystemId() {
-    final String SYSTEM_ID = "System 76";
-    StreamSource ss = new StreamSource(SYSTEM_ID);
-    assertNull(ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertNull(ss.getReader());
-    assertEquals(SYSTEM_ID, ss.getSystemId());
-  }
-
-  @Test
-  public void constructorWithReader() {
-    StringReader sr = new StringReader("House");
-    StreamSource ss = new StreamSource(sr);
-    assertNull(ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertEquals(sr, ss.getReader());
-    assertNull(ss.getSystemId());
-  }
-
-  @Test
-  public void constructorWithReaderAndSystemId() {
-    final String SYSTEM_ID = "System 96";
-    StringReader sr = new StringReader("House");
-    StreamSource ss = new StreamSource(sr, SYSTEM_ID);
-    assertNull(ss.getInputStream());
-    assertNull(ss.getPublicId());
-    assertEquals(sr, ss.getReader());
-    assertEquals(SYSTEM_ID, ss.getSystemId());
-  }
-
-  @Test
-  public void setInputStream() {
-    StreamSource ss = new StreamSource();
-    ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {(byte) 0});
-    ss.setInputStream(is);
-    assertEquals(is, ss.getInputStream());
-  }
-
-  @Test
-  public void setReader() {
-    StreamSource ss = new StreamSource();
-    StringReader sr = new StringReader("Thirteen-twenty-one");
-    ss.setReader(sr);
-    assertEquals(sr, ss.getReader());
-  }
-
-  @Test
-  public void setPublicId() {
-    final String PUBLIC_ID = "Thirteen-twenty-three";
-    StreamSource ss = new StreamSource();
-    ss.setPublicId(PUBLIC_ID);
-    assertEquals(PUBLIC_ID, ss.getPublicId());
-  }
-
-  @Test
-  public void setSystemId() {
-    final String SYSTEM_ID = "Thirteen-twenty-four";
-    StreamSource ss = new StreamSource();
-    ss.setSystemId(SYSTEM_ID);
-    assertEquals(SYSTEM_ID, ss.getSystemId());
-  }
-
-  @Test
-  public void setSystemIdWithFile() throws IOException {
-    final String PREFIX = "StreamSourceTest100";
-    StreamSource ss = new StreamSource();
-    File file = File.createTempFile(PREFIX, null);
-    ss.setSystemId(file);
-    assertTrue(ss.getSystemId().contains(PREFIX));
-    if (file.exists()) {
-      file.delete();
+    @Test
+    public void constructor() {
+        source = new StreamSource();
+        assertNull(source.getSystemId());
+        assertNull(source.getPublicId());
+        assertNull(source.getInputStream());
+        assertNull(source.getReader());
     }
-  }
+
+    @Test
+    public void constructor_withInputStreamAndString() {
+        InputStream is = new ByteArrayInputStream(new byte[]{ 0x00 });
+        String systemId = "systemId";
+        source = new StreamSource(is, systemId);
+        assertEquals(is, source.getInputStream());
+        assertEquals(systemId, source.getSystemId());
+    }
+
+    @Test
+    public void constructor_withReaderAndString() {
+        Reader reader = new CharArrayReader(new char[]{ 'a' });
+        String systemId = "systemId";
+        source = new StreamSource(reader, systemId);
+        assertEquals(reader, source.getReader());
+        assertEquals(systemId, source.getSystemId());
+    }
+
+    @Test
+    public void constructor_withString() {
+        String systemId = "systemId";
+        source = new StreamSource(systemId);
+        assertEquals(systemId, source.getSystemId());
+    }
+
+    @Test
+    public void setInputStream() {
+        InputStream is = new ByteArrayInputStream(new byte[]{ 0x00 });
+        source.setInputStream(is);
+        assertEquals(is, source.getInputStream());
+
+        source.setInputStream(null);
+        assertNull(source.getInputStream());
+    }
+
+    @Test
+    public void setPublicId() {
+        String publicId = "publicId";
+        source.setPublicId(publicId);
+        assertEquals(publicId, source.getPublicId());
+
+        source.setPublicId(null);
+        assertNull(source.getPublicId());
+    }
+
+    @Test
+    public void setSystemId_withFile() {
+        source.setSystemId(new File("path"));
+        assertEquals("file:///path", source.getSystemId());
+
+        source.setSystemId(new File("."));
+        assertEquals("file:///.", source.getSystemId());
+    }
+
+    @Test
+    public void setSystemId_withString() {
+        String systemId = "systemId";
+        source.setSystemId(systemId);
+        assertEquals(systemId, source.getSystemId());
+
+        source.setSystemId((String)null);
+        assertNull(source.getSystemId());
+    }
 }

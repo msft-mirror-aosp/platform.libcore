@@ -363,7 +363,7 @@ public class LinkedListTest extends JSR166TestCase {
         LinkedList l = new LinkedList();
         l.add(new Object());
         try {
-            l.toArray((Object[]) null);
+            l.toArray(null);
             shouldThrow();
         } catch (NullPointerException success) {}
     }

@@ -73,19 +73,6 @@ public class BaseDexClassLoader extends ClassLoader {
     protected final ClassLoader[] sharedLibraryLoaders;
 
     /**
-     * Array of ClassLoaders identical to {@code sharedLibraryLoaders} except that these library
-     * loaders are always checked after the {@code pathList} when looking up classes and resources.
-     *
-     * The placement of a library into this group is done by the OEM and cannot be configured by
-     * an App.
-     *
-     * <p>{@code null} if the class loader has no shared library.
-     *
-     * @hide
-     */
-    protected final ClassLoader[] sharedLibraryLoadersAfter;
-
-    /**
      * Constructs an instance.
      * Note that all the *.jar and *.apk files from {@code dexPath} might be
      * first extracted in-memory before the code is loaded. This can be avoided
@@ -102,7 +89,7 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent) {
-        this(dexPath, librarySearchPath, parent, null, null, false);
+        this(dexPath, librarySearchPath, parent, null, false);
     }
 
     /**
@@ -111,7 +98,7 @@ public class BaseDexClassLoader extends ClassLoader {
     @UnsupportedAppUsage
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent, boolean isTrusted) {
-        this(dexPath, librarySearchPath, parent, null, null, isTrusted);
+        this(dexPath, librarySearchPath, parent, null, isTrusted);
     }
 
     /**
@@ -119,17 +106,8 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public BaseDexClassLoader(String dexPath,
             String librarySearchPath, ClassLoader parent, ClassLoader[] libraries) {
-        this(dexPath, librarySearchPath, parent, libraries, null, false);
+        this(dexPath, librarySearchPath, parent, libraries, false);
     }
-
-    /**
-     * @hide
-     */
-    public BaseDexClassLoader(String dexPath, String librarySearchPath,
-            ClassLoader parent, ClassLoader[] libraries, ClassLoader[] librariesAfter) {
-        this(dexPath, librarySearchPath, parent, libraries, librariesAfter, false);
-    }
-
 
     /**
      * BaseDexClassLoader implements the Android
@@ -141,15 +119,11 @@ public class BaseDexClassLoader extends ClassLoader {
      * after the parent.
      * The shared library loaders are always checked before the {@code pathList} when looking
      * up classes and resources.
-     * <p>
-     * The shared library loaders defined in sharedLibraryLoadersAfter are always checked
-     * <b>after</b> the {@code pathList}
      *
      * @hide
      */
     public BaseDexClassLoader(String dexPath,
             String librarySearchPath, ClassLoader parent, ClassLoader[] sharedLibraryLoaders,
-            ClassLoader[] sharedLibraryLoadersAfter,
             boolean isTrusted) {
         super(parent);
         // Setup shared libraries before creating the path list. ART relies on the class loader
@@ -159,9 +133,6 @@ public class BaseDexClassLoader extends ClassLoader {
                 : Arrays.copyOf(sharedLibraryLoaders, sharedLibraryLoaders.length);
         this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
 
-        this.sharedLibraryLoadersAfter = sharedLibraryLoadersAfter == null
-                ? null
-                : Arrays.copyOf(sharedLibraryLoadersAfter, sharedLibraryLoadersAfter.length);
         // Run background verification after having set 'pathList'.
         this.pathList.maybeRunBackgroundVerification(this);
 
@@ -174,6 +145,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void reportClassLoaderChain() {
         if (reporter == null) {
             return;
@@ -221,7 +193,6 @@ public class BaseDexClassLoader extends ClassLoader {
     public BaseDexClassLoader(ByteBuffer[] dexFiles, String librarySearchPath, ClassLoader parent) {
         super(parent);
         this.sharedLibraryLoaders = null;
-        this.sharedLibraryLoadersAfter = null;
         this.pathList = new DexPathList(this, librarySearchPath);
         this.pathList.initByteBufferDexPath(dexFiles);
         // Run background verification after having set 'pathList'.
@@ -243,18 +214,6 @@ public class BaseDexClassLoader extends ClassLoader {
         // this classloader operates on.
         List<Throwable> suppressedExceptions = new ArrayList<Throwable>();
         Class c = pathList.findClass(name, suppressedExceptions);
-        if (c != null) {
-            return c;
-        }
-        // Now, check whether the class is present in the "after" shared libraries.
-        if (sharedLibraryLoadersAfter != null) {
-            for (ClassLoader loader : sharedLibraryLoadersAfter) {
-                try {
-                    return loader.loadClass(name);
-                } catch (ClassNotFoundException ignored) {
-                }
-            }
-        }
         if (c == null) {
             ClassNotFoundException cnfe = new ClassNotFoundException(
                     "Didn't find class \"" + name + "\" on path: " + pathList);
@@ -275,6 +234,7 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addDexPath(@Nullable String dexPath) {
         addDexPath(dexPath, false /*isTrusted*/);
     }
@@ -296,6 +256,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addNativePath(@NonNull Collection<String> libPaths) {
         pathList.addNativePath(libPaths);
     }
@@ -310,59 +271,28 @@ public class BaseDexClassLoader extends ClassLoader {
                 }
             }
         }
-        URL url = pathList.findResource(name);
-        if (url != null) {
-            return url;
-        }
-        if (sharedLibraryLoadersAfter != null) {
-            for (ClassLoader loader : sharedLibraryLoadersAfter) {
-                URL url2 = loader.getResource(name);
-                if (url2 != null) {
-                    return url2;
-                }
-            }
-        }
-        return null;
+        return pathList.findResource(name);
     }
 
     @Override
     protected Enumeration<URL> findResources(String name) {
         Enumeration<URL> myResources = pathList.findResources(name);
-        if (sharedLibraryLoaders == null && sharedLibraryLoadersAfter == null) {
+        if (sharedLibraryLoaders == null) {
           return myResources;
         }
 
-        int sharedLibraryLoadersCount =
-                (sharedLibraryLoaders != null) ? sharedLibraryLoaders.length : 0;
-        int sharedLibraryLoadersAfterCount =
-                (sharedLibraryLoadersAfter != null) ? sharedLibraryLoadersAfter.length : 0;
-
         Enumeration<URL>[] tmp =
-                (Enumeration<URL>[]) new Enumeration<?>[sharedLibraryLoadersCount +
-                        sharedLibraryLoadersAfterCount
-                        + 1];
-        // First add sharedLibrary resources.
+            (Enumeration<URL>[]) new Enumeration<?>[sharedLibraryLoaders.length + 1];
         // This will add duplicate resources if a shared library is loaded twice, but that's ok
         // as we don't guarantee uniqueness.
-        int i = 0;
-        for (; i < sharedLibraryLoadersCount; i++) {
+        for (int i = 0; i < sharedLibraryLoaders.length; i++) {
             try {
                 tmp[i] = sharedLibraryLoaders[i].getResources(name);
             } catch (IOException e) {
                 // Ignore.
             }
         }
-        // Then add resource from this dex path.
-        tmp[i++] = myResources;
-
-        // Finally add resources from shared libraries that are to be loaded after.
-        for (int j = 0; j < sharedLibraryLoadersAfterCount; i++, j++) {
-            try {
-                tmp[i] = sharedLibraryLoadersAfter[j].getResources(name);
-            } catch (IOException e) {
-                // Ignore.
-            }
-        }
+        tmp[sharedLibraryLoaders.length] = myResources;
         return new CompoundEnumeration<>(tmp);
     }
 
@@ -423,6 +353,7 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public @NonNull String getLdLibraryPath() {
         StringBuilder result = new StringBuilder();
         for (File directory : pathList.getNativeLibraryDirectories()) {
@@ -448,6 +379,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setReporter(@Nullable Reporter newReporter) {
         reporter = newReporter;
     }
@@ -466,6 +398,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public interface Reporter {
         /**
          * Reports the construction of a BaseDexClassLoader and provides opaque information about
@@ -480,6 +413,7 @@ public class BaseDexClassLoader extends ClassLoader {
          * @hide
          */
         @SystemApi(client = MODULE_LIBRARIES)
+        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         void report(@NonNull Map<String, String> contextsMap);
     }
 }

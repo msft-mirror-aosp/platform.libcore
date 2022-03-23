@@ -37,7 +37,7 @@ package java.lang;
  * found.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class NoClassDefFoundError extends LinkageError {

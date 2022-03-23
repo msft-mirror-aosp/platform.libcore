@@ -27,8 +27,6 @@ package java.nio.file;
 
 /**
  * Runtime exception thrown when a provider of the required type cannot be found.
- *
- * @since 1.7
  */
 
 public class ProviderNotFoundException
