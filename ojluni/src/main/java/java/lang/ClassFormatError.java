@@ -31,7 +31,7 @@ package java.lang;
  * be interpreted as a class file.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class ClassFormatError extends LinkageError {

@@ -26,7 +26,6 @@
 package java.lang.invoke;
 
 import dalvik.system.VMRuntime;
-import jdk.internal.HotSpotIntrinsicCandidate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -432,6 +431,7 @@ import java.util.Objects;
  * @see MethodHandles
  * @see MethodType
  * @since 9
+ * @hide
  */
 public abstract class VarHandle {
     // Android-added: Using sun.misc.Unsafe for fence implementation.
@@ -491,7 +491,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object get(Object... args);
 
     /**
@@ -517,7 +518,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     void set(Object... args);
 
 
@@ -549,7 +551,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getVolatile(Object... args);
 
     /**
@@ -579,7 +582,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     void setVolatile(Object... args);
 
 
@@ -609,7 +613,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getOpaque(Object... args);
 
     /**
@@ -636,7 +641,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     void setOpaque(Object... args);
 
 
@@ -673,7 +679,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAcquire(Object... args);
 
     /**
@@ -704,7 +711,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     void setRelease(Object... args);
 
 
@@ -740,7 +748,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     boolean compareAndSet(Object... args);
 
     /**
@@ -775,7 +784,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object compareAndExchange(Object... args);
 
     /**
@@ -810,7 +820,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object compareAndExchangeAcquire(Object... args);
 
     /**
@@ -845,7 +856,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object compareAndExchangeRelease(Object... args);
 
     // Weak (spurious failures allowed)
@@ -884,7 +896,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetPlain(Object... args);
 
     /**
@@ -921,7 +934,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSet(Object... args);
 
     /**
@@ -959,7 +973,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetAcquire(Object... args);
 
     /**
@@ -997,7 +1012,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetRelease(Object... args);
 
     /**
@@ -1030,7 +1046,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndSet(Object... args);
 
     /**
@@ -1063,7 +1080,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndSetAcquire(Object... args);
 
     /**
@@ -1096,7 +1114,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndSetRelease(Object... args);
 
     // Primitive adders
@@ -1132,7 +1151,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndAdd(Object... args);
 
     /**
@@ -1165,7 +1185,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndAddAcquire(Object... args);
 
     /**
@@ -1198,7 +1219,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndAddRelease(Object... args);
 
 
@@ -1239,7 +1261,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOr(Object... args);
 
     /**
@@ -1276,7 +1299,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOrAcquire(Object... args);
 
     /**
@@ -1313,7 +1337,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOrRelease(Object... args);
 
     /**
@@ -1350,7 +1375,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAnd(Object... args);
 
     /**
@@ -1387,7 +1413,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAndAcquire(Object... args);
 
     /**
@@ -1424,7 +1451,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAndRelease(Object... args);
 
     /**
@@ -1461,7 +1489,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXor(Object... args);
 
     /**
@@ -1498,7 +1527,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXorAcquire(Object... args);
 
     /**
@@ -1535,7 +1565,8 @@ public abstract class VarHandle {
      */
     public final native
     @MethodHandle.PolymorphicSignature
-    @HotSpotIntrinsicCandidate
+    // Android-removed: unsupported annotation.
+    // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXorRelease(Object... args);
 
 

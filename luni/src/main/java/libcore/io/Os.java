@@ -59,6 +59,7 @@ import java.nio.ByteBuffer;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public interface Os {
 
     /**
@@ -789,6 +790,7 @@ public interface Os {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static boolean compareAndSetDefault(Os expect, Os update) {
         return Libcore.compareAndSetOs(expect, update);
     }
@@ -799,6 +801,7 @@ public interface Os {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static Os getDefault() {
         return Libcore.getOs();
     }

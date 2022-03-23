@@ -16,7 +16,13 @@
 
 package android.system;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
+
 import java.net.SocketAddress;
+import libcore.api.CorePlatformApi;
+import libcore.util.Objects;
 
 /**
  * A virtio-vsock address {@link VmSocketAddress}.
@@ -30,11 +36,13 @@ import java.net.SocketAddress;
  *
  * <p>
  * Currently virtio-vsock is used as a generic purpose pipe in emulators
- * to talk to the host. Most I/O operations using this address via {@link Os} class will require
- * additional permissions to talk to the host.
+ * to talk to the host.
  *
  * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
+ * @hide
  */
+@SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = CorePlatformApi.Status.STABLE)
 public final class VmSocketAddress extends SocketAddress {
     /**
       * sockaddr_vm::svmPort, see {@code struct sockaddr_vm} in
@@ -52,10 +60,14 @@ public final class VmSocketAddress extends SocketAddress {
      * Creates a new instance of VmSocketAddress.
      *
      * @param svmPort      The svmPort field value,
-     *                     see {@link OsConstants#VMADDR_PORT_ANY}.
+     *                     see {@link OsConstants.VMADDR_PORT_ANY}.
      * @param svmCid       The svmCid field value,
      *                     see OsConstants.VMADDR_CID_* for VMADDR_CID_* values.
+     *
+     * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
+    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public VmSocketAddress(int svmPort, int svmCid) {
         this.svmPort = svmPort;
         this.svmCid = svmCid;
@@ -63,14 +75,22 @@ public final class VmSocketAddress extends SocketAddress {
 
     /**
      * Returns the value of the svmPort field
+     *
+     * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public int getSvmPort() {
         return svmPort;
     }
 
     /**
      * Returns the value of the svmCid field
+     *
+     * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public int getSvmCid() {
         return svmCid;
     }

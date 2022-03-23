@@ -408,7 +408,7 @@ public class ConcurrentLinkedQueueTest extends JSR166TestCase {
     public void testToArray_NullArg() {
         ConcurrentLinkedQueue q = populatedQueue(SIZE);
         try {
-            q.toArray((Object[]) null);
+            q.toArray(null);
             shouldThrow();
         } catch (NullPointerException success) {}
     }

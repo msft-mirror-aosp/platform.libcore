@@ -25,7 +25,7 @@
 
 package java.lang;
 
-import jdk.internal.math.FloatingDecimal;
+import sun.misc.FloatingDecimal;
 import java.util.Arrays;
 
 /**
@@ -45,7 +45,6 @@ import java.util.Arrays;
  * @since       1.5
  */
 abstract class AbstractStringBuilder implements Appendable, CharSequence {
-    // TODO: remove java.lang.Integer.getChars(int, int, char[]) once updated to byte[] from 11.
     /**
      * The value is used for character storage.
      */

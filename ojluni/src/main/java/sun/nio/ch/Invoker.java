@@ -136,9 +136,9 @@ class Invoker {
         /*
         if (System.getSecurityManager() != null) {
             Thread me = Thread.currentThread();
-            if (me instanceof InnocuousThread) {
+            if (me instanceof sun.misc.InnocuousThread) {
                 GroupAndInvokeCount thisGroupAndInvokeCount = myGroupAndInvokeCount.get();
-                ((InnocuousThread)me).eraseThreadLocals();
+                ((sun.misc.InnocuousThread)me).eraseThreadLocals();
                 if (thisGroupAndInvokeCount != null) {
                     myGroupAndInvokeCount.set(thisGroupAndInvokeCount);
                 }

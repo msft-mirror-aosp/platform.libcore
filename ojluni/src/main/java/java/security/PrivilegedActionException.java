@@ -47,7 +47,6 @@ package java.security;
  * <i>cause</i>, and may be accessed via the {@link Throwable#getCause()}
  * method, as well as the aforementioned "legacy method."
  *
- * @since 1.2
  * @see PrivilegedExceptionAction
  * @see AccessController#doPrivileged(PrivilegedExceptionAction)
  * @see AccessController#doPrivileged(PrivilegedExceptionAction,AccessControlContext)

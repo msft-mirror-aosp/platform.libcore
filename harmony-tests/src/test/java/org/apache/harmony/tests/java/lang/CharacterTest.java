@@ -16,7 +16,6 @@
 
 package org.apache.harmony.tests.java.lang;
 
-import android.icu.util.VersionInfo;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
@@ -754,9 +753,7 @@ public class CharacterTest extends TestCase {
         assertTrue(Character.getType(0x2FFFF) == Character.UNASSIGNED);
         assertTrue(Character.getType(0x3134B) == Character.UNASSIGNED);
 
-        byte charType9FFF = VersionInfo.ICU_VERSION.getMajor() >= 70 ? Character.OTHER_LETTER
-            : Character.UNASSIGNED;
-        assertTrue(Character.getType(0x9FFF) == charType9FFF);
+        assertTrue(Character.getType(0x9FFF) == Character.UNASSIGNED);
         assertTrue(Character.getType(0x110000) == Character.UNASSIGNED);
 
         assertTrue(Character.getType(0x0041) == Character.UPPERCASE_LETTER);

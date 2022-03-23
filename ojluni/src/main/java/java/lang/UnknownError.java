@@ -30,7 +30,7 @@ package java.lang;
  * Java Virtual Machine.
  *
  * @author unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class UnknownError extends VirtualMachineError {

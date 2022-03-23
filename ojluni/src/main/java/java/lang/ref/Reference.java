@@ -57,9 +57,8 @@ public abstract class Reference<T> {
      * Used by the reference processor to determine whether or not the referent
      * can be immediately returned. Because the referent might get swept during
      * GC, the slow path, which passes through JNI, must be taken.
-     * After initialization, this is only accessed by native code. It is not
-     * used with the concurrent copying collector. It is enabled with mutators
-     * suspended, but disabled asynchronously.
+     * This is only modified with mutators suspended, and hence does not need to
+     * be volatile.
      */
     private static boolean slowPathEnabled = false;
 
@@ -117,11 +116,11 @@ public abstract class Reference<T> {
     /**
      * Tests if the referent of this reference object is {@code obj}.
      * Using a {@code null} {@code obj} returns {@code true} if the
-     * reference object has been cleared. Prefer this to a comparison
-     * with the result of {@code get}.
+     * reference object has been cleared.
      *
      * @param  obj the object to compare with this reference object's referent
      * @return {@code true} if {@code obj} is the referent of this reference object
+     * @hide
      */
     public final boolean refersTo(T obj) {
         return refersTo0(obj);

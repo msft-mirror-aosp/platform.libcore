@@ -83,7 +83,7 @@ import libcore.icu.ICU;
  * comparisons. Four strengths are provided: <code>PRIMARY</code>,
  * <code>SECONDARY</code>, <code>TERTIARY</code>, and <code>IDENTICAL</code>.
  * The exact assignment of strengths to language features is
- * locale dependent.  For example, in Czech, "e" and "f" are considered
+ * locale dependant.  For example, in Czech, "e" and "f" are considered
  * primary differences, while "e" and "&#283;" are secondary differences,
  * "e" and "E" are tertiary differences and "e" and "e" are identical.
  * The following shows how both case and accents could be ignored for
@@ -118,7 +118,6 @@ import libcore.icu.ICU;
  * @see         CollationElementIterator
  * @see         Locale
  * @author      Helena Shih, Laura Werner, Richard Gillam
- * @since 1.1
  */
 
 public abstract class Collator
@@ -127,36 +126,36 @@ public abstract class Collator
     /**
      * Collator strength value.  When set, only PRIMARY differences are
      * considered significant during comparison. The assignment of strengths
-     * to language features is locale dependent. A common example is for
+     * to language features is locale dependant. A common example is for
      * different base letters ("a" vs "b") to be considered a PRIMARY difference.
      * @see java.text.Collator#setStrength
      * @see java.text.Collator#getStrength
      */
-    public static final int PRIMARY = 0;
+    public final static int PRIMARY = 0;
     /**
      * Collator strength value.  When set, only SECONDARY and above differences are
      * considered significant during comparison. The assignment of strengths
-     * to language features is locale dependent. A common example is for
+     * to language features is locale dependant. A common example is for
      * different accented forms of the same base letter ("a" vs "\u00E4") to be
      * considered a SECONDARY difference.
      * @see java.text.Collator#setStrength
      * @see java.text.Collator#getStrength
      */
-    public static final int SECONDARY = 1;
+    public final static int SECONDARY = 1;
     /**
      * Collator strength value.  When set, only TERTIARY and above differences are
      * considered significant during comparison. The assignment of strengths
-     * to language features is locale dependent. A common example is for
+     * to language features is locale dependant. A common example is for
      * case differences ("a" vs "A") to be considered a TERTIARY difference.
      * @see java.text.Collator#setStrength
      * @see java.text.Collator#getStrength
      */
-    public static final int TERTIARY = 2;
+    public final static int TERTIARY = 2;
 
     /**
      * Collator strength value.  When set, all differences are
      * considered significant during comparison. The assignment of strengths
-     * to language features is locale dependent. A common example is for control
+     * to language features is locale dependant. A common example is for control
      * characters ("&#092;u0001" vs "&#092;u0002") to be considered equal at the
      * PRIMARY, SECONDARY, and TERTIARY levels but different at the IDENTICAL
      * level.  Additionally, differences between pre-composed accents such as
@@ -164,7 +163,7 @@ public abstract class Collator
      * (A, combining-grave) will be considered significant at the IDENTICAL
      * level if decomposition is set to NO_DECOMPOSITION.
      */
-    public static final int IDENTICAL = 3;
+    public final static int IDENTICAL = 3;
 
     /**
      * Decomposition mode value. With NO_DECOMPOSITION
@@ -174,7 +173,7 @@ public abstract class Collator
      * @see java.text.Collator#getDecomposition
      * @see java.text.Collator#setDecomposition
      */
-    public static final int NO_DECOMPOSITION = 0;
+    public final static int NO_DECOMPOSITION = 0;
 
     /**
      * Decomposition mode value. With CANONICAL_DECOMPOSITION
@@ -189,7 +188,7 @@ public abstract class Collator
      * @see java.text.Collator#getDecomposition
      * @see java.text.Collator#setDecomposition
      */
-    public static final int CANONICAL_DECOMPOSITION = 1;
+    public final static int CANONICAL_DECOMPOSITION = 1;
 
     /**
      * Decomposition mode value. With FULL_DECOMPOSITION
@@ -208,7 +207,7 @@ public abstract class Collator
      * @see java.text.Collator#getDecomposition
      * @see java.text.Collator#setDecomposition
      */
-    public static final int FULL_DECOMPOSITION = 2;
+    public final static int FULL_DECOMPOSITION = 2;
 
     /**
      * Gets the Collator for the current default locale.
@@ -476,7 +475,7 @@ public abstract class Collator
      * Generates the hash code for this Collator.
      */
     @Override
-    public abstract int hashCode();
+    abstract public int hashCode();
 
     /**
      * Default constructor.  This constructor is
@@ -487,8 +486,6 @@ public abstract class Collator
     protected Collator()
     {
         // Android-changed: Switched to ICU.
-        // strength = TERTIARY;
-        // decmp = CANONICAL_DECOMPOSITION;
         icuColl = android.icu.text.RuleBasedCollator.getInstance(Locale.getDefault());
     }
 
@@ -500,34 +497,5 @@ public abstract class Collator
         this.icuColl = icuColl;
     }
 
-    // BEGIN Android-removed: Fields and constants.
-    /*
-    private int strength = 0;
-    private int decmp = 0;
-    private static final ConcurrentMap<Locale, SoftReference<Collator>> cache
-            = new ConcurrentHashMap<>();
-
-    //
-    // FIXME: These three constants should be removed.
-    //
-    /**
-     * LESS is returned if source string is compared to be less than target
-     * string in the compare() method.
-     * @see java.text.Collator#compare
-     *
-    static final int LESS = -1;
-    /**
-     * EQUAL is returned if source string is compared to be equal to target
-     * string in the compare() method.
-     * @see java.text.Collator#compare
-     *
-    static final int EQUAL = 0;
-    /**
-     * GREATER is returned if source string is compared to be greater than
-     * target string in the compare() method.
-     * @see java.text.Collator#compare
-     *
-    static final int GREATER = 1;
-    */
-    // END Android-removed: Fields and constants.
- }
+    // Android-removed: Fields and constants.
+}

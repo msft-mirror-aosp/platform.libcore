@@ -120,8 +120,8 @@ public class PKIXParameters implements CertPathParameters {
         setTrustAnchors(trustAnchors);
 
         this.unmodInitialPolicies = Collections.<String>emptySet();
-        this.certPathCheckers = new ArrayList<>();
-        this.certStores = new ArrayList<>();
+        this.certPathCheckers = new ArrayList<PKIXCertPathChecker>();
+        this.certStores = new ArrayList<CertStore>();
     }
 
     /**
@@ -144,7 +144,7 @@ public class PKIXParameters implements CertPathParameters {
         if (keystore == null)
             throw new NullPointerException("the keystore parameter must be " +
                 "non-null");
-        Set<TrustAnchor> hashSet = new HashSet<>();
+        Set<TrustAnchor> hashSet = new HashSet<TrustAnchor>();
         Enumeration<String> aliases = keystore.aliases();
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
@@ -156,8 +156,8 @@ public class PKIXParameters implements CertPathParameters {
         }
         setTrustAnchors(hashSet);
         this.unmodInitialPolicies = Collections.<String>emptySet();
-        this.certPathCheckers = new ArrayList<>();
-        this.certStores = new ArrayList<>();
+        this.certPathCheckers = new ArrayList<PKIXCertPathChecker>();
+        this.certStores = new ArrayList<CertStore>();
     }
 
     /**
@@ -207,7 +207,7 @@ public class PKIXParameters implements CertPathParameters {
             }
         }
         this.unmodTrustAnchors = Collections.unmodifiableSet
-                (new HashSet<>(trustAnchors));
+                (new HashSet<TrustAnchor>(trustAnchors));
     }
 
     /**
@@ -256,7 +256,7 @@ public class PKIXParameters implements CertPathParameters {
                         + "of type java.lang.String");
             }
             this.unmodInitialPolicies =
-                Collections.unmodifiableSet(new HashSet<>(initialPolicies));
+                Collections.unmodifiableSet(new HashSet<String>(initialPolicies));
         } else
             this.unmodInitialPolicies = Collections.<String>emptySet();
     }
@@ -280,7 +280,7 @@ public class PKIXParameters implements CertPathParameters {
      */
     public void setCertStores(List<CertStore> stores) {
         if (stores == null) {
-            this.certStores = new ArrayList<>();
+            this.certStores = new ArrayList<CertStore>();
         } else {
             for (Iterator<CertStore> i = stores.iterator(); i.hasNext();) {
                 if (!(i.next() instanceof CertStore)) {
@@ -288,7 +288,7 @@ public class PKIXParameters implements CertPathParameters {
                         + "of type java.security.cert.CertStore");
                 }
             }
-            this.certStores = new ArrayList<>(stores);
+            this.certStores = new ArrayList<CertStore>(stores);
         }
     }
 
@@ -316,7 +316,7 @@ public class PKIXParameters implements CertPathParameters {
      */
     public List<CertStore> getCertStores() {
         return Collections.unmodifiableList
-                (new ArrayList<>(this.certStores));
+                (new ArrayList<CertStore>(this.certStores));
     }
 
     /**
@@ -544,13 +544,14 @@ public class PKIXParameters implements CertPathParameters {
      */
     public void setCertPathCheckers(List<PKIXCertPathChecker> checkers) {
         if (checkers != null) {
-            List<PKIXCertPathChecker> tmpList = new ArrayList<>();
+            List<PKIXCertPathChecker> tmpList =
+                        new ArrayList<PKIXCertPathChecker>();
             for (PKIXCertPathChecker checker : checkers) {
                 tmpList.add((PKIXCertPathChecker)checker.clone());
             }
             this.certPathCheckers = tmpList;
         } else {
-            this.certPathCheckers = new ArrayList<>();
+            this.certPathCheckers = new ArrayList<PKIXCertPathChecker>();
         }
     }
 
@@ -566,7 +567,7 @@ public class PKIXParameters implements CertPathParameters {
      * @see #setCertPathCheckers
      */
     public List<PKIXCertPathChecker> getCertPathCheckers() {
-        List<PKIXCertPathChecker> tmpList = new ArrayList<>();
+        List<PKIXCertPathChecker> tmpList = new ArrayList<PKIXCertPathChecker>();
         for (PKIXCertPathChecker ck : certPathCheckers) {
             tmpList.add((PKIXCertPathChecker)ck.clone());
         }
@@ -666,11 +667,11 @@ public class PKIXParameters implements CertPathParameters {
 
             // must clone these because addCertStore, et al. modify them
             if (certStores != null) {
-                copy.certStores = new ArrayList<>(certStores);
+                copy.certStores = new ArrayList<CertStore>(certStores);
             }
             if (certPathCheckers != null) {
                 copy.certPathCheckers =
-                    new ArrayList<>(certPathCheckers.size());
+                    new ArrayList<PKIXCertPathChecker>(certPathCheckers.size());
                 for (PKIXCertPathChecker checker : certPathCheckers) {
                     copy.certPathCheckers.add(
                                     (PKIXCertPathChecker)checker.clone());
@@ -692,7 +693,7 @@ public class PKIXParameters implements CertPathParameters {
      * @return a formatted string describing the parameters.
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("[\n");
 
         /* start with trusted anchor info */

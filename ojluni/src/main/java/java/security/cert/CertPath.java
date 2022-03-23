@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -91,9 +91,9 @@ import java.util.List;
  * <li>{@code PkiPath}</li>
  * </ul>
  * These encodings are described in the <a href=
- * "{@docRoot}/../specs/security/standard-names.html#certpath-encodings">
+ * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#CertPathEncodings">
  * CertPath Encodings section</a> of the
- * Java Security Standard Algorithm Names Specification.
+ * Java Cryptography Architecture Standard Algorithm Name Documentation.
  * Consult the release documentation for your implementation to see if any
  * other encodings are supported.
  * <p>
@@ -220,7 +220,7 @@ public abstract class CertPath implements Serializable {
      * @return a string representation of this certification path
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         Iterator<? extends Certificate> stringIterator =
                                         getCertificates().iterator();
 
