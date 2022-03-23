@@ -51,7 +51,7 @@ public class EnumConstantNotPresentException extends RuntimeException {
     private String constantName;
 
     /**
-     * Constructs an {@code EnumConstantNotPresentException} for the
+     * Constructs an <tt>EnumConstantNotPresentException</tt> for the
      * specified constant.
      *
      * @param enumType the type of the missing enum constant

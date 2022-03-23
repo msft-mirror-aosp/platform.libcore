@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,104 +17,80 @@
 package libcore.javax.xml.transform.stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import javax.xml.transform.stream.StreamResult;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-
-import javax.xml.transform.stream.StreamResult;
-
 @RunWith(JUnit4.class)
 public class StreamResultTest {
 
+    private StreamResult result;
+
+    @Before
+    public void setUp() {
+        result = new StreamResult();
+    }
+
     @Test
     public void constructor() {
-        StreamResult sr = new StreamResult();
-        assertNull(sr.getOutputStream());
-        assertNull(sr.getSystemId());
-        assertNull(sr.getWriter());
+        result = new StreamResult();
+        assertNotNull(result);
+        assertNull(result.getSystemId());
     }
 
     @Test
-    public void constructorWithFile() throws IOException {
-        final String PREFIX = "StreamResultTest52";
-        File file = File.createTempFile(PREFIX, null);
-        StreamResult sr = new StreamResult(file);
-        assertNull(sr.getOutputStream());
-        assertTrue(sr.getSystemId().contains(PREFIX));
-        assertNull(sr.getWriter());
-        if (file.exists()) {
-            file.delete();
-        }
+    public void constructor_File() {
+        result = new StreamResult(new File("path"));
+        assertEquals("file:///path", result.getSystemId());
     }
 
     @Test
-    public void constructorWithOutputStream() {
-        ByteArrayOutputStream os = new ByteArrayOutputStream(16);
-        StreamResult sr = new StreamResult(os);
-        assertEquals(os, sr.getOutputStream());
-        assertNull(sr.getSystemId());
-        assertNull(sr.getWriter());
+    public void constructor_String() {
+        result = new StreamResult((String)null);
+        assertNull(result.getSystemId());
+
+        result = new StreamResult("");
+        assertEquals("", result.getSystemId());
+
+        result = new StreamResult("some string");
+        assertEquals("some string", result.getSystemId());
     }
 
     @Test
-    public void constructorWithSystemId() {
-        final String ID = "System74";
-        StreamResult sr = new StreamResult(ID);
-        assertNull(sr.getOutputStream());
-        assertEquals(ID, sr.getSystemId());
-        assertNull(sr.getWriter());
+    public void getSystemId() {
+        assertNull(result.getSystemId());
+
+        result = new StreamResult("string constructor");
+        assertEquals("string constructor", result.getSystemId());
+
+        result = new StreamResult(new File("path"));
+        assertEquals("file:///path", result.getSystemId());
+
+        result.setSystemId("hello");
+        assertEquals("hello", result.getSystemId());
     }
 
     @Test
-    public void constructorWithWriter() {
-        StringWriter sw = new StringWriter();
-        StreamResult sr = new StreamResult(sw);
-        assertNull(sr.getOutputStream());
-        assertNull(sr.getSystemId());
-        assertEquals(sw, sr.getWriter());
+    public void setSystemId_File() {
+        result.setSystemId(new File("path"));
+        assertEquals("file:///path", result.getSystemId());
+
+        result.setSystemId(new File("."));
+        assertEquals("file:///.", result.getSystemId());
     }
 
     @Test
-    public void setOutputStream() {
-        StreamResult sr = new StreamResult();
-        ByteArrayOutputStream os = new ByteArrayOutputStream(16);
-        sr.setOutputStream(os);
-        assertEquals(os, sr.getOutputStream());
-    }
+    public void setSystemId_String() {
+        result.setSystemId((String)null);
+        assertNull(result.getSystemId());
 
-    @Test
-    public void setSystemIdWithFile() throws IOException {
-        final String PREFIX = "StreamResultTest100";
-        StreamResult sr = new StreamResult();
-        File file = File.createTempFile(PREFIX, null);
-        sr.setSystemId(file);
-        assertTrue(sr.getSystemId().contains(PREFIX));
-        if (file.exists()) {
-            file.delete();
-        }
-    }
-
-    @Test
-    public void setSystemIdWithString() {
-        final String ID = "System112";
-        StreamResult sr = new StreamResult();
-        sr.setSystemId(ID);
-        assertEquals(ID, sr.getSystemId());
-    }
-
-    @Test
-    public void setWriter() {
-        StreamResult sr = new StreamResult();
-        StringWriter sw = new StringWriter();
-        sr.setWriter(sw);
-        assertEquals(sw, sr.getWriter());
+        result.setSystemId("hello");
+        assertEquals("hello", result.getSystemId());
     }
 }

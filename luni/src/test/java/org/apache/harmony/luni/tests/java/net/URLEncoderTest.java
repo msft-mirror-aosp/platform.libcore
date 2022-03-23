@@ -61,7 +61,8 @@ public class URLEncoderTest extends TestCase {
         try {
             URLEncoder.encode(null, "harmony");
             fail("NullPointerException expected");
-        } catch (UnsupportedEncodingException expected) {
+        } catch (NullPointerException expected) {
+        } catch (UnsupportedCharsetException expected) {
         }
     }
 

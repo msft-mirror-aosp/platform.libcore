@@ -27,6 +27,7 @@ import android.compat.annotation.UnsupportedAppUsage;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class DdmVmInternal {
 
     /* do not instantiate */
@@ -42,6 +43,7 @@ public final class DdmVmInternal {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     native public static void setThreadNotifyEnabled(boolean enabled);
 
     /**
@@ -72,5 +74,6 @@ public final class DdmVmInternal {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     native public static void setRecentAllocationsTrackingEnabled(boolean enabled);
 }

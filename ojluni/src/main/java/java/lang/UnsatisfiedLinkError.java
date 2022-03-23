@@ -31,7 +31,7 @@ package java.lang;
  *
  * @author unascribed
  * @see     java.lang.Runtime
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class UnsatisfiedLinkError extends LinkageError {

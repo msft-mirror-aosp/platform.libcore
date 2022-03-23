@@ -87,15 +87,13 @@ import java.util.Set;
  * necessary locking. Multiple threads each manipulating separate objects
  * need not synchronize.
  *
- * @since 1.8
+ * <p>See RFC 2560: X.509 Internet Public Key Infrastructure Online Certificate Status Protocol -
+ * OCSP, RFC 5280: Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation
+ * List (CRL) Profile (Android note: this paragraph was originally in a malformed "see" tag below,
+ * moved here for correct construction of the docs).
  *
- * // Android-changed: Changed invalid `@`see to "See".
- * See <a href="http://www.ietf.org/rfc/rfc2560.txt"><i>RFC&nbsp;2560: X.509
- * Internet Public Key Infrastructure Online Certificate Status Protocol -
- * OCSP</i></a>, <br><a
- * href="http://www.ietf.org/rfc/rfc5280.txt"><i>RFC&nbsp;5280: Internet X.509
- * Public Key Infrastructure Certificate and Certificate Revocation List (CRL)
- * Profile</i></a>
+ * @since 1.8
+
  */
 public abstract class PKIXRevocationChecker extends PKIXCertPathChecker {
     private URI ocspResponder;
@@ -171,7 +169,7 @@ public abstract class PKIXRevocationChecker extends PKIXCertPathChecker {
     {
         this.ocspExtensions = (extensions == null)
                               ? Collections.<Extension>emptyList()
-                              : new ArrayList<>(extensions);
+                              : new ArrayList<Extension>(extensions);
     }
 
     /**
@@ -233,7 +231,7 @@ public abstract class PKIXRevocationChecker extends PKIXCertPathChecker {
     public void setOptions(Set<Option> options) {
         this.options = (options == null)
                        ? Collections.<Option>emptySet()
-                       : new HashSet<>(options);
+                       : new HashSet<Option>(options);
     }
 
     /**
