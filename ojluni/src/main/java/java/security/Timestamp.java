@@ -141,7 +141,7 @@ public final class Timestamp implements Serializable {
      *         its signer's certificate.
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("(");
         sb.append("timestamp: " + timestamp);
         List<? extends Certificate> certs = signerCertPath.getCertificates();

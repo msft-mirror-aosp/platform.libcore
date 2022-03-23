@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class NetworkEventDispatcher {
 
   private static final NetworkEventDispatcher instance = new NetworkEventDispatcher();
@@ -45,6 +46,7 @@ public final class NetworkEventDispatcher {
    */
   @UnsupportedAppUsage
   @SystemApi(client = MODULE_LIBRARIES)
+  @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
   public static NetworkEventDispatcher getInstance() {
     return instance;
   }
@@ -88,6 +90,7 @@ public final class NetworkEventDispatcher {
    * @hide
    */
   @SystemApi(client = MODULE_LIBRARIES)
+  @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
   public void dispatchNetworkConfigurationChange() {
     for (NetworkEventListener listener : listeners) {
       try {

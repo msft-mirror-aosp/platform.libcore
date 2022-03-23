@@ -30,7 +30,6 @@ package java.security.cert;
  * occurs while attempting to encode a certificate.
  *
  * @author Hemma Prafullchandra
- * @since 1.2
  */
 public class CertificateEncodingException extends CertificateException {
 

@@ -37,7 +37,6 @@ import java.math.BigInteger;
  * @see DSAPublicKey
  *
  * @author Benjamin Renaud
- * @since 1.1
  */
 public interface DSAPrivateKey extends DSAKey, java.security.PrivateKey {
 
