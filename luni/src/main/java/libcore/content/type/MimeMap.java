@@ -16,10 +16,6 @@
 
 package libcore.content.type;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,38 +34,16 @@ import libcore.util.Nullable;
  *
  * @hide
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public final class MimeMap {
 
-    /**
-     * Creates a MIME type map builder.
-     *
-     * @return builder
-     *
-     * @see MimeMap.Builder
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-    public static @NonNull Builder builder() {
+    @CorePlatformApi
+    public static Builder builder() {
         return new Builder();
     }
 
-    /**
-     * Creates a MIME type map builder with values based on {@code this} instance.
-     * This builder will contain all previously added MIMEs and extensions.
-     *
-     * @return builder
-     *
-     * @see MimeMap.Builder
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-    public @NonNull Builder buildUpon() {
+    @CorePlatformApi
+    public Builder buildUpon() {
         return new Builder(mimeToExt, extToMime);
     }
 
@@ -86,12 +60,12 @@ public final class MimeMap {
     private static volatile MemoizingSupplier<@NonNull MimeMap> instanceSupplier =
             new MemoizingSupplier<>(
                     () -> builder()
-                            .addMimeMapping("application/pdf", "pdf")
-                            .addMimeMapping("image/jpeg", "jpg")
-                            .addMimeMapping("image/x-ms-bmp", "bmp")
-                            .addMimeMapping("text/html", Arrays.asList("htm", "html"))
-                            .addMimeMapping("text/plain", Arrays.asList("text", "txt"))
-                            .addMimeMapping("text/x-java", "java")
+                            .put("application/pdf", "pdf")
+                            .put("image/jpeg", "jpg")
+                            .put("image/x-ms-bmp", "bmp")
+                            .put("text/html", Arrays.asList("htm", "html"))
+                            .put("text/plain", Arrays.asList("text", "txt"))
+                            .put("text/x-java", "java")
                             .build());
 
     private MimeMap(Map<String, String> mimeToExt, Map<String, String> extToMime) {
@@ -108,14 +82,9 @@ public final class MimeMap {
     }
 
     /**
-     * Gets system's current default {@link MimeMap}
-     *
      * @return The system's current default {@link MimeMap}.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static @NonNull MimeMap getDefault() {
         return Objects.requireNonNull(instanceSupplier.get());
     }
@@ -130,11 +99,8 @@ public final class MimeMap {
      * {@link #getDefault()} without an intervening call to
      * {@link #setDefaultSupplier(Supplier)} will return that same instance
      * without consulting {@code mimeMapSupplier} a second time.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void setDefaultSupplier(@NonNull Supplier<@NonNull MimeMap> mimeMapSupplier) {
         instanceSupplier = new MemoizingSupplier<>(Objects.requireNonNull(mimeMapSupplier));
     }
@@ -145,11 +111,8 @@ public final class MimeMap {
      * @param extension A file extension without the leading '.'
      * @return Whether a MIME type has been registered for the given case insensitive file
      *         extension.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public final boolean hasExtension(@Nullable String extension) {
         return guessMimeTypeFromExtension(extension) != null;
     }
@@ -161,11 +124,8 @@ public final class MimeMap {
      * @param extension A file extension without the leading '.'
      * @return The lower-case MIME type registered for the given case insensitive file extension,
      *         or null if there is none.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public final @Nullable String guessMimeTypeFromExtension(@Nullable String extension) {
         if (extension == null) {
             return null;
@@ -175,16 +135,11 @@ public final class MimeMap {
     }
 
     /**
-     * Returns whether given case insensetive MIME type is mapped to a file extension.
-     *
      * @param mimeType A MIME type (i.e. {@code "text/plain")
      * @return Whether the given case insensitive MIME type is
      *         {@link #guessMimeTypeFromExtension(String) mapped} to a file extension.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public final boolean hasMimeType(@Nullable String mimeType) {
         return guessExtensionFromMimeType(mimeType) != null;
     }
@@ -196,11 +151,8 @@ public final class MimeMap {
      * @param mimeType A MIME type (i.e. text/plain)
      * @return The lower-case file extension (without the leading "." that has been registered for
      *         the given case insensitive MIME type, or null if there is none.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public final @Nullable String guessExtensionFromMimeType(@Nullable String mimeType) {
         if (mimeType == null) {
             return null;
@@ -214,12 +166,9 @@ public final class MimeMap {
      * {@link #hasMimeType(String) maps to some extension}. Note that the
      * reverse mapping might not exist.
      *
-     * @return unmodifiable {@link Set} of MIME types mapped to some extension
-     *
      * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public @NonNull Set<String> mimeTypes() {
         return Collections.unmodifiableSet(mimeToExt.keySet());
     }
@@ -229,13 +178,9 @@ public final class MimeMap {
      * {@link #hasExtension(String) maps to some MIME type}. Note that the
      * reverse mapping might not exist.
      *
-     * @return unmodifiable {@link Set} of extensions that this {@link MimeMap}
-     *         maps to some MIME type
-     *
      * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public @NonNull Set<String> extensions() {
         return Collections.unmodifiableSet(extToMime.keySet());
     }
@@ -249,10 +194,6 @@ public final class MimeMap {
 
     private volatile int hashCode = 0;
 
-    /**
-     *
-     * @hide
-     */
     @Override
     public int hashCode() {
         if (hashCode == 0) { // potentially uninitialized
@@ -261,10 +202,6 @@ public final class MimeMap {
         return hashCode;
     }
 
-    /**
-     *
-     * @hide
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof MimeMap)) {
@@ -277,24 +214,15 @@ public final class MimeMap {
         return mimeToExt.equals(that.mimeToExt) && extToMime.equals(that.extToMime);
     }
 
-    /**
-     *
-     * @hide
-     */
     @Override
     public String toString() {
         return "MimeMap[" + mimeToExt + ", " + extToMime + "]";
     }
 
     /**
-     * A builder for mapping of MIME types to extensions and back.
-     * Use {@link #addMimeMapping(String, List)} and {@link #addMimeMapping(String, String)} to add
-     * mapping entries and build final {@link MimeMap} with {@link #build()}.
-     *
      * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final class Builder {
         private final Map<String, String> mimeToExt;
         private final Map<String, String> extToMime;
@@ -395,12 +323,9 @@ public final class MimeMap {
          *                 are invalid (null, empty, contain ' ', or '?' after an initial '?' has
          *                 been stripped off).
          * @return This builder.
-         *
-         * @hide
          */
-        @SystemApi(client = MODULE_LIBRARIES)
-        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-        public @NonNull Builder addMimeMapping(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs)
+        @CorePlatformApi
+        public Builder put(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs)
         {
             Element mimeElement = Element.ofMimeSpec(mimeSpec); // validate mimeSpec unconditionally
             if (extensionSpecs.isEmpty()) {
@@ -421,27 +346,15 @@ public final class MimeMap {
          *
          * @hide
          */
-        public @NonNull Builder addMimeMapping(@NonNull String mimeSpec, @NonNull String extensionSpec) {
-            return addMimeMapping(mimeSpec, Collections.singletonList(extensionSpec));
+        public Builder put(@NonNull String mimeSpec, @NonNull String extensionSpec) {
+            return put(mimeSpec, Collections.singletonList(extensionSpec));
         }
 
-        /**
-         * Builds {@link MimeMap} containing all added MIME mappings.
-         *
-         * @return {@link MimeMap} containing previously added MIME mapping entries
-         *
-         * @hide
-         */
-        @SystemApi(client = MODULE_LIBRARIES)
-        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-        public @NonNull MimeMap build() {
+        @CorePlatformApi
+        public MimeMap build() {
             return new MimeMap(mimeToExt, extToMime);
         }
 
-        /**
-         *
-         * @hide
-         */
         @Override
         public String toString() {
             return "MimeMap.Builder[" + mimeToExt + ", " + extToMime + "]";

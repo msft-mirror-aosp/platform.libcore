@@ -106,6 +106,7 @@ module java.base {
     exports sun.util.resources;
     // non-oj
     exports android.system;
+    exports android.icu.impl;
     exports android.icu.math;
     exports android.icu.text;
     exports android.icu.util;
@@ -119,6 +120,7 @@ module java.base {
     exports libcore.net.event;
     exports libcore.net.http;
     exports libcore.reflect;
+    exports libcore.timezone;
     exports libcore.util;
     exports org.json;
 }

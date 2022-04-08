@@ -129,7 +129,7 @@ public class SignerInfo implements sun.security.util.DerEncoder {
         throw new RuntimeException("Stub!");
     }
 
-    @android.compat.annotation.UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @android.compat.annotation.UnsupportedAppUsage
     public byte[] getEncryptedDigest() {
         throw new RuntimeException("Stub!");
     }

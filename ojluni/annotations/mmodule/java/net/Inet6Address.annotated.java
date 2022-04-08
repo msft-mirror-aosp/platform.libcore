@@ -28,6 +28,7 @@
 package java.net;
 
 
+@libcore.api.CorePlatformApi
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Inet6Address extends java.net.InetAddress {
 
@@ -59,6 +60,7 @@ public boolean isMCOrgLocal() { throw new RuntimeException("Stub!"); }
 
 public byte[] getAddress() { throw new RuntimeException("Stub!"); }
 
+@libcore.api.CorePlatformApi
 public int getScopeId() { throw new RuntimeException("Stub!"); }
 
 public java.net.NetworkInterface getScopedInterface() { throw new RuntimeException("Stub!"); }
@@ -71,13 +73,11 @@ public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"
 
 public boolean isIPv4CompatibleAddress() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public static final java.net.InetAddress ANY;
 static { ANY = null; }
 
-@android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public static final java.net.InetAddress LOOPBACK;
 static { LOOPBACK = null; }
 }

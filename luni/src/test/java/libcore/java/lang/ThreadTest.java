@@ -16,13 +16,6 @@
 
 package libcore.java.lang;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotNull;
-
 import dalvik.system.InMemoryDexClassLoader;
 
 import java.io.InputStream;
@@ -38,17 +31,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import libcore.io.Streams;
 import libcore.java.lang.ref.FinalizationTester;
 
-@RunWith(JUnit4.class)
-public final class ThreadTest {
+public final class ThreadTest extends TestCase {
     static {
         System.loadLibrary("javacoretests");
     }
@@ -57,14 +46,12 @@ public final class ThreadTest {
      * getContextClassLoader returned a non-application class loader.
      * http://code.google.com/p/android/issues/detail?id=5697
      */
-    @Test
-    public void javaContextClassLoader() throws Exception {
+    public void testJavaContextClassLoader() throws Exception {
         Assert.assertNotNull("Must have a Java context ClassLoader",
                 Thread.currentThread().getContextClassLoader());
     }
 
-    @Test
-    public void leakingStartedThreads() {
+    public void testLeakingStartedThreads() {
         final AtomicInteger finalizedThreadsCount = new AtomicInteger();
         for (int i = 0; true; i++) {
             try {
@@ -77,8 +64,7 @@ public final class ThreadTest {
         assertTrue("Started threads were never finalized!", finalizedThreadsCount.get() > 0);
     }
 
-    @Test
-    public void leakingUnstartedThreads() {
+    public void testLeakingUnstartedThreads() {
         final AtomicInteger finalizedThreadsCount = new AtomicInteger();
         for (int i = 0; true; i++) {
             try {
@@ -91,8 +77,7 @@ public final class ThreadTest {
         assertTrue("Unstarted threads were never finalized!", finalizedThreadsCount.get() > 0);
     }
 
-    @Test
-    public void threadSleep() throws Exception {
+    public void testThreadSleep() throws Exception {
         int millis = 1000;
         long start = System.currentTimeMillis();
 
@@ -104,8 +89,7 @@ public final class ThreadTest {
         assertTrue("Actual sleep off by " + offBy + " ms", offBy <= 250);
     }
 
-    @Test
-    public void threadInterrupted() throws Exception {
+    public void testThreadInterrupted() throws Exception {
         Thread.currentThread().interrupt();
         try {
             Thread.sleep(0);
@@ -115,8 +99,7 @@ public final class ThreadTest {
         }
     }
 
-    @Test
-    public void threadSleepIllegalArguments() throws Exception {
+    public void testThreadSleepIllegalArguments() throws Exception {
 
         try {
             Thread.sleep(-1);
@@ -137,8 +120,7 @@ public final class ThreadTest {
         }
     }
 
-    @Test
-    public void threadWakeup() throws Exception {
+    public void testThreadWakeup() throws Exception {
         WakeupTestThread t1 = new WakeupTestThread();
         WakeupTestThread t2 = new WakeupTestThread();
 
@@ -153,26 +135,22 @@ public final class ThreadTest {
         assertTrue("Threads did not finish", t1.done && t2.done);
     }
 
-    @Test
-    public void contextClassLoaderIsNotNull() {
+    public void testContextClassLoaderIsNotNull() {
         assertNotNull(Thread.currentThread().getContextClassLoader());
     }
 
-    @Test
-    public void contextClassLoaderIsInherited() {
+    public void testContextClassLoaderIsInherited() {
         Thread other = new Thread();
         assertSame(Thread.currentThread().getContextClassLoader(), other.getContextClassLoader());
     }
 
-    @Test
-    public void setPriority_unstarted() {
+    public void testSetPriority_unstarted() throws Exception {
         Thread thread = new Thread();
         checkSetPriority_inBounds_succeeds(thread);
         checkSetPriority_outOfBounds_fails(thread);
     }
 
-    @Test
-    public void setPriority_starting() throws Exception {
+    public void testSetPriority_starting() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         Thread thread = new Thread("starting thread") {
             @Override public void run() { try { latch.await(); } catch (Exception e) { } }
@@ -189,8 +167,7 @@ public final class ThreadTest {
         thread.join();
     }
 
-    @Test
-    public void setPriority_started() throws Exception {
+    public void testSetPriority_started() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         Thread startedThread = new Thread("started thread") {
             @Override public void run() { try { latch.await(); } catch (Exception e) { } }
@@ -202,8 +179,7 @@ public final class ThreadTest {
         startedThread.join();
     }
 
-    @Test
-    public void setPriority_joined() throws Exception {
+    public void testSetPriority_joined() throws Exception {
         Thread joinedThread = new Thread();
         joinedThread.start();
         joinedThread.join();
@@ -247,8 +223,7 @@ public final class ThreadTest {
         assertEquals(oldPriority, thread.getPriority()); // priority shouldn't have changed
     }
 
-    @Test
-    public void uncaughtExceptionPreHandler_calledBeforeDefaultHandler() {
+    public void testUncaughtExceptionPreHandler_calledBeforeDefaultHandler() {
         UncaughtExceptionHandler initialHandler = Mockito.mock(UncaughtExceptionHandler.class);
         UncaughtExceptionHandler defaultHandler = Mockito.mock(UncaughtExceptionHandler.class);
         InOrder inOrder = Mockito.inOrder(initialHandler, defaultHandler);
@@ -270,8 +245,7 @@ public final class ThreadTest {
         }
     }
 
-    @Test
-    public void uncaughtExceptionPreHandler_noDefaultHandler() {
+    public void testUncaughtExceptionPreHandler_noDefaultHandler() {
         UncaughtExceptionHandler initialHandler = Mockito.mock(UncaughtExceptionHandler.class);
         UncaughtExceptionHandler originalDefaultHandler
                 = Thread.getDefaultUncaughtExceptionHandler();
@@ -292,8 +266,7 @@ public final class ThreadTest {
     /**
      * Thread.getStackTrace() is broken. http://b/1252043
      */
-    @Test
-    public void getStackTrace() throws Exception {
+    public void testGetStackTrace() throws Exception {
         Thread t1 = new Thread("t1") {
             @Override public void run() {
                 doSomething();
@@ -321,8 +294,7 @@ public final class ThreadTest {
      * (source-filename, line number) hard-coded in a class loaded from
      * pre-built test resources.
      */
-    @Test
-    public void getStackTrace_debugInfo() throws Exception {
+    public void testGetStackTrace_debugInfo() throws Exception {
         StackTraceElement ste = getStackTraceElement("debugInfo");
 
         // Verify that this StackTraceElement appears as we expect it to
@@ -343,8 +315,7 @@ public final class ThreadTest {
      * a line number when debug info is missing for a method; the method is
      * declared on a class loaded from pre-built test resources.
      */
-    @Test
-    public void getStackTrace_noDebugInfo() throws Exception {
+    public void testGetStackTrace_noDebugInfo() throws Exception {
         StackTraceElement ste = getStackTraceElement("noDebugInfo");
 
         // Verify that this StackTraceElement appears as we expect it to
@@ -389,15 +360,14 @@ public final class ThreadTest {
         // - ThreadTestHelper.{debugInfo,noDebugInfo}
         StackTraceElement result = stes[3];
 
-        // Confidence check before we return
+        // Sanity check before we return
         assertEquals(result.getClassName(), className);
         assertEquals(result.getMethodName(), methodName);
         assertFalse(result.isNativeMethod());
         return result;
     }
 
-    @Test
-    public void getAllStackTracesIncludesAllGroups() throws Exception {
+    public void testGetAllStackTracesIncludesAllGroups() throws Exception {
         final AtomicInteger visibleTraces = new AtomicInteger();
         ThreadGroup group = new ThreadGroup("1");
         Thread t2 = new Thread(group, "t2") {
@@ -413,8 +383,7 @@ public final class ThreadTest {
     }
 
     // http://b/27748318
-    @Test
-    public void nativeThreadNames() {
+    public void testNativeThreadNames() throws Exception {
         String testResult = nativeTestNativeThreadNames();
         // Not using assertNull here because this results in a better error message.
         if (testResult != null) {
@@ -423,8 +392,7 @@ public final class ThreadTest {
     }
 
     // http://b/29746125
-    @Test
-    public void parkUntilWithUnderflowValue() throws Exception {
+    public void testParkUntilWithUnderflowValue() throws Exception {
         final Thread current = Thread.currentThread();
 
         // watchdog to unpark the tread in case it will be parked
@@ -456,52 +424,11 @@ public final class ThreadTest {
         watchdog.join();
     }
 
-    private class LongParker {
-        long nanos;
-        Thread parkerThread;
-        volatile boolean shouldPark = true;
-        LongParker(long nanos) {
-            this.nanos = nanos;
-            parkerThread = new Thread() {
-                @Override public void run() {
-                    while (shouldPark) {
-                        LockSupport.parkNanos(nanos);
-                    }
-                }
-            };
-            parkerThread.start();
-        }
-        void quit() throws InterruptedException {
-            shouldPark = false;
-            LockSupport.unpark(parkerThread);
-            parkerThread.join();
-        }
-    }
-
-    /**
-     * Test that large timeout arguments don't cause crashes. b/161006928 .
-     */
-    @Test
-    public void parkNanosHugeTimeout() throws InterruptedException {
-        for (long i = 0; i < 5; ++i) {
-            LongParker p = new LongParker(Long.MAX_VALUE - 800_000_000L * i);
-            Thread.sleep(10);
-            p.quit();
-        }
-        for (long i = 0; i < 5; ++i) {
-            LongParker p = new LongParker(Long.MAX_VALUE - 800_000_000_000_000_000L * i);
-            Thread.sleep(10);
-            p.quit();
-        }
-    }
-
-
     /**
      * Check that call Thread.start for already started thread
      * throws {@code IllegalThreadStateException}
      */
-    @Test
-    public void threadDoubleStart() {
+    public void testThreadDoubleStart() {
         final ReentrantLock lock = new ReentrantLock();
         Thread thread = new Thread() {
             public void run() {
@@ -533,8 +460,7 @@ public final class ThreadTest {
      * Check that call Thread.start for already finished thread
      * throws {@code IllegalThreadStateException}
      */
-    @Test
-    public void threadRestart() {
+    public void testThreadRestart() {
         Thread thread = new Thread();
         thread.start();
         try {
@@ -545,18 +471,6 @@ public final class ThreadTest {
             thread.start();
             fail();
         } catch (IllegalThreadStateException expected) {
-        }
-    }
-
-    @Test
-    public void resume_shouldThrowUnsupportedOperationException() {
-        Thread thread = new Thread();
-
-        try {
-            thread.resume();
-            fail();
-        } catch (UnsupportedOperationException ignored) {
-            // expected
         }
     }
 
@@ -575,7 +489,7 @@ public final class ThreadTest {
     }
 
     private class WakeupTestThread extends Thread {
-        public volatile boolean done;
+        public boolean done;
 
         public void run() {
             done = false;

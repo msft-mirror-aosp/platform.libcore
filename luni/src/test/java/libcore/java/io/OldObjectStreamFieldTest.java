@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 public class OldObjectStreamFieldTest extends junit.framework.TestCase {
 
-    static class FakeClass implements Serializable {
+    static class DummyClass implements Serializable {
         private static final long serialVersionUID = 999999999999998L;
 
         boolean bField = true;
@@ -170,7 +170,7 @@ public class OldObjectStreamFieldTest extends junit.framework.TestCase {
     }
 
     protected void setUp() {
-        osc = ObjectStreamClass.lookup(FakeClass.class);
+        osc = ObjectStreamClass.lookup(DummyClass.class);
         bamField = osc.getField("bam");
         samField = osc.getField("sam");
         hamField = osc.getField("ham");

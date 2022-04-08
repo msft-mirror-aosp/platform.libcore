@@ -107,7 +107,8 @@ public final class CollationElementIterator
      * Null order which indicates the end of string is reached by the
      * cursor.
      */
-    public final static int NULLORDER = 0xffffffff;
+    // Android-changed: use ICU CollationElementIterator constant.
+    public final static int NULLORDER = android.icu.text.CollationElementIterator.NULLORDER;
 
     // Android-removed: internal constructors.
 

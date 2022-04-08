@@ -16,12 +16,6 @@
 
 package dalvik.system;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-import libcore.util.NonNull;
-import libcore.util.Nullable;
-
 /**
  * A class encapsulating a StackTraceElement and lock state. This adds
  * critical thread state to the standard stack trace information, which
@@ -29,9 +23,8 @@ import libcore.util.Nullable;
  *
  * @hide
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-public final class AnnotatedStackTraceElement {
+@libcore.api.CorePlatformApi
+public class AnnotatedStackTraceElement {
     /**
      * The traditional StackTraceElement describing the Java stack frame.
      */
@@ -43,7 +36,7 @@ public final class AnnotatedStackTraceElement {
     private Object[] heldLocks;
 
     /**
-     * If this frame denotes the top of stack, {@code blockedOn} will hold
+     * If this frame denotes the top of stack, <code>blockedOn<code> will hold
      * the object this thread is waiting to lock, or waiting on, if any. May be
      * null.
      */
@@ -53,45 +46,18 @@ public final class AnnotatedStackTraceElement {
     private AnnotatedStackTraceElement() {
     }
 
-    /**
-     * Returns the {@link StackTraceElement} describing the Java stack frame.
-     *
-     * @return {@link StackTraceElement} describing the Java stack frame.
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    @NonNull public StackTraceElement getStackTraceElement() {
+    @libcore.api.CorePlatformApi
+    public StackTraceElement getStackTraceElement() {
         return stackTraceElement;
     }
 
-    /**
-     * Returns the objects this stack frame is synchronized on.
-     * May be {@code null}.
-     *
-     * @return array of objects current frame is syncronized on.
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    @Nullable public Object[] getHeldLocks() {
+    @libcore.api.CorePlatformApi
+    public Object[] getHeldLocks() {
         return heldLocks;
     }
 
-    /**
-     * Returns the object this stack frame is waiting on for synchronization.
-     * May be {@code null}.
-     *
-     * @return object this thread is waiting to lock, or waiting on, if any,
-     *         or {@code null}, if none.
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    @Nullable public Object getBlockedOn() {
+    @libcore.api.CorePlatformApi
+    public Object getBlockedOn() {
         return blockedOn;
     }
 }

@@ -271,7 +271,7 @@ public class KeyStore4Test extends TestCase {
         }
 
         try {
-            String certificateAlias = keyStore.getCertificateAlias(new MyCertificate("fake", null));
+            String certificateAlias = keyStore.getCertificateAlias(new MyCertificate("dummy", null));
             assertNull("alias was not null", certificateAlias);
         } catch (KeyStoreException e) {
             fail("unexpected exception: " + e);

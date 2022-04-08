@@ -36,8 +36,6 @@ import java.nio.channels.MembershipKey;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
-import java.net.ProtocolFamily;
-import java.net.StandardProtocolFamily;
 
 import libcore.io.IoBridge;
 
@@ -85,7 +83,7 @@ public class DatagramChannelMulticastTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         // The loopback interface isn't actually useful for sending/receiving multicast messages
-        // but it can be used as a fake for tests where that does not matter.
+        // but it can be used as a dummy for tests where that does not matter.
         loopbackInterface = NetworkInterface.getByInetAddress(InetAddress.getLoopbackAddress());
         assertNotNull(loopbackInterface);
         assertTrue(loopbackInterface.isLoopback());
@@ -221,25 +219,25 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_joinAnySource_IPv4() throws Exception {
-        check_joinAnySource(GOOD_MULTICAST_IPv4, BAD_MULTICAST_IPv4, ipv4NetworkInterface, StandardProtocolFamily.INET);
+        check_joinAnySource(GOOD_MULTICAST_IPv4, BAD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_joinAnySource_IPv6() throws Exception {
-        check_joinAnySource(GOOD_MULTICAST_IPv6, BAD_MULTICAST_IPv6, ipv6NetworkInterface, StandardProtocolFamily.INET6);
+        check_joinAnySource(GOOD_MULTICAST_IPv6, BAD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
     private void check_joinAnySource(InetAddress group, InetAddress group2,
-            NetworkInterface networkInterface, ProtocolFamily protocolFamily) throws Exception {
+            NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
         }
         // Set up a receiver join the group on ipv4NetworkInterface
-        DatagramChannel receiverChannel = createReceiverChannel(protocolFamily);
+        DatagramChannel receiverChannel = createReceiverChannel();
         InetSocketAddress localAddress = (InetSocketAddress) receiverChannel.getLocalAddress();
         receiverChannel.join(group, networkInterface);
 
         String msg = "Hello World";
-        createChannelAndSendMulticastMessage(group, localAddress.getPort(), msg, networkInterface, protocolFamily);
+        createChannelAndSendMulticastMessage(group, localAddress.getPort(), msg, networkInterface);
 
         // now verify that we received the data as expected
         ByteBuffer recvBuffer = ByteBuffer.allocate(100);
@@ -249,7 +247,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         // now verify that we didn't receive the second message
         String msg2 = "Hello World - Different Group";
         createChannelAndSendMulticastMessage(
-                group2, localAddress.getPort(), msg2, networkInterface, protocolFamily);
+                group2, localAddress.getPort(), msg2, networkInterface);
         recvBuffer.position(0);
         checkNoDatagramReceived(receiverChannel);
 
@@ -398,13 +396,6 @@ public class DatagramChannelMulticastTest extends TestCase {
         return dc;
     }
 
-    private DatagramChannel createReceiverChannel(ProtocolFamily protocolFamily) throws Exception {
-        DatagramChannel dc = DatagramChannel.open(protocolFamily);
-        dc.bind(null /* leave the OS to determine the port, and use the wildcard address */);
-        configureChannelForReceiving(dc);
-        return dc;
-    }
-
     public void test_joinAnySource_multiple_joins_IPv4()
             throws Exception {
         check_joinAnySource_multiple_joins(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
@@ -434,21 +425,21 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_joinAnySource_multicastLoopOption_IPv4() throws Exception {
-        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv4, ipv4NetworkInterface, StandardProtocolFamily.INET);
+        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_multicastLoopOption_IPv6() throws Exception {
-        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv6, ipv6NetworkInterface, StandardProtocolFamily.INET6);
+        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
     private void check_joinAnySource_multicastLoopOption(InetAddress group,
-            NetworkInterface networkInterface, ProtocolFamily protocolFamily) throws Exception {
+            NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
         }
         final String message = "Hello, world!";
 
-        DatagramChannel dc = createReceiverChannel(protocolFamily);
+        DatagramChannel dc = createReceiverChannel();
         dc.setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true /* enable loop */);
         dc.setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface);
         configureChannelForReceiving(dc);
@@ -1294,17 +1285,6 @@ public class DatagramChannelMulticastTest extends TestCase {
             throws IOException {
         // Any datagram socket can send to a group. It does not need to have joined the group.
         DatagramChannel dc = DatagramChannel.open();
-        BindableChannel channel = new BindableChannel(dc, sendingInterface);
-        channel.sendMulticastMessage(msg, new InetSocketAddress(group, port));
-        dc.close();
-    }
-
-
-    private static void createChannelAndSendMulticastMessage(
-            InetAddress group, int port, String msg, NetworkInterface sendingInterface, ProtocolFamily protocolFamily)
-            throws IOException {
-        // Any datagram socket can send to a group. It does not need to have joined the group.
-        DatagramChannel dc = DatagramChannel.open(protocolFamily);
         BindableChannel channel = new BindableChannel(dc, sendingInterface);
         channel.sendMulticastMessage(msg, new InetSocketAddress(group, port));
         dc.close();

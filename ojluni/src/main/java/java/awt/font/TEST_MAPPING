@@ -7,14 +7,6 @@
           "include-filter": "libcore.java.awt.font"
         }
       ]
-    },
-    {
-      "name": "CtsLibcoreOjTestCases",
-      "options": [
-        {
-          "include-filter": "test.java.awt.font"
-        }
-      ]
     }
   ]
 }

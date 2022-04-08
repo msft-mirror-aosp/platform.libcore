@@ -55,7 +55,7 @@ public class Thread implements java.lang.Runnable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     Thread(java.lang.ThreadGroup group, java.lang.String name, int priority, boolean daemon) {
         throw new RuntimeException("Stub!");
     }
@@ -306,7 +306,7 @@ public class Thread implements java.lang.Runnable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public final void dispatchUncaughtException(java.lang.Throwable e) {
         throw new RuntimeException("Stub!");
     }

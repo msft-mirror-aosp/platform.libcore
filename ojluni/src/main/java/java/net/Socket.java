@@ -1775,11 +1775,7 @@ class Socket implements java.io.Closeable {
 
     // Android-added: getFileDescriptor$() method for testing and internal use.
     /**
-     * Gets socket's underlying {@link FileDescriptor}.
-     *
      * @hide internal use only
-     *
-     * @return socket's underlying {@link FileDescriptor}.
      */
     public FileDescriptor getFileDescriptor$() {
         return impl.getFileDescriptor();

@@ -300,7 +300,7 @@ public class ObjectOutputStream extends java.io.OutputStream
 
     private byte[] primVals;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private int protocol = 2; // 0x2
 
     private final java.io.ObjectOutputStream.ReplaceTable subs;

@@ -38,7 +38,7 @@ public class Random implements java.io.Serializable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(trackingBug = 172313849)
+    @UnsupportedAppUsage
     private static long seedUniquifier() {
         throw new RuntimeException("Stub!");
     }

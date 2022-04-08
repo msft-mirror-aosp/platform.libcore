@@ -50,13 +50,13 @@ public class TestKeyStoreSpi extends KeyStoreSpi {
 
     };
 
-    public static final Object FAKE = new Object();
+    public static final Object DUMMY = new Object();
 
     public TestKeyStoreSpi() {
         aliases.put("certalias", CERT);
         aliases.put("chainalias", CERTCHAIN);
         aliases.put("keyalias", KEY);
-        aliases.put("unknownalias", FAKE);
+        aliases.put("unknownalias", DUMMY);
     }
 
     @Override

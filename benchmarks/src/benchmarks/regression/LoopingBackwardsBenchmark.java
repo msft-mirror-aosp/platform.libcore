@@ -27,22 +27,22 @@ public class LoopingBackwardsBenchmark {
   @Param({"2", "20", "2000", "20000000"}) int max;
 
   public int timeForwards(int reps) {
-    int fake = 0;
+    int dummy = 0;
     for (int i = 0; i < reps; i++) {
       for (int j = 0; j < max; j++) {
-        fake += j;
+        dummy += j;
       }
     }
-    return fake;
+    return dummy;
   }
 
   public int timeBackwards(int reps) {
-    int fake = 0;
+    int dummy = 0;
     for (int i = 0; i < reps; i++) {
       for (int j = max - 1; j >= 0; j--) {
-        fake += j;
+        dummy += j;
       }
     }
-    return fake;
+    return dummy;
   }
 }

@@ -251,12 +251,10 @@ public class SignerInfo implements DerEncoder {
         out.write(tmp.toByteArray());
     }
 
-    /**
-     * Returns the (user) certificate pertaining to this {@link SignerInfo}.
-     *
-     * @param block block of encrypted data
-     * @return certificate pertaining to the {@link SignerInfo}
-     * @throws IOException on decoding error
+
+
+    /*
+     * Returns the (user) certificate pertaining to this SignerInfo.
      */
     public X509Certificate getCertificate(PKCS7 block)
         throws IOException
@@ -264,12 +262,8 @@ public class SignerInfo implements DerEncoder {
         return block.getCertificate(certificateSerialNumber, issuerName);
     }
 
-    /**
-     * Returns the certificate chain pertaining to this {@link #SignerInfo}.
-     *
-     * @param block block of encrypted data
-     * @return certificate chain pertaining to this {@link #SignerInfo}.
-     * @throws IOException on decoding error
+    /*
+     * Returns the certificate chain pertaining to this SignerInfo.
      */
     public ArrayList<X509Certificate> getCertificateChain(PKCS7 block)
         throws IOException
@@ -433,13 +427,10 @@ public class SignerInfo implements DerEncoder {
             }
 
             X509Certificate cert = getCertificate(block);
-            // Android-changed: Null pointer fix from later upstream revision
-            // PublicKey key = cert.getPublicKey();
+            PublicKey key = cert.getPublicKey();
             if (cert == null) {
                 return null;
             }
-            // Android-changed: Null pointer fix from later upstream revision
-            PublicKey key = cert.getPublicKey();
 
             // check if the public key is restricted
             if (!JAR_DISABLED_CHECK.permits(SIG_PRIMITIVE_SET, key)) {

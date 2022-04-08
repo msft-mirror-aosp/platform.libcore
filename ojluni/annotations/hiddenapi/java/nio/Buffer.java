@@ -149,7 +149,7 @@ public abstract class Buffer {
     @UnsupportedAppUsage
     long address;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private int capacity;
 
     @UnsupportedAppUsage

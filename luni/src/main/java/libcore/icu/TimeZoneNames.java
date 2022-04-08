@@ -16,7 +16,6 @@
 
 package libcore.icu;
 
-import com.android.icu.text.TimeZoneNamesNative;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,8 +51,14 @@ public final class TimeZoneNames {
         @Override protected String[][] create(Locale locale) {
             long start = System.nanoTime();
 
+            // Set up the 2D array used to hold the names. The first column contains the Olson ids.
+            String[][] result = new String[availableTimeZoneIds.length][5];
+            for (int i = 0; i < availableTimeZoneIds.length; ++i) {
+                result[i][0] = availableTimeZoneIds[i];
+            }
+
             long nativeStart = System.nanoTime();
-            String[][] result = TimeZoneNamesNative.getFilledZoneStrings(locale, availableTimeZoneIds);
+            fillZoneStrings(locale.toLanguageTag(), result);
             long nativeEnd = System.nanoTime();
 
             addOffsetStrings(result);
@@ -146,16 +151,5 @@ public final class TimeZoneNames {
         return cachedZoneStrings.get(locale);
     }
 
-    /**
-     * A utility method to get display names in various {@param namesTypes} from
-     * ICU4J's {@param timeZoneNames}.
-     */
-    public static void getDisplayNames(android.icu.text.TimeZoneNames timeZoneNames, String tzId,
-            android.icu.text.TimeZoneNames.NameType[] nameTypes, long date, String[] names,
-            int namesOffset) {
-        for (int i = 0; i < nameTypes.length; i++) {
-            android.icu.text.TimeZoneNames.NameType nameType = nameTypes[i];
-            names[namesOffset + i] = timeZoneNames.getDisplayName(tzId, nameType, date);
-        }
-    }
+    private static native void fillZoneStrings(String locale, String[][] result);
 }

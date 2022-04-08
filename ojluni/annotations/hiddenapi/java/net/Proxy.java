@@ -30,7 +30,7 @@ import android.compat.annotation.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class Proxy {
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private Proxy() {
         throw new RuntimeException("Stub!");
     }

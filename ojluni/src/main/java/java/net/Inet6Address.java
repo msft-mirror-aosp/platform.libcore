@@ -178,31 +178,23 @@ public final
 class Inet6Address extends InetAddress {
     final static int INADDRSZ = 16;
 
-    // BEGIN Android-removed: Remove special handling for link-local addresses.
+    // BEGIN Android-removed: Remove special handling for link-local addresses
     /*
     * cached scope_id - for link-local address use only.
     *
     private transient int cached_scope_id;  // 0
     */
-    // END Android-removed: Remove special handling for link-local addresses.
+    // END Android-removed: Remove special handling for link-local addresses
 
-    // BEGIN Android-added: Define special-purpose IPv6 address.
-    /**
-     * Reserved address for {@code INADDR_ANY}, to specify any IPv6 address at all.
-     *
-     * @hide
-     */
+    // BEGIN Android-added: Define special-purpose IPv6 address
+    /** @hide */
     public static final InetAddress ANY =
             new Inet6Address("::", new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0);
 
-    /**
-     * Loopback address to the local host.
-     *
-     * @hide
-     */
+    /** @hide */
     public static final InetAddress LOOPBACK = new Inet6Address("ip6-localhost",
             new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 0);
-    // END Android-added: Define special-purpose IPv6 address.
+    // END Android-added: Define special-purpose IPv6 address
 
     private class Inet6AddressHolder {
 
@@ -260,7 +252,7 @@ class Inet6Address extends InetAddress {
         void init(byte addr[], int scope_id) {
             setAddr(addr);
 
-            // Android-changed: was >= 0.
+            // Android-changed: was >= 0
             if (scope_id > 0) {
                 this.scope_id = scope_id;
                 this.scope_id_set = true;
@@ -280,7 +272,7 @@ class Inet6Address extends InetAddress {
             }
         }
 
-        // Android-removed: getnameinfo returns smarter representations than getHostAddress().
+        // Android-removed: getnameinfo returns smarter representations than getHostAddress()
         /*
         String getHostAddress() {
             String s = numericToTextFormat(ipaddress);
@@ -397,11 +389,11 @@ class Inet6Address extends InetAddress {
 
     private static final long serialVersionUID = 6880410070516793377L;
 
-    // BEGIN Android-removed: Android doesn't need to call native init.
+    // BEGIN Android-removed: Android doesn't need to call native init
     /*
     // Perform native initialization
     static { init(); }
-    // END Android-removed: Android doesn't need to call native init.
+    // END Android-removed: Android doesn't need to call native init
     */
 
     Inet6Address() {
@@ -630,7 +622,7 @@ class Inet6Address extends InetAddress {
         throws IOException, ClassNotFoundException {
         NetworkInterface scope_ifname = null;
 
-        // Android-changed: was getClass().getClassLoader() != null.
+        // Android-changed: was getClass().getClassLoader() != null
         if (getClass().getClassLoader() != Class.class.getClassLoader()) {
             throw new SecurityException ("invalid address type");
         }
@@ -902,7 +894,7 @@ class Inet6Address extends InetAddress {
      */
     @Override
     public String getHostAddress() {
-        // Android-changed: getnameinfo returns smarter representations than getHostAddress().
+        // Android-changed: getnameinfo returns smarter representations than getHostAddress()
         // return holder6.getHostAddress();
         return Libcore.os.getnameinfo(this, NI_NUMERICHOST); // Can't throw.
     }
@@ -979,11 +971,11 @@ class Inet6Address extends InetAddress {
         return sb.toString();
     }
 
-    // BEGIN Android-removed: Android doesn't need to call native init.
+    // BEGIN Android-removed: Android doesn't need to call native init
     /*
      * Perform class load-time initializations.
      *
     private static native void init();
     */
-    // END Android-removed: Android doesn't need to call native init.
+    // END Android-removed: Android doesn't need to call native init
 }

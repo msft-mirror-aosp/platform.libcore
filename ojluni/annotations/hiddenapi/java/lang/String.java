@@ -138,7 +138,7 @@ public final class String
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     native void getCharsNoCheck(int start, int end, char[] buffer, int index);
 
     @Deprecated
@@ -255,7 +255,7 @@ public final class String
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     static int indexOf(
             char[] source,
             int sourceOffset,
@@ -289,7 +289,7 @@ public final class String
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     static int lastIndexOf(
             char[] source,
             int sourceOffset,
@@ -457,7 +457,7 @@ public final class String
         count = 0;
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private int hash;
 
     private static final java.io.ObjectStreamField[] serialPersistentFields;

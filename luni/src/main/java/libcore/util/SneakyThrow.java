@@ -16,10 +16,6 @@
 
 package libcore.util;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-
 /**
  * Provides a hacky method that always throws {@code t} even if {@code t} is a checked exception.
  * and is not declared to be thrown.
@@ -29,8 +25,7 @@ import android.annotation.SystemApi;
  *
  * @hide
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public class SneakyThrow {
 
     private SneakyThrow() {
@@ -39,14 +34,9 @@ public class SneakyThrow {
     /**
      * A hacky method that always throws {@code t} even if {@code t} is a checked exception,
      * and is not declared to be thrown.
-     *
-     * @param t throwable to throw
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void sneakyThrow(@NonNull Throwable t) {
+    @libcore.api.CorePlatformApi
+    public static void sneakyThrow(Throwable t) {
         SneakyThrow.<RuntimeException>sneakyThrow_(t);
     }
 

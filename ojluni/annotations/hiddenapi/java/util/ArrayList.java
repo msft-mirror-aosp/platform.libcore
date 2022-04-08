@@ -404,7 +404,7 @@ public class ArrayList<E> extends java.util.AbstractList<E>
             throw new RuntimeException("Stub!");
         }
 
-        @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+        @UnsupportedAppUsage
         private final int offset;
 
         {

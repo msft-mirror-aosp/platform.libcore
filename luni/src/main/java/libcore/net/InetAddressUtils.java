@@ -15,10 +15,6 @@
  */
 package libcore.net;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-
 import android.system.GaiException;
 import android.system.StructAddrinfo;
 import java.net.Inet4Address;
@@ -34,8 +30,7 @@ import static android.system.OsConstants.AI_NUMERICHOST;
  *
  * @hide
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public class InetAddressUtils {
 
     private static final int NETID_UNSET = 0;
@@ -55,11 +50,8 @@ public class InetAddressUtils {
      *
      * @param address the address to parse.
      * @return true if the supplied address is numeric, false otherwise.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static boolean isNumericAddress(String address) {
         return parseNumericAddressNoThrow(address) != null;
     }
@@ -76,11 +68,8 @@ public class InetAddressUtils {
      * @param address the address to parse, must be numeric.
      * @return an {@link InetAddress} instance corresponding to the address.
      * @throws IllegalArgumentException if {@code address} is not a numeric address.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static InetAddress parseNumericAddress(String address) {
         InetAddress result = parseNumericAddressNoThrow(address);
         if (result == null) {
@@ -89,9 +78,6 @@ public class InetAddressUtils {
         return result;
     }
 
-    /**
-     * @hide
-     */
     public static InetAddress parseNumericAddressNoThrow(String address) {
         StructAddrinfo hints = new StructAddrinfo();
         hints.ai_flags = AI_NUMERICHOST;
@@ -109,8 +95,6 @@ public class InetAddressUtils {
     /**
      * Like {@link #parseNumericAddressNoThrow(String)}}, but strips optional []
      * around a numeric IPv6 address.
-     *
-     * @hide
      */
     public static InetAddress parseNumericAddressNoThrowStripOptionalBrackets(String address) {
         // Accept IPv6 addresses (only) in square brackets for compatibility.

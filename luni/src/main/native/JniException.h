@@ -19,6 +19,9 @@
 
 #include "jni.h"
 
+void jniThrowExceptionWithErrno(JNIEnv* env, const char* exceptionClassName, int error);
+
 void jniThrowOutOfMemoryError(JNIEnv* env, const char* message);
+void jniThrowSocketException(JNIEnv* env, int error);
 
 #endif  // JNI_EXCEPTION_H_included

@@ -100,7 +100,7 @@ public class DecimalFormatSymbols implements java.lang.Cloneable, java.io.Serial
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public java.lang.String getPercentString() {
         throw new RuntimeException("Stub!");
     }

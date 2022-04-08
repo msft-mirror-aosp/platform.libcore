@@ -201,7 +201,7 @@ public abstract class NumberFormat extends java.text.Format {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private static java.text.NumberFormat getInstance(java.util.Locale desiredLocale, int choice) {
         throw new RuntimeException("Stub!");
     }

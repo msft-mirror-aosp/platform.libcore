@@ -334,7 +334,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.AbstractExecutorSer
 
     private static final int TIDYING = 1073741824; // 0x40000000
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private volatile boolean allowCoreThreadTimeOut;
 
     private long completedTaskCount;
@@ -348,7 +348,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.AbstractExecutorSer
         ctl = null;
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private static final java.util.concurrent.RejectedExecutionHandler defaultHandler;
 
     static {
@@ -361,7 +361,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.AbstractExecutorSer
 
     private int largestPoolSize;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private final java.util.concurrent.locks.ReentrantLock mainLock;
 
     {

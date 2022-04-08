@@ -31,7 +31,7 @@ import android.compat.annotation.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class Runtime {
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private Runtime() {
         throw new RuntimeException("Stub!");
     }

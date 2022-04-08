@@ -80,7 +80,7 @@ public class SignatureSpiTest extends TestCase {
         // or rather test that no UnsupportedOperationException is thrown?
 
         @SuppressWarnings("unused")
-        Signature s = new Signature("fake") {
+        Signature s = new Signature("dummy") {
             protected AlgorithmParameters engineGetParameters() {
                 engineGetParametersCalled = true;
                 try {
@@ -310,7 +310,7 @@ public class SignatureSpiTest extends TestCase {
     }
 
     public void testEngineInitSign_PrivateKey_SecureRandom() {
-        MySignature signature = new MySignature("fake");
+        MySignature signature = new MySignature("dummy");
 
         try {
             signature.initSign(null, null);
@@ -323,7 +323,7 @@ public class SignatureSpiTest extends TestCase {
 
     public void testEngineSetParameter()
     {
-        MySignature signature = new MySignature("fake");
+        MySignature signature = new MySignature("dummy");
 
         try {
             signature.setParameter(null);
@@ -337,7 +337,7 @@ public class SignatureSpiTest extends TestCase {
     }
 
     public void testEngineSign_BII() {
-        MySignature signature = new MySignature("fake");
+        MySignature signature = new MySignature("dummy");
         try {
             signature.initSign(new PrivateKey() {
 
@@ -367,7 +367,7 @@ public class SignatureSpiTest extends TestCase {
     }
 
     public void testEngineUpdate_ByteBuffer() {
-        MySignature signature = new MySignature("fake");
+        MySignature signature = new MySignature("dummy");
         try {
             signature.initSign(new PrivateKey() {
 
@@ -397,7 +397,7 @@ public class SignatureSpiTest extends TestCase {
     }
 
     public void testEngineVerify_BII() {
-        MySignature signature = new MySignature("fake");
+        MySignature signature = new MySignature("dummy");
 
         try {
             signature.initVerify(new PublicKey() {

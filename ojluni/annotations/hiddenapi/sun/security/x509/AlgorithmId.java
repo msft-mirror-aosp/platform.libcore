@@ -67,7 +67,7 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public final byte[] encode() throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }

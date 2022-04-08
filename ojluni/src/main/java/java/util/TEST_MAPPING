@@ -10,9 +10,7 @@
           "include-filter": "org.apache.harmony.tests.java.util"
         }
       ]
-    }
-  ],
-  "presubmit-large": [
+    },
     {
       "name": "CtsLibcoreOjTestCases",
       "options": [

@@ -361,21 +361,16 @@ public final class Currency implements Serializable {
         */
         android.icu.util.Currency icuInstance =
                 android.icu.util.Currency.getInstance(locale);
-        // Unknown historical reason to append variant to country code. The API documentation
-        // does not mention the effect of locale variant. The actual effect here is throwing
-        // IllegalArgumentException because the code like FR_EURO is not a valid country code.
         String variant = locale.getVariant();
         if (!variant.isEmpty() && (variant.equals("EURO") || variant.equals("HK") ||
                 variant.equals("PREEURO"))) {
             country = country + "_" + variant;
         }
-        if (!ICU.isIsoCountry(country)) {
-            // Throws IllegalArgumentException as required by the API documentation.
+        String currencyCode = ICU.getCurrencyCode(country);
+        if (currencyCode == null) {
             throw new IllegalArgumentException("Unsupported ISO 3166 country: " + locale);
         }
-        String currencyCode = ICU.getCurrencyCode(country);
-        if (currencyCode == null || icuInstance == null ||
-                icuInstance.getCurrencyCode().equals("XXX")) { // XXX is not a real currency.
+        if (icuInstance == null || icuInstance.getCurrencyCode().equals("XXX")) {
             return null;
         }
         return getInstance(currencyCode);

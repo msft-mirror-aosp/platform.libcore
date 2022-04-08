@@ -56,21 +56,21 @@ public class CharacterBenchmark {
 
     // A fake benchmark to give us a baseline.
     public boolean timeIsSpace(int reps) {
-        boolean fake = false;
+        boolean dummy = false;
         if (overload == Overload.CHAR) {
             for (int i = 0; i < reps; ++i) {
                 for (int ch = 0; ch < 65536; ++ch) {
-                    fake ^= ((char) ch == ' ');
+                    dummy ^= ((char) ch == ' ');
                 }
             }
         } else {
             for (int i = 0; i < reps; ++i) {
                 for (int ch = 0; ch < 65536; ++ch) {
-                    fake ^= (ch == ' ');
+                    dummy ^= (ch == ' ');
                 }
             }
         }
-        return fake;
+        return dummy;
     }
 
     public void timeDigit(int reps) {

@@ -278,7 +278,7 @@ public class OldThreadGroupTest extends TestCase implements Thread.UncaughtExcep
     public void test_resume() {
         ThreadGroup group = new ThreadGroup("Foo");
 
-        Thread thread = launchFiveSecondFakeThread(group);
+        Thread thread = launchFiveSecondDummyThread(group);
 
         try {
             Thread.sleep(1000);
@@ -293,7 +293,7 @@ public class OldThreadGroupTest extends TestCase implements Thread.UncaughtExcep
         }
     }
 
-    private Thread launchFiveSecondFakeThread(ThreadGroup group) {
+    private Thread launchFiveSecondDummyThread(ThreadGroup group) {
         Thread thread = new Thread(group, "Bar") {
             public void run() {
                 try {

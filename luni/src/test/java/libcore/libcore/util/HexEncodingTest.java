@@ -64,7 +64,6 @@ public class HexEncodingTest extends TestCase {
 
       assertArraysEqual(encodedUpper.toCharArray(), encode(bytes));
       assertArraysEqual(encodedUpper.toCharArray(), encode(bytes, true /* upperCase */));
-      assertArraysEqual(encodedUpper.toCharArray(), encode(bytes, 0, bytes.length));
       assertArraysEqual(encodedLower.toCharArray(), encode(bytes, false /* upperCase */));
 
       assertArraysEqual(bytes, decode(encode(bytes), false /* allowSingleChar */));

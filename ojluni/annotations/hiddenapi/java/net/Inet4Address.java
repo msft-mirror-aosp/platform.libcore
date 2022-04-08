@@ -31,7 +31,7 @@ import android.compat.annotation.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Inet4Address extends java.net.InetAddress {
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     Inet4Address() {
         throw new RuntimeException("Stub!");
     }
@@ -108,14 +108,14 @@ public final class Inet4Address extends java.net.InetAddress {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public static final java.net.InetAddress ALL;
 
     static {
         ALL = null;
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public static final java.net.InetAddress ANY;
 
     static {

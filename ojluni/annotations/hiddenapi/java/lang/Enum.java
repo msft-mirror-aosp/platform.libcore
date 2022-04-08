@@ -77,7 +77,7 @@ public abstract class Enum<E extends java.lang.Enum<E>>
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public static <T extends java.lang.Enum<T>> T[] getSharedConstants(
             java.lang.Class<T> enumType) {
         throw new RuntimeException("Stub!");
@@ -96,14 +96,14 @@ public abstract class Enum<E extends java.lang.Enum<E>>
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private final java.lang.String name;
 
     {
         name = null;
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private final int ordinal;
 
     {

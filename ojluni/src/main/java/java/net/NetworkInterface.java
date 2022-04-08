@@ -494,11 +494,8 @@ public final class NetworkInterface {
                 NetworkInterface parent = nis.get(parentName);
 
                 ni.virtual = true;
-
-                if (parent != null) {
-                    ni.parent = parent;
-                    parent.childs.add(ni);
-                }
+                ni.parent = parent;
+                parent.childs.add(ni);
             }
         }
 

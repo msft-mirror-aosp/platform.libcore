@@ -230,33 +230,33 @@ public final class Unsafe {
     @UnsupportedAppUsage
     public native void putDouble(long address, double x);
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public native void copyMemoryToPrimitiveArray(
             long srcAddr, java.lang.Object dst, long dstOffset, long bytes);
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public native void copyMemoryFromPrimitiveArray(
             java.lang.Object src, long srcOffset, long dstAddr, long bytes);
 
     @UnsupportedAppUsage
     public native void copyMemory(long srcAddr, long dstAddr, long bytes);
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public int getAndAddInt(java.lang.Object o, long offset, int delta) {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public long getAndAddLong(java.lang.Object o, long offset, long delta) {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public int getAndSetInt(java.lang.Object o, long offset, int newValue) {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public long getAndSetLong(java.lang.Object o, long offset, long newValue) {
         throw new RuntimeException("Stub!");
     }
@@ -276,7 +276,7 @@ public final class Unsafe {
     @UnsupportedAppUsage
     public native void fullFence();
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public static final int INVALID_FIELD_OFFSET = -1; // 0xffffffff
 
     @UnsupportedAppUsage private static final sun.misc.Unsafe THE_ONE;

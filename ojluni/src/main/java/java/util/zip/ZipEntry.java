@@ -164,12 +164,11 @@ class ZipEntry implements ZipConstants, Cloneable {
      */
     ZipEntry() {}
 
-    // BEGIN Android-added: Add dataOffset for internal use.
+    // Android-added: Add dataOffset for internal use.
     /** @hide */
     public long getDataOffset() {
         return dataOffset;
     }
-    // END Android-added: Add dataOffset for internal use.
 
     /**
      * Returns the name of the entry.

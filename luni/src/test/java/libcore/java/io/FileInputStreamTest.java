@@ -16,7 +16,17 @@
 
 package libcore.java.io;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.system.ErrnoException;
+import android.system.Int32Ref;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStatVfs;
@@ -29,15 +39,6 @@ import libcore.testing.io.TestIoUtils;
 
 import org.junit.Rule;
 import org.junit.rules.TestRule;
-
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class FileInputStreamTest extends TestCaseWithRules {
     @Rule
@@ -223,7 +224,7 @@ public final class FileInputStreamTest extends TestCaseWithRules {
         }
 
         try (FileInputStream input = new FileInputStream(file)) {
-            android.system.Os.ioctlInt(input.getFD(), OsConstants.FIONREAD);
+            android.system.Os.ioctlInt(input.getFD(), OsConstants.FIONREAD, new Int32Ref(0));
             fail();
         } catch (ErrnoException expected) {
             assertEquals("FIONREAD should have returned ENOTTY for the file. If it doesn't return"

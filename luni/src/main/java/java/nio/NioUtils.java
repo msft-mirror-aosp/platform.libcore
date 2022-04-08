@@ -16,9 +16,6 @@
 
 package java.nio;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
 
 import java.io.Closeable;
@@ -35,22 +32,13 @@ import static android.system.OsConstants.O_WRONLY;
 /**
  * @hide internal use only
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public final class NioUtils {
     private NioUtils() {
     }
 
-    /**
-     * Frees {@link DirectByteBuffer} running associated {@link sun.misc.Cleaner Cleaner}.
-     *
-     * @param buffer to free with associated {@code Cleaner}
-     *
-     * @hide
-     */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void freeDirectBuffer(ByteBuffer buffer) {
         if (buffer == null) {
             return;
@@ -67,8 +55,6 @@ public final class NioUtils {
 
     /**
      * Returns the int file descriptor from within the given FileChannel 'fc'.
-     *
-     * @hide
      */
     public static FileDescriptor getFD(FileChannel fc) {
         return ((FileChannelImpl) fc).fd;
@@ -76,8 +62,6 @@ public final class NioUtils {
 
     /**
      * Helps bridge between io and nio.
-     *
-     * @hide
      */
     public static FileChannel newFileChannel(Closeable ioObject, FileDescriptor fd, int mode) {
         boolean readable = (mode & O_ACCMODE) != O_WRONLY;
@@ -87,34 +71,21 @@ public final class NioUtils {
     }
 
     /**
-     * Exposes the array backing a non-direct {@link java.nio.ByteBuffer ByteBuffer}, even if
-     * the {@link java.nio.ByteBuffer ByteBuffer} is read-only.
+     * Exposes the array backing a non-direct ByteBuffer, even if the ByteBuffer is read-only.
      * Normally, attempting to access the array backing a read-only buffer throws.
-     *
-     * @param b  {@link java.nio.ByteBuffer ByteBuffer} to access its backing array.
-     * @return   buffer's underlying array.
-     *
-     * @hide
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static byte[] unsafeArray(ByteBuffer b) {
         return b.array();
     }
 
     /**
-     * Exposes the array offset for the array backing a non-direct {@link java.nio.ByteBuffer ByteBuffer},
-     * even if the {@link java.nio.ByteBuffer ByteBuffer} is read-only.
-     *
-     * @param b  {@link java.nio.ByteBuffer ByteBuffer} to access its backing array offset.
-     * @return   buffer's underlying array data offset.
-     *
-     * @hide
+     * Exposes the array offset for the array backing a non-direct ByteBuffer,
+     * even if the ByteBuffer is read-only.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static int unsafeArrayOffset(ByteBuffer b) {
         return b.arrayOffset();
     }

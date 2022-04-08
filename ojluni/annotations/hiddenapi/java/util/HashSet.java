@@ -47,7 +47,7 @@ public class HashSet<E> extends java.util.AbstractSet<E>
         throw new RuntimeException("Stub!");
     }
 
-    HashSet(int initialCapacity, float loadFactor, boolean fake) {
+    HashSet(int initialCapacity, float loadFactor, boolean dummy) {
         throw new RuntimeException("Stub!");
     }
 

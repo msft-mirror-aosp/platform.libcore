@@ -154,7 +154,7 @@ public class OldThreadTest extends junit.framework.TestCase {
         }
     }
 
-    private Thread launchFiveSecondFakeThread() {
+    private Thread launchFiveSecondDummyThread() {
         Thread thread = new Thread() {
             public void run() {
                 try {
@@ -389,7 +389,7 @@ public class OldThreadTest extends junit.framework.TestCase {
 
     @SuppressWarnings("deprecation")
     public void test_stop() {
-        Thread thread = launchFiveSecondFakeThread();
+        Thread thread = launchFiveSecondDummyThread();
 
         try {
             Thread.sleep(1000);
@@ -442,7 +442,7 @@ public class OldThreadTest extends junit.framework.TestCase {
 
     @SuppressWarnings("deprecation")
     public void test_suspend() {
-        Thread thread = launchFiveSecondFakeThread();
+        Thread thread = launchFiveSecondDummyThread();
 
         try {
             Thread.sleep(1000);

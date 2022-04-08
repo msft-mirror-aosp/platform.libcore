@@ -17,13 +17,6 @@
 
 package org.apache.harmony.tests.java.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -39,16 +32,12 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
+import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
-
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
-import org.junit.Test;
 
-public class MulticastSocketTest {
+public class MulticastSocketTest extends TestCaseWithRules {
     @Rule
     public TestRule guardRule = ResourceLeakageDetector.getRule();
 
@@ -74,10 +63,10 @@ public class MulticastSocketTest {
     private NetworkInterface ipv6NetworkInterface;
     private boolean supportsMulticast;
 
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         // The loopback interface isn't actually useful for sending/receiving multicast messages
-        // but it can be used as a fake for tests where that does not matter.
+        // but it can be used as a dummy for tests where that does not matter.
         loopbackInterface = NetworkInterface.getByInetAddress(InetAddress.getLoopbackAddress());
         assertNotNull(loopbackInterface);
         assertTrue(loopbackInterface.isLoopback());
@@ -90,7 +79,9 @@ public class MulticastSocketTest {
         // set we assume the device has an interface capable of supporting multicast.
         supportsMulticast = Boolean.parseBoolean(
                 System.getProperty("android.cts.device.multicast", "true"));
-        Assume.assumeTrue(supportsMulticast);
+        if (!supportsMulticast) {
+            return;
+        }
 
         while (interfaces.hasMoreElements()
                 && (ipv4NetworkInterface == null || ipv6NetworkInterface == null)) {
@@ -113,9 +104,10 @@ public class MulticastSocketTest {
                 ipv4NetworkInterface != null && ipv6NetworkInterface != null);
     }
 
-    @Test
-    public void constructor() throws IOException {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_Constructor() throws IOException {
+        if (!supportsMulticast) {
+            return;
+        }
         // Regression test for 497.
         MulticastSocket s = new MulticastSocket();
         // Regression test for Harmony-1162.
@@ -124,9 +116,10 @@ public class MulticastSocketTest {
         s.close();
     }
 
-    @Test
-    public void constructorI() throws IOException {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_ConstructorI() throws IOException {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket orig = new MulticastSocket();
         int port = orig.getLocalPort();
         orig.close();
@@ -137,9 +130,10 @@ public class MulticastSocketTest {
         dup.close();
     }
 
-    @Test
-    public void getInterface() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_getInterface() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         // Validate that we get the expected response when one was not set.
         MulticastSocket mss = new MulticastSocket(0);
         // We expect an ANY address in this case.
@@ -163,9 +157,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void getNetworkInterface() throws IOException {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_getNetworkInterface() throws IOException {
+        if (!supportsMulticast) {
+            return;
+        }
         // Validate that we get the expected response when one was not set.
         MulticastSocket mss = new MulticastSocket(0);
         NetworkInterface theInterface = mss.getNetworkInterface();
@@ -207,9 +202,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void getTimeToLive() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_getTimeToLive() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket();
         mss.setTimeToLive(120);
         assertEquals("Returned incorrect 1st TTL", 120, mss.getTimeToLive());
@@ -218,24 +214,27 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void getTTL() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_getTTL() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket();
         mss.setTTL((byte) 120);
         assertEquals("Returned incorrect TTL", 120, mss.getTTL());
         mss.close();
     }
 
-    @Test
-    public void joinGroupLjava_net_InetAddress_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroupLjava_net_InetAddress_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         test_joinGroupLjava_net_InetAddress(GOOD_IPv4);
     }
 
-    @Test
-    public void joinGroupLjava_net_InetAddress_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroupLjava_net_InetAddress_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         test_joinGroupLjava_net_InetAddress(GOOD_IPv6);
     }
 
@@ -259,9 +258,10 @@ public class MulticastSocketTest {
         receivingSocket.close();
     }
 
-    @Test
-    public void joinGroup_null_null() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroup_null_null() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.joinGroup(null, null);
@@ -271,9 +271,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void joinGroup_non_multicast_address_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroup_non_multicast_address_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.joinGroup(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0), null);
@@ -283,9 +284,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void joinGroup_non_multicast_address_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroup_non_multicast_address_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.joinGroup(new InetSocketAddress(InetAddress.getByName("::1"), 0), null);
@@ -295,35 +297,35 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
                 ipv4NetworkInterface, GOOD_IPv4, BAD_IPv4);
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
                 ipv6NetworkInterface, GOOD_IPv6, BAD_IPv6);
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4_nullInterface()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4_nullInterface()
             throws Exception {
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(null, GOOD_IPv4, BAD_IPv4);
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(null, GOOD_IPv4, BAD_IPv4);
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6_nullInterface()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6_nullInterface()
             throws Exception {
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(null, GOOD_IPv6, BAD_IPv6);
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(null, GOOD_IPv6, BAD_IPv6);
     }
 
-    private void check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+    private void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
             NetworkInterface networkInterface, InetAddress group, InetAddress group2)
             throws Exception {
         // Create the sending socket and specify the interface to use as needed (otherwise use the
@@ -381,9 +383,10 @@ public class MulticastSocketTest {
         sendingSocket.close();
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         // Check that we can join on specific interfaces and that we only receive if data is
         // received on that interface. This test is only really useful on devices with multiple
         // non-loopback interfaces.
@@ -450,23 +453,25 @@ public class MulticastSocketTest {
         }
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins_IPv4()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins_IPv4()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
                 ipv4NetworkInterface, GOOD_IPv4);
     }
 
-    @Test
-    public void joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins_IPv6()
+    public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins_IPv6()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
                 ipv6NetworkInterface, GOOD_IPv6);
     }
 
-    private void check_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
+    private void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_multiple_joins(
             NetworkInterface networkInterface, InetAddress group) throws Exception {
         // Validate that we can join the same address on two different interfaces but not on the
         // same interface.
@@ -482,19 +487,21 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void leaveGroupLjava_net_InetAddress_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_leaveGroupLjava_net_InetAddress(GOOD_IPv4);
+    public void test_leaveGroupLjava_net_InetAddress_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_leaveGroupLjava_net_InetAddress(GOOD_IPv4);
     }
 
-    @Test
-    public void leaveGroupLjava_net_InetAddress_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_leaveGroupLjava_net_InetAddress(GOOD_IPv6);
+    public void test_leaveGroupLjava_net_InetAddress_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_leaveGroupLjava_net_InetAddress(GOOD_IPv6);
     }
 
-    private void check_leaveGroupLjava_net_InetAddress(InetAddress group) throws Exception {
+    private void test_leaveGroupLjava_net_InetAddress(InetAddress group) throws Exception {
         String msg = "Hello World";
         MulticastSocket mss = new MulticastSocket(0);
         InetSocketAddress groupAddress = new InetSocketAddress(group, mss.getLocalPort());
@@ -509,9 +516,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void leaveGroup_null_null() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_leaveGroup_null_null() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.leaveGroup(null, null);
@@ -521,9 +529,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void leaveGroup_non_multicast_address_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_leaveGroup_non_multicast_address_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.leaveGroup(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0), null);
@@ -533,9 +542,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void leaveGroup_non_multicast_address_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_leaveGroup_non_multicast_address_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket(0);
         try {
             mss.leaveGroup(new InetSocketAddress(InetAddress.getByName("::1"), 0), null);
@@ -545,23 +555,25 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4()
+    public void test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
                 ipv4NetworkInterface, GOOD_IPv4, BAD_IPv4);
     }
 
-    @Test
-    public void leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6()
+    public void test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6()
             throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+        if (!supportsMulticast) {
+            return;
+        }
+        test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
                 ipv6NetworkInterface, GOOD_IPv6, BAD_IPv6);
     }
 
-    private void check_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
+    private void test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface(
             NetworkInterface networkInterface, InetAddress group, InetAddress group2)
             throws Exception {
         SocketAddress groupSockAddr = null;
@@ -597,19 +609,21 @@ public class MulticastSocketTest {
         }
     }
 
-    @Test
-    public void sendLjava_net_DatagramPacketB_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_sendLjava_net_DatagramPacketB(GOOD_IPv4);
+    public void test_sendLjava_net_DatagramPacketB_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_sendLjava_net_DatagramPacketB(GOOD_IPv4);
     }
 
-    @Test
-    public void sendLjava_net_DatagramPacketB_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_sendLjava_net_DatagramPacketB(GOOD_IPv6);
+    public void test_sendLjava_net_DatagramPacketB_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_sendLjava_net_DatagramPacketB(GOOD_IPv6);
     }
 
-    private void check_sendLjava_net_DatagramPacketB(InetAddress group) throws Exception {
+    private void test_sendLjava_net_DatagramPacketB(InetAddress group) throws Exception {
         String msg = "Hello World";
         MulticastSocket sendingSocket = new MulticastSocket(0);
         MulticastSocket receivingSocket = createReceivingSocket(sendingSocket.getLocalPort());
@@ -627,9 +641,10 @@ public class MulticastSocketTest {
         receivingSocket.close();
     }
 
-    @Test
-    public void setInterfaceLjava_net_InetAddress() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setInterfaceLjava_net_InetAddress() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket();
         mss.setInterface(InetAddress.getLocalHost());
         InetAddress theInterface = mss.getInterface();
@@ -647,15 +662,17 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void setInterface_unbound_address_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setInterface_unbound_address_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         test_setInterface_unbound_address(GOOD_IPv4);
     }
 
-    @Test
-    public void setInterface_unbound_address_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setInterface_unbound_address_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         test_setInterface_unbound_address(GOOD_IPv6);
     }
 
@@ -670,9 +687,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void setNetworkInterfaceLjava_net_NetworkInterface_null() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setNetworkInterfaceLjava_net_NetworkInterface_null() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         // Validate that null interface is handled ok.
         MulticastSocket mss = new MulticastSocket();
         try {
@@ -683,9 +701,10 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void setNetworkInterfaceLjava_net_NetworkInterface_round_trip() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setNetworkInterfaceLjava_net_NetworkInterface_round_trip() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         // Validate that we can get and set the interface.
         MulticastSocket mss = new MulticastSocket();
         mss.setNetworkInterface(ipv4NetworkInterface);
@@ -694,19 +713,21 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void setNetworkInterfaceLjava_net_NetworkInterface_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv4);
+    public void test_setNetworkInterfaceLjava_net_NetworkInterface_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv4);
     }
 
-    @Test
-    public void setNetworkInterfaceLjava_net_NetworkInterface_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv6);
+    public void test_setNetworkInterfaceLjava_net_NetworkInterface_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv6);
     }
 
-    private void check_setNetworkInterfaceLjava_net_NetworkInterface(InetAddress group)
+    private void test_setNetworkInterfaceLjava_net_NetworkInterface(InetAddress group)
             throws IOException, InterruptedException {
         // Set up the receiving socket and join the group.
         Enumeration theInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -740,9 +761,10 @@ public class MulticastSocketTest {
         }
     }
 
-    @Test
-    public void setTimeToLiveI() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setTimeToLiveI() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket();
         mss.setTimeToLive(120);
         assertEquals("Returned incorrect 1st TTL", 120, mss.getTimeToLive());
@@ -751,18 +773,20 @@ public class MulticastSocketTest {
         mss.close();
     }
 
-    @Test
-    public void setTTLB() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setTTLB() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket mss = new MulticastSocket();
         mss.setTTL((byte) 120);
         assertEquals("Failed to set TTL", 120, mss.getTTL());
         mss.close();
     }
 
-    @Test
-    public void constructorLjava_net_SocketAddress() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_ConstructorLjava_net_SocketAddress() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket ms = new MulticastSocket((SocketAddress) null);
         assertTrue("should not be bound", !ms.isBound() && !ms.isClosed() && !ms.isConnected());
         ms.bind(null);
@@ -793,9 +817,10 @@ public class MulticastSocketTest {
         s.close();
     }
 
-    @Test
-    public void getLoopbackMode() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_getLoopbackMode() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket ms = new MulticastSocket(null);
         assertTrue("should not be bound", !ms.isBound() && !ms.isClosed() && !ms.isConnected());
         ms.getLoopbackMode();
@@ -804,9 +829,10 @@ public class MulticastSocketTest {
         assertTrue("should be closed", ms.isClosed());
     }
 
-    @Test
-    public void setLoopbackModeZ() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setLoopbackModeZ() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         MulticastSocket ms = new MulticastSocket();
         ms.setLoopbackMode(true);
         assertTrue("loopback should be true", ms.getLoopbackMode());
@@ -816,19 +842,21 @@ public class MulticastSocketTest {
         assertTrue("should be closed", ms.isClosed());
     }
 
-    @Test
-    public void setLoopbackModeSendReceive_IPv4() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_setLoopbackModeSendReceive(GOOD_IPv4);
+    public void test_setLoopbackModeSendReceive_IPv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_setLoopbackModeSendReceive(GOOD_IPv4);
     }
 
-    @Test
-    public void setLoopbackModeSendReceive_IPv6() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
-        check_setLoopbackModeSendReceive(GOOD_IPv6);
+    public void test_setLoopbackModeSendReceive_IPv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
+        test_setLoopbackModeSendReceive(GOOD_IPv6);
     }
 
-    private void check_setLoopbackModeSendReceive(InetAddress group) throws IOException {
+    private void test_setLoopbackModeSendReceive(InetAddress group) throws IOException {
         // Test send receive.
         final String message = "Hello, world!";
 
@@ -850,9 +878,10 @@ public class MulticastSocketTest {
         socket.close();
     }
 
-    @Test
-    public void setReuseAddressZ() throws Exception {
-        Assume.assumeTrue(supportsMulticast);
+    public void test_setReuseAddressZ() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         // Test case were we to set ReuseAddress to false.
         MulticastSocket theSocket1 = new MulticastSocket(null);
         theSocket1.setReuseAddress(false);

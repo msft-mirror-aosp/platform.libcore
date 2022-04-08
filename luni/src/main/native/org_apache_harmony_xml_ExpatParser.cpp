@@ -31,11 +31,10 @@
 #include <nativehelper/ScopedUtfChars.h>
 #include <nativehelper/jni_macros.h>
 
-#include <unicode/char16ptr.h>
-#include <unicode/ustring.h>
-
 #include "JniConstants.h"
 #include "JniException.h"
+#include "unicode/char16ptr.h"
+#include "unicode/ustring.h"
 
 #define BUCKET_COUNT 128
 

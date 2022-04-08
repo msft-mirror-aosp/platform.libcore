@@ -15,15 +15,14 @@
  */
 package libcore.java.time.chrono;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
-
 import java.time.chrono.HijrahChronology;
 import java.time.chrono.HijrahDate;
 import java.time.chrono.HijrahEra;
 import java.time.temporal.ChronoField;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * Additional tests for {@link HijrahDate}.
@@ -65,12 +64,4 @@ public class HijrahChronologyTest {
     public void test_HijrahDate_withVariant_null() {
         HijrahDate.now().withVariant(null);
     }
-
-    @Test
-    public void dateEpochDay() {
-        // 18766th Epoch Day is 19 May 2021
-        assertEquals(HijrahDate.of(1442, 10, 7), HijrahChronology.INSTANCE.dateEpochDay(18766));
-        assertEquals(HijrahDate.of(1389, 10, 22), HijrahChronology.INSTANCE.dateEpochDay(0));
-    }
-
 }

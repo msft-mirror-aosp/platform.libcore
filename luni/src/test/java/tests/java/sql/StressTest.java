@@ -16,40 +16,31 @@
 
 package tests.java.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import tests.support.DatabaseCreator;
 import tests.support.Support_SQL;
 import tests.support.ThreadPool;
+import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-@RunWith(JUnit4.class)
-public class StressTest {
+public class StressTest extends TestCase {
     Vector<Connection> vc = new Vector<Connection>();
 
     private static Connection conn;
 
     private static Statement statement;
 
-    @Before
     public void setUp() throws Exception {
+        super.setUp();
         Support_SQL.loadDriver();
         conn = Support_SQL.getConnection();
         statement = conn.createStatement();
@@ -57,11 +48,11 @@ public class StressTest {
         vc.clear();
     }
 
-    @After
-    public void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         closeConnections();
         statement.close();
         conn.close();
+        super.tearDown();
     }
 
     private void createTestTables() {
@@ -114,7 +105,6 @@ public class StressTest {
      * StressTest#testManyConnectionsUsingOneThread(). Create many
      *        connections to the DataBase using one thread.
      */
-    @Test
     public void testManyConnectionsUsingOneThread() {
         try {
             int maxConnections = getConnectionNum();
@@ -130,7 +120,6 @@ public class StressTest {
      * StressTest#testManyConnectionsUsingManyThreads(). Create many
      *        connections to the DataBase using some threads.
      */
-    @Test
     public void testManyConnectionsUsingManyThreads() {
         int numTasks = getConnectionNum();
 
@@ -160,7 +149,6 @@ public class StressTest {
      * StressTest#testInsertOfManyRowsUsingOneThread(). Insert a lot of
      *        records to the Database using a maximum number of connections.
      */
-    @Test
     public void testInsertOfManyRowsUsingOneThread() {
 
         Logger.global
@@ -199,10 +187,7 @@ public class StressTest {
 
     /**
      * @tests
-     * TODO(b/169673091): Investigate why it could occasionally take 10min rather than 10s to
-     * finish.
      */
-    @Test
     public void testInsertOfManyRowsUsingManyThreads() {
         Logger.global.info("java.sql stress test: multiple threads and many operations.");
 
@@ -219,7 +204,6 @@ public class StressTest {
         }
         // close the pool and wait for all tasks to finish.
         threadPool.join();
-        Logger.global.info("All threads joined");
         assertEquals("Unable to create a connection", numConnections, vc.size());
 
         try {
@@ -227,12 +211,11 @@ public class StressTest {
                     .executeQuery("SELECT COUNT(*) as counter FROM "
                             + DatabaseCreator.TEST_TABLE2);
             assertTrue("RecordSet is empty", rs.next());
-            Logger.global.info("Counting statement returned");
+
 
             assertEquals("Incorrect number of records", tasksPerConnection
                     * numConnections, rs.getInt("counter"));
             rs.close();
-            Logger.global.info("ResultSet closed");
         } catch (SQLException sql) {
             fail("Unexpected SQLException " + sql.toString());
 

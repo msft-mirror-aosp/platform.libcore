@@ -162,7 +162,7 @@ public class Vector<E> extends java.util.AbstractList<E>
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     E elementData(int index) {
         throw new RuntimeException("Stub!");
     }

@@ -1310,16 +1310,16 @@ public abstract class AbstractCookiesTest extends TestCase {
                 new String[][] { cookies[0], cookies[1] }, responseHeaders,
                 null);
 
-        HashMap<String, List<String>> fakeMap = new HashMap<String, List<String>>();
+        HashMap<String, List<String>> dummyMap = new HashMap<String, List<String>>();
         Map<String, List<String>> map = manager.get(new URI("http://a.b.c/"),
-                fakeMap);
+                dummyMap);
 
         assertEquals(1, map.size());
         List<String> list = map.get("Cookie");
         assertEquals(1, list.size());
 
         // requires path of cookie is the prefix of uri
-        map = manager.get(new URI("http://a.b.c/te"), fakeMap);
+        map = manager.get(new URI("http://a.b.c/te"), dummyMap);
         list = map.get("Cookie");
         assertEquals(1, list.size());
         assertTrue(list.get(0).contains("PREF=test"));
@@ -1330,7 +1330,7 @@ public abstract class AbstractCookiesTest extends TestCase {
         // ,no matter the value cookie-key
         responseHeaders = addCookie(new String[][] { cookies[2] });
         manager = store(new String[][] { cookies[2] }, responseHeaders, null);
-        map = manager.get(new URI("http://a.beg.com/test"), fakeMap);
+        map = manager.get(new URI("http://a.beg.com/test"), dummyMap);
         list = map.get("Cookie");
         assertEquals(1, list.size());
         assertTrue(list.get(0).startsWith("$Version=\"1\""));
@@ -1390,9 +1390,9 @@ public abstract class AbstractCookiesTest extends TestCase {
      * @since 1.6
      */
     public void testCookieManager_LCookieStore_LCookiePolicy() {
-        class FakeStore implements CookieStore {
+        class DummyStore implements CookieStore {
             public String getName() {
-                return "A fake store";
+                return "A dummy store";
             }
 
             public void add(URI uri, HttpCookie cookie) {
@@ -1419,10 +1419,10 @@ public abstract class AbstractCookiesTest extends TestCase {
                 return false;
             }
         }
-        CookieStore store = new FakeStore();
+        CookieStore store = new DummyStore();
         CookieManager cookieManager = new CookieManager(store,
                 CookiePolicy.ACCEPT_ALL);
-        assertEquals("A fake store", ((FakeStore) cookieManager
+        assertEquals("A dummy store", ((DummyStore) cookieManager
                 .getCookieStore()).getName());
         assertSame(store, cookieManager.getCookieStore());
     }

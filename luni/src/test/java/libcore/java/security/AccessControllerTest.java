@@ -16,36 +16,25 @@
 
 package libcore.java.security;
 
-import static org.junit.Assert.assertEquals;
-
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.DomainCombiner;
 import java.security.Permission;
 import java.security.Permissions;
 import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.security.ProtectionDomain;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import junit.framework.AssertionFailedError;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /**
  * Android doesn't fully support access controller. This tests that actions are
  * passed through without permission enforcement.
  */
-@RunWith(JUnit4.class)
-public final class AccessControllerTest {
+public final class AccessControllerTest extends TestCase {
 
-    @Test
-    public void testDoPrivilegedWithCombiner() throws Exception {
+    public void testDoPrivilegedWithCombiner() {
+        final Permission permission = new RuntimePermission("do stuff");
         final DomainCombiner union = new DomainCombiner() {
             @Override
             public ProtectionDomain[] combine(ProtectionDomain[] a, ProtectionDomain[] b) {
@@ -57,61 +46,28 @@ public final class AccessControllerTest {
         AccessControlContext accessControlContext = new AccessControlContext(
                 new AccessControlContext(new ProtectionDomain[] { protectionDomain }), union);
 
-        assertActionRun(action -> AccessController.doPrivileged(
-                (PrivilegedAction<Void>) action::get));
-
-        assertActionRun(action -> AccessController.doPrivileged(
-                (PrivilegedAction<Void>) action::get, accessControlContext));
-
-        assertActionRun(action -> {
-            try {
-                AccessController.doPrivileged((PrivilegedExceptionAction<Void>) action::get);
-            } catch (PrivilegedActionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        assertActionRun(action -> {
-            try {
-                AccessController.doPrivileged(
-                        (PrivilegedExceptionAction<Void>) action::get, accessControlContext);
-            } catch (PrivilegedActionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        assertActionRun(action -> AccessController.doPrivilegedWithCombiner(
-                (PrivilegedAction<Void>) action::get));
-
-        assertActionRun(action -> {
-            try {
-                AccessController.doPrivilegedWithCombiner(
-                        (PrivilegedExceptionAction<Void>) action::get);
-            } catch (PrivilegedActionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private static void assertActionRun(Consumer<Supplier<Void>> runner) {
-        final Permission permission = new RuntimePermission("do stuff");
-
         final AtomicInteger actionCount = new AtomicInteger();
 
-        runner.accept(() -> {
-            assertEquals(null, AccessController.getContext().getDomainCombiner());
-            AccessController.getContext().checkPermission(permission);
-
-            // Calling doPrivileged again would have exercised the combiner
-            runner.accept(() -> {
-                actionCount.incrementAndGet();
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
                 assertEquals(null, AccessController.getContext().getDomainCombiner());
                 AccessController.getContext().checkPermission(permission);
-                return null;
-            });
 
-            return null;
-        });
+                // Calling doPrivileged again would have exercised the combiner
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    @Override
+                    public Void run() {
+                        actionCount.incrementAndGet();
+                        assertEquals(null, AccessController.getContext().getDomainCombiner());
+                        AccessController.getContext().checkPermission(permission);
+                        return null;
+                    }
+                });
+
+                return null;
+            }
+        }, accessControlContext);
 
         assertEquals(1, actionCount.get());
     }

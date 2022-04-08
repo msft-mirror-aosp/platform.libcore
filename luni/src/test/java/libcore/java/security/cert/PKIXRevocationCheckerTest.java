@@ -116,10 +116,4 @@ public class PKIXRevocationCheckerTest extends TestCaseWithRules {
         assertEquals(1, checker.getOcspExtensions().size());
         assertEquals("TestExtension", checker.getOcspExtensions().get(0).getId());
     }
-
-    public void test_clone() {
-        PKIXRevocationChecker clone = checker.clone();
-        assertNotNull(clone);
-        assertNotSame(checker, clone);
-    }
 }

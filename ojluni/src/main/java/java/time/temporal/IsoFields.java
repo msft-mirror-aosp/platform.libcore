@@ -420,7 +420,7 @@ public final class IsoFields {
                 Objects.requireNonNull(locale, "locale");
                 // Android-changed: Use ICU name values.
                 DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
-                        .getInstance(ULocale.forLocale(locale));
+                        .getFrozenInstance(ULocale.forLocale(locale));
                 String icuName = dateTimePatternGenerator
                         .getAppendItemName(DateTimePatternGenerator.WEEK_OF_YEAR);
                 return icuName != null && !icuName.isEmpty() ? icuName : toString();

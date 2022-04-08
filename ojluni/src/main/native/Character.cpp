@@ -24,6 +24,7 @@
 #include <nativehelper/JNIHelp.h>
 #include "nativehelper/jni_macros.h"
 #include "unicode/uchar.h"
+#include "unicode/uscript.h"
 #include <math.h>
 #include <stdio.h> // For BUFSIZ
 

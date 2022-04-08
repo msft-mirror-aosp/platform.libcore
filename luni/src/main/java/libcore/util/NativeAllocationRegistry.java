@@ -16,16 +16,10 @@
 
 package libcore.util;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-
 import dalvik.system.VMRuntime;
 import sun.misc.Cleaner;
 
 import java.lang.ref.Reference;
-
-import libcore.util.NonNull;
 
 /**
  * A NativeAllocationRegistry is used to associate native allocations with
@@ -46,8 +40,7 @@ import libcore.util.NonNull;
  * used to register any number of native allocations of that kind.
  * @hide
  */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public class NativeAllocationRegistry {
 
@@ -67,33 +60,29 @@ public class NativeAllocationRegistry {
     private static final long IS_MALLOCED = 0x1;
 
     /**
-     * Return a {@link NativeAllocationRegistry} for native memory that is mostly
+     * Return a NativeAllocationRegistry for native memory that is mostly
      * allocated by means other than the system memory allocator. For example,
      * the memory may be allocated directly with mmap.
      * @param classLoader  ClassLoader that was used to load the native
      *                     library defining freeFunction.
      *                     This ensures that the the native library isn't unloaded
-     *                     before {@code freeFunction} is called.
+     *                     before freeFunction is called.
      * @param freeFunction address of a native function of type
-     *                     {@code void f(void* nativePtr)} used to free this
+     *                     <code>void f(void* nativePtr)</code> used to free this
      *                     kind of native allocation
      * @param size         estimated size in bytes of the part of the described
      *                     native memory that is not allocated with system malloc.
      *                     Approximate values are acceptable.
-     * @return allocated {@link NativeAllocationRegistry}
-     * @throws IllegalArgumentException If {@code size} is negative
-     *
-     * @hide
+     * @throws IllegalArgumentException If <code>size</code> is negative
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static NativeAllocationRegistry createNonmalloced(
-            @NonNull ClassLoader classLoader, long freeFunction, long size) {
+            ClassLoader classLoader, long freeFunction, long size) {
         return new NativeAllocationRegistry(classLoader, freeFunction, size, false);
     }
 
     /**
-     * Return a {@link NativeAllocationRegistry} for native memory that is mostly
+     * Return a NativeAllocationRegistry for native memory that is mostly
      * allocated by the system memory allocator.
      * For example, the memory may be allocated directly with new or malloc.
      * <p>
@@ -103,44 +92,36 @@ public class NativeAllocationRegistry {
      * </pre>
      * <p>
      * @param classLoader  ClassLoader that was used to load the native
-     *                     library {@code freeFunction} belongs to.
+     *                     library freeFunction belongs to.
      * @param freeFunction address of a native function of type
-     *                     {@code void f(void* nativePtr)} used to free this
+     *                     <code>void f(void* nativePtr)</code> used to free this
      *                     kind of native allocation
      * @param size         estimated size in bytes of the part of the described
      *                     native memory allocated with system malloc.
      *                     Approximate values are acceptable. For sizes less than
      *                     a few hundered KB, use the simplified overload below.
-     * @return allocated {@link NativeAllocationRegistry}
-     * @throws IllegalArgumentException If {@code size} is negative
-     *
-     * @hide
+     * @throws IllegalArgumentException If <code>size</code> is negative
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static NativeAllocationRegistry createMalloced(
-            @NonNull ClassLoader classLoader, long freeFunction, long size) {
+            ClassLoader classLoader, long freeFunction, long size) {
         return new NativeAllocationRegistry(classLoader, freeFunction, size, true);
     }
 
     /**
-     * Return a {@link NativeAllocationRegistry} for native memory that is mostly
+     * Return a NativeAllocationRegistry for native memory that is mostly
      * allocated by the system memory allocator. This version is preferred
      * for smaller objects (typically less than a few hundred KB).
      * @param classLoader  ClassLoader that was used to load the native
-     *                     library {@code freeFunction} belongs to.
+     *                     library freeFunction belongs to.
      * @param freeFunction address of a native function of type
-     *                     {@code void f(void* nativePtr)} used to free this
+     *                     <code>void f(void* nativePtr)</code> used to free this
      *                     kind of native allocation
-     * @return allocated {@link NativeAllocationRegistry}
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static NativeAllocationRegistry createMalloced(
-            @NonNull ClassLoader classLoader, long freeFunction) {
+            ClassLoader classLoader, long freeFunction) {
         return new NativeAllocationRegistry(classLoader, freeFunction, 0, true);
     }
 
@@ -183,24 +164,24 @@ public class NativeAllocationRegistry {
     }
 
     /**
-     * Constructs a {@link NativeAllocationRegistry} for a particular kind of native
+     * Constructs a NativeAllocationRegistry for a particular kind of native
      * allocation.
      * <p>
      * New code should use the preceding factory methods rather than calling this
      * constructor directly.
      * <p>
-     * The {@code size} should be an estimate of the total number of
+     * The <code>size</code> should be an estimate of the total number of
      * native bytes this kind of native allocation takes up excluding bytes allocated
      * with system malloc. Different
-     * {@link NativeAllocationRegistry}s must be used to register native allocations
+     * NativeAllocationRegistrys must be used to register native allocations
      * with different estimated sizes, even if they use the same
-     * {@code freeFunction}. This is used to help inform the garbage
+     * <code>freeFunction</code>. This is used to help inform the garbage
      * collector about the possible need for collection. Memory allocated with
      * native malloc is implicitly included, and ideally should not be included in this
      * argument.
      * <p>
      * @param classLoader  ClassLoader that was used to load the native
-     *                     library {@code freeFunction} belongs to.
+     *                     library freeFunction belongs to.
      * @param freeFunction address of a native function used to free this
      *                     kind of native allocation
      * @param size         estimated size in bytes of this kind of native
@@ -208,27 +189,26 @@ public class NativeAllocationRegistry {
      *                     A value of 0 indicates that the memory was allocated mainly
      *                     with malloc.
      *
-     * @hide
+     * @param mallocAllocation the native object is primarily allocated via malloc.
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public NativeAllocationRegistry(@NonNull ClassLoader classLoader, long freeFunction, long size) {
+    @libcore.api.CorePlatformApi
+    public NativeAllocationRegistry(ClassLoader classLoader, long freeFunction, long size) {
         this(classLoader, freeFunction, size, size == 0);
     }
 
     /**
      * Registers a new native allocation and associated Java object with the
      * runtime.
-     * This {@link NativeAllocationRegistry}'s {@code freeFunction} will
-     * automatically be called with {@code nativePtr} as its sole
-     * argument when {@code referent} becomes unreachable. If you
-     * maintain copies of {@code nativePtr} outside
-     * {@code referent}, you must not access these after
-     * {@code referent} becomes unreachable, because they may be dangling
+     * This NativeAllocationRegistry's <code>freeFunction</code> will
+     * automatically be called with <code>nativePtr</code> as its sole
+     * argument when <code>referent</code> becomes unreachable. If you
+     * maintain copies of <code>nativePtr</code> outside
+     * <code>referent</code>, you must not access these after
+     * <code>referent</code> becomes unreachable, because they may be dangling
      * pointers.
      * <p>
      * The returned Runnable can be used to free the native allocation before
-     * {@code referent} becomes unreachable. The runnable will have no
+     * <code>referent</code> becomes unreachable. The runnable will have no
      * effect if the native allocation has already been freed by the runtime
      * or by using the runnable.
      * <p>
@@ -237,23 +217,20 @@ public class NativeAllocationRegistry {
      * if the registration attempt throws an exception (other than one reporting
      * a programming error).
      *
-     * @param referent      Non-{@code null} java object to associate the native allocation with
+     * @param referent      Non-null java object to associate the native allocation with
      * @param nativePtr     Non-zero address of the native allocation
      * @return runnable to explicitly free native allocation
-     * @throws IllegalArgumentException if either referent or nativePtr is {@code null}.
+     * @throws IllegalArgumentException if either referent or nativePtr is null.
      * @throws OutOfMemoryError  if there is not enough space on the Java heap
      *                           in which to register the allocation. In this
-     *                           case, {@code freeFunction} will be
-     *                           called with {@code nativePtr} as its
-     *                           argument before the {@link OutOfMemoryError} is
+     *                           case, <code>freeFunction</code> will be
+     *                           called with <code>nativePtr</code> as its
+     *                           argument before the OutOfMemoryError is
      *                           thrown.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
-    public @NonNull Runnable registerNativeAllocation(@NonNull Object referent, long nativePtr) {
+    public Runnable registerNativeAllocation(Object referent, long nativePtr) {
         if (referent == null) {
             throw new IllegalArgumentException("referent is null");
         }
@@ -334,19 +311,12 @@ public class NativeAllocationRegistry {
     }
 
     /**
-     * Calls {@code freeFunction}({@code nativePtr}).
+     * Calls <code>freeFunction</code>(<code>nativePtr</code>).
      * Provided as a convenience in the case where you wish to manually free a
-     * native allocation using a {@code freeFunction} without using a
-     * {@link NativeAllocationRegistry}.
-     *
-     * @param freeFunction address of a native function used to free this
-     *                     kind of native allocation
-     * @param nativePtr    pointer to pass to freeing function
-     *
-     * @hide
+     * native allocation using a <code>freeFunction</code> without using a
+     * NativeAllocationRegistry.
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static native void applyFreeFunction(long freeFunction, long nativePtr);
 }
 

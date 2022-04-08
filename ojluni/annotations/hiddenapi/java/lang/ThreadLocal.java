@@ -63,7 +63,7 @@ public class ThreadLocal<T> {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     java.lang.ThreadLocal.ThreadLocalMap getMap(java.lang.Thread t) {
         throw new RuntimeException("Stub!");
     }

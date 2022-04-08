@@ -55,6 +55,7 @@ import java.security.PrivilegedAction;
  *
  * @author Mark Reinhold
  */
+
 public class Cleaner
     extends PhantomReference<Object>
 {

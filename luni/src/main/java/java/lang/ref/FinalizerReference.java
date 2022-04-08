@@ -160,15 +160,16 @@ public final class FinalizerReference<T> extends Reference<T> {
 
         synchronized void awaitFinalization(long timeout) throws InterruptedException {
             final long startTime = System.nanoTime();
-            final long endTime = startTime + timeout;  // May wrap.
+            final long endTime = startTime + timeout;
             while (!finalized) {
                 // 0 signifies no timeout.
                 if (timeout != 0) {
-                    final long deltaTime = endTime - System.nanoTime();
-                    if (deltaTime <= 0) {
+                    final long currentTime = System.nanoTime();
+                    if (currentTime >= endTime) {
                         break;
                     } else {
-                        wait(deltaTime / 1_000_000, (int)(deltaTime % 1_000_000));
+                        final long deltaTime = endTime - currentTime;
+                        wait(deltaTime / 1000000, (int)(deltaTime % 1000000));
                     }
                 } else {
                     wait();

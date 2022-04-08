@@ -102,5 +102,8 @@ static { in = null; }
 public static final java.io.PrintStream out;
 static { out = null; }
 
+@libcore.api.CorePlatformApi
+public static void logE(String message, Throwable th) { throw new RuntimeException("Stub!"); }
+
 }
 

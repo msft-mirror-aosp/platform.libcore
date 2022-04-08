@@ -75,7 +75,7 @@ public class PKCS9Attributes {
         throw new RuntimeException("Stub!");
     }
 
-    @android.compat.annotation.UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @android.compat.annotation.UnsupportedAppUsage
     public sun.security.pkcs.PKCS9Attribute getAttribute(java.lang.String name) {
         throw new RuntimeException("Stub!");
     }

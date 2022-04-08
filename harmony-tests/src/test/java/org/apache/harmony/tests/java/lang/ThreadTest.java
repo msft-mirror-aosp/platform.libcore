@@ -707,7 +707,7 @@ public class ThreadTest extends junit.framework.TestCase {
         long secondRead = System.currentTimeMillis();
         assertTrue("Did not join by appropriate time: " + secondRead + "-"
                 + firstRead + "=" + (secondRead - firstRead), secondRead
-                - firstRead <= 400);
+                - firstRead <= 300);
         assertTrue("Joined thread is not alive", st.isAlive());
         st.interrupt();
 
@@ -818,6 +818,8 @@ public class ThreadTest extends junit.framework.TestCase {
      */
     public void test_sleepJ() {
         // Test for method void java.lang.Thread.sleep(long)
+
+        // TODO : Test needs enhancing.
         long stime = 0, ftime = 0;
         try {
             stime = System.currentTimeMillis();
@@ -826,12 +828,7 @@ public class ThreadTest extends junit.framework.TestCase {
         } catch (InterruptedException e) {
             fail("Unexpected interrupt received");
         }
-        long elapsedMillis = ftime - stime;
-        // We shouldn't ever wake up early, but there might be some rounding:
-        assertTrue("Failed to sleep long enough: " + elapsedMillis,
-            elapsedMillis >= 998);
-        // Scheduling delays can make us appear to sleep quite a bit longer:
-        assertTrue("Overslept: " + elapsedMillis, elapsedMillis <= 1300);
+        assertTrue("Failed to sleep long enough", (ftime - stime) >= 800);
     }
 
     /**
@@ -839,6 +836,8 @@ public class ThreadTest extends junit.framework.TestCase {
      */
     public void test_sleepJI() {
         // Test for method void java.lang.Thread.sleep(long, int)
+
+        // TODO : Test needs revisiting.
         long stime = 0, ftime = 0;
         try {
             stime = System.currentTimeMillis();
@@ -847,10 +846,9 @@ public class ThreadTest extends junit.framework.TestCase {
         } catch (InterruptedException e) {
             fail("Unexpected interrupt received");
         }
-        long elapsedMillis = ftime - stime;
-        assertTrue("Failed to sleep long enough: " + elapsedMillis,
-            elapsedMillis >= 999);
-        assertTrue("Overslept: " + elapsedMillis, elapsedMillis <= 1300);
+        long result = ftime - stime;
+        assertTrue("Failed to sleep long enough: " + result, result >= 900
+                && result <= 1100);
     }
 
     /**

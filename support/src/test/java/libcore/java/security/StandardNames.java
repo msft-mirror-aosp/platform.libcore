@@ -608,14 +608,6 @@ public final class StandardNames {
             if (Security.getProvider("KnoxAndroidKeyStore") != null) {
                 provide("KeyStore", "KnoxAndroidKeyStore");
             }
-
-            // Elliptic curve Diffie-Hellman
-            provide("KeyAgreement", "XDH");
-            provide("KeyFactory", "XDH");
-            provide("KeyPairGenerator", "XDH");
-
-            // AES-CMAC Mac
-            provide("Mac", "AESCMAC");
         }
     }
 

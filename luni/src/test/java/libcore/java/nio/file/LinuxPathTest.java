@@ -59,35 +59,35 @@ public class LinuxPathTest {
     /**
      * CTS doesn't allow creating files in the test directory, however, Vogar allows creation of
      * new files in the test directory. Therefore, for the tests which don't require write
-     * permission, fakePath would serve the purpose, however, for the others, {@link
+     * permission, dummyPath would serve the purpose, however, for the others, {@link
      * FilesSetup#getTestDirPath()} should be used.
      */
-    private static final Path fakePath = Paths.get("fakePath");
+    private static final Path dummyPath = Paths.get("dummyPath");
 
     @Test
     public void test_getFileSystem() {
-        assertTrue(fakePath.getFileSystem().provider() instanceof
+        assertTrue(dummyPath.getFileSystem().provider() instanceof
                 sun.nio.fs.LinuxFileSystemProvider);
     }
 
     @Test
     public void test_isAbsolute() {
-        assertFalse(fakePath.isAbsolute());
-        Path absolutePath = fakePath.toAbsolutePath();
+        assertFalse(dummyPath.isAbsolute());
+        Path absolutePath = dummyPath.toAbsolutePath();
         assertTrue(absolutePath.isAbsolute());
     }
 
     @Test
     public void test_getRoot() {
-        assertEquals(Paths.get("/"), fakePath.toAbsolutePath().getRoot());
-        assertNull(fakePath.getRoot());
+        assertEquals(Paths.get("/"), dummyPath.toAbsolutePath().getRoot());
+        assertNull(dummyPath.getRoot());
     }
 
     @Test
     public void test_getFileName() {
-        assertEquals(fakePath, fakePath.getFileName());
-        assertEquals(fakePath, fakePath.toAbsolutePath().getFileName());
-        assertNull(fakePath.getRoot());
+        assertEquals(dummyPath, dummyPath.getFileName());
+        assertEquals(dummyPath, dummyPath.toAbsolutePath().getFileName());
+        assertNull(dummyPath.getRoot());
         assertEquals(Paths.get("data"), Paths.get("/data").getFileName());
         assertEquals(Paths.get("data"), Paths.get("/data/").getFileName());
         assertEquals(Paths.get(".."), Paths.get("/data/dir1/..").getFileName());
@@ -95,7 +95,7 @@ public class LinuxPathTest {
 
     @Test
     public void test_getParent() {
-        assertNull(fakePath.getParent());
+        assertNull(dummyPath.getParent());
         assertEquals(Paths.get("rootDir"), Paths.get("rootDir/dir").getParent());
     }
 
@@ -153,7 +153,7 @@ public class LinuxPathTest {
     @Test
     public void test_startsWith$String() {
         assertTrue(Paths.get("t1/t2").startsWith("t1"));
-        assertTrue(fakePath.toAbsolutePath().startsWith("/"));
+        assertTrue(dummyPath.toAbsolutePath().startsWith("/"));
         assertTrue(Paths.get("t1/t2/t3").startsWith("t1/t2"));
         assertFalse(Paths.get("t1/t2").startsWith("t2"));
     }
@@ -166,7 +166,7 @@ public class LinuxPathTest {
     @Test
     public void test_startsWith$Path() {
         assertTrue(Paths.get("t1/t2").startsWith(Paths.get("t1")));
-        assertTrue(fakePath.toAbsolutePath().startsWith(Paths.get("/")));
+        assertTrue(dummyPath.toAbsolutePath().startsWith(Paths.get("/")));
         assertTrue(Paths.get("t1/t2/t3").startsWith(Paths.get("t1/t2")));
         assertFalse(Paths.get("t1/t2").startsWith(Paths.get("t2")));
     }
@@ -226,7 +226,7 @@ public class LinuxPathTest {
 
     @Test(expected = NullPointerException.class)
     public void test_resolve$Path_NPE() {
-        fakePath.resolve((Path)null);
+        dummyPath.resolve((Path)null);
     }
 
     @Test
@@ -240,7 +240,7 @@ public class LinuxPathTest {
 
     @Test(expected = NullPointerException.class)
     public void test_resolve$String_NPE() {
-        fakePath.resolve((String)null);
+        dummyPath.resolve((String)null);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class LinuxPathTest {
 
     @Test(expected = NullPointerException.class)
     public void test_resolveSibling$String_Path() {
-        fakePath.resolveSibling((Path) null);
+        dummyPath.resolveSibling((Path) null);
     }
 
     @Test
@@ -271,7 +271,7 @@ public class LinuxPathTest {
 
     @Test(expected = NullPointerException.class)
     public void test_resolveSibling$String_NPE() {
-        fakePath.resolveSibling((String)null);
+        dummyPath.resolveSibling((String)null);
     }
 
     @Test
@@ -296,12 +296,12 @@ public class LinuxPathTest {
 
     @Test(expected = NullPointerException.class)
     public void test_relativize_NPE() {
-        fakePath.relativize(null);
+        dummyPath.relativize(null);
     }
 
     @Test
     public void test_toURI() throws URISyntaxException {
-        assertEquals(new URI("file://" + fakePath.toAbsolutePath().toString()), fakePath.toUri());
+        assertEquals(new URI("file://" + dummyPath.toAbsolutePath().toString()), dummyPath.toUri());
         assertEquals(new URI("file:///"), Paths.get("/").toUri());
         assertEquals(new URI("file:///dir/.."), Paths.get(("/dir/..")).toUri());
         assertEquals(new URI("file:///../"), Paths.get(("/..")).toUri());
@@ -314,15 +314,15 @@ public class LinuxPathTest {
 
     @Test
     public void test_toAbsolutePath() {
-        assertFalse(fakePath.isAbsolute());
-        assertTrue(fakePath.toAbsolutePath().isAbsolute());
+        assertFalse(dummyPath.isAbsolute());
+        assertTrue(dummyPath.toAbsolutePath().isAbsolute());
     }
 
     @Test
     public void test_toRealPath() throws IOException {
         // When file doesn't exist.
         try {
-            fakePath.toRealPath();
+            dummyPath.toRealPath();
             fail();
         } catch (NoSuchFileException expected) {}
         Files.createFile(filesSetup.getTestPath());
@@ -356,8 +356,8 @@ public class LinuxPathTest {
 
     @Test
     public void test_toFile() {
-        File file = fakePath.toFile();
-        assertEquals(fakePath.toAbsolutePath().toString(), file.getAbsolutePath());
+        File file = dummyPath.toFile();
+        assertEquals(dummyPath.toAbsolutePath().toString(), file.getAbsolutePath());
     }
 
     @Test

@@ -298,7 +298,7 @@ public class TimeZoneTest extends TestCase {
                 }
             }
 
-            // Check that whenever a display name is just a GMT string that it's the
+            // Sanity check that whenever a display name is just a GMT string that it's the
             // right GMT string.
             String gmtDst = formatGmtString(tz, true);
             String gmtStd = formatGmtString(tz, false);

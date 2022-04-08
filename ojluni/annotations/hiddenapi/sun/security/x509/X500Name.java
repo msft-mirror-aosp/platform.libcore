@@ -45,7 +45,7 @@ public class X500Name implements sun.security.x509.GeneralNameInterface, java.se
         throw new RuntimeException("Stub!");
     }
 
-    @android.compat.annotation.UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @android.compat.annotation.UnsupportedAppUsage
     public X500Name(
             java.lang.String commonName,
             java.lang.String organizationUnit,
@@ -55,7 +55,7 @@ public class X500Name implements sun.security.x509.GeneralNameInterface, java.se
         throw new RuntimeException("Stub!");
     }
 
-    @android.compat.annotation.UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @android.compat.annotation.UnsupportedAppUsage
     public X500Name(
             java.lang.String commonName,
             java.lang.String organizationUnit,

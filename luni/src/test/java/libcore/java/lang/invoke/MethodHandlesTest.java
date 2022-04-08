@@ -1212,14 +1212,14 @@ public class MethodHandlesTest extends TestCase {
 
         // boolean -> int
         try {
-            int fake = (int) mh.invoke("True");
+            int dummy = (int) mh.invoke("True");
             fail();
         } catch (WrongMethodTypeException expected) {
         }
 
         // boolean -> Integer
         try {
-            Integer fake = (Integer) mh.invoke("True");
+            Integer dummy = (Integer) mh.invoke("True");
             fail();
         } catch (WrongMethodTypeException expected) {
         }
@@ -1232,14 +1232,14 @@ public class MethodHandlesTest extends TestCase {
 
         // Boolean -> int
         try {
-            int fake = (int) mh.invoke(false);
+            int dummy = (int) mh.invoke(false);
             fail();
         } catch (WrongMethodTypeException expected) {
         }
 
         // Boolean -> Integer
         try {
-            Integer fake = (Integer) mh.invoke("True");
+            Integer dummy = (Integer) mh.invoke("True");
             fail();
         } catch (WrongMethodTypeException expected) {
         }

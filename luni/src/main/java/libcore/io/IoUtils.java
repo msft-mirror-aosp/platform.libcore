@@ -16,9 +16,6 @@
 
 package libcore.io;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
 import android.system.ErrnoException;
 import android.system.StructStat;
@@ -32,9 +29,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
 import libcore.util.NonNull;
-import libcore.util.Nullable;
 
 import static android.system.OsConstants.F_GETFL;
 import static android.system.OsConstants.F_SETFL;
@@ -42,30 +37,25 @@ import static android.system.OsConstants.O_NONBLOCK;
 import static android.system.OsConstants.O_RDONLY;
 
 /** @hide */
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@libcore.api.CorePlatformApi
 public final class IoUtils {
     private IoUtils() {
     }
 
     /**
-     * Acquires ownership of an integer file descriptor from a {@link FileDescriptor}.
+     * Acquires ownership of an integer file descriptor from a FileDescriptor.
      *
-     * This method invalidates the {@link FileDescriptor} passed in.
+     * This method invalidates the FileDescriptor passed in.
      *
      * The important part of this function is that you are taking ownership of a resource that you
      * must either clean up yourself, or hand off to some other object that does that for you.
      *
      * See bionic/include/android/fdsan.h for more details.
      *
-     * @param fd {@link FileDescriptor} to take ownership from, must be non-{@code null}.
-     * @return raw file descriptor
+     * @param fd FileDescriptor to take ownership from, must be non-null.
      * @throws NullPointerException if fd is null
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static int acquireRawFd(@NonNull FileDescriptor fd) {
         Objects.requireNonNull(fd);
 
@@ -123,35 +113,25 @@ public final class IoUtils {
         // The owner ID is not required to be unique but should be stable and attempt to avoid
         // collision with identifiers generated both here and in native code (which are simply the
         // address of the owning object). identityHashCode(Object) meets these requirements.
-        //
-        // If identityHashCode returns a negative int, it'll be sign-extended, so we need to apply
-        // a mask. fdsan uses bits 48-56 to distinguish between a generic native pointer and a
-        // generic Java type, but since we're only inserting 32-bits of data, we might as well mask
-        // off the entire upper 32 bits.
-        long mask = (1L << 32) - 1;
-        long tagValue = System.identityHashCode(owner) & mask;
+        long tagValue = System.identityHashCode(owner);
         return tagType << 56 | tagValue;
     }
 
     /**
-     * Assigns ownership of an unowned {@link FileDescriptor}.
+     * Assigns ownership of an unowned FileDescriptor.
      *
-     * Associates the supplied {@link FileDescriptor} and the underlying Unix file descriptor with an owner
-     * ID derived from the supplied {@code owner} object. If the {@link FileDescriptor} already has an
+     * Associates the supplied FileDescriptor and the underlying Unix file descriptor with an owner
+     * ID derived from the supplied {@code owner} object. If the FileDescriptor already has an
      * associated owner an {@link IllegalStateException} will be thrown. If the underlying Unix
      * file descriptor already has an associated owner, the process will abort.
      *
      * See bionic/include/android/fdsan.h for more details.
      *
-     * @param fd    {@link FileDescriptor} to take ownership from, must be non-{@code null}.
-     * @param owner owner object
-     * @throws NullPointerException if {@code fd} or {@code owner} are {@code null}
-     * @throws IllegalStateException if {@code fd} is already owned
-     *
-     * @hide
+     * @param fd FileDescriptor to take ownership from, must be non-null.
+     * @throws NullPointerException if fd or owner are null
+     * @throws IllegalStateException if fd is already owned
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static void setFdOwner(@NonNull FileDescriptor fd, @NonNull Object owner) {
         Objects.requireNonNull(fd);
         Objects.requireNonNull(owner);
@@ -170,31 +150,20 @@ public final class IoUtils {
     }
 
     /**
-     * Closes a file descriptor, so that it no longer refers to any file and may
-     * be reused. Also resets the internal int to -1.
-     *
-     * @param fd is {@link FileDescriptor} instance, invalid value is ignored.
-     * @throws IOException if an I/O error occurred.
-     *
-     * @hide
+     * Calls close(2) on 'fd'. Also resets the internal int to -1. Does nothing if 'fd' is null
+     * or invalid.
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void close(@Nullable FileDescriptor fd) throws IOException {
+    @libcore.api.CorePlatformApi
+    public static void close(FileDescriptor fd) throws IOException {
         IoBridge.closeAndSignalBlockedThreads(fd);
     }
 
     /**
-     * Closes {@link AutoClosable} instance, ignoring any checked exceptions.
-     *
-     * @param close is AutoClosable instance, null value is ignored.
-     *
-     * @hide
+     * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void closeQuietly(@Nullable AutoCloseable closeable) {
+    @libcore.api.CorePlatformApi
+    public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
@@ -206,16 +175,11 @@ public final class IoUtils {
     }
 
     /**
-     * Calls {@link #close(FileDescriptor)}, ignoring any exceptions.
-     *
-     * @param fd is {@link FileDescriptor} instance, invalid value is ignored.
-     *
-     * @hide
+     * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void closeQuietly(@Nullable FileDescriptor fd) {
+    @libcore.api.CorePlatformApi
+    public static void closeQuietly(FileDescriptor fd) {
         try {
             IoUtils.close(fd);
         } catch (IOException ignored) {
@@ -223,39 +187,25 @@ public final class IoUtils {
     }
 
     /**
-     * Closes socket, ignoring any exceptions.
-     *
-     * @param socket is {@link Socket} instance, {@code null} value is ignored.
-     *
-     * @hide
+     * Closes 'socket', ignoring any exceptions. Does nothing if 'socket' is null.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void closeQuietly(@Nullable Socket socket) {
+    @libcore.api.CorePlatformApi
+    public static void closeQuietly(Socket socket) {
         if (socket != null) {
             try {
                 socket.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
             } catch (Exception ignored) {
             }
         }
     }
 
     /**
-     * Sets file descriptor to be blocking or non-blocking.
-     *
-     * @param fd is {@link FileDescriptor} instance
-     * @param blocking is a boolean that defines whether fd should be blocking or non-blocking
-     * @throws IOException if system API call fails
-     *
-     * @hide
+     * Sets 'fd' to be blocking or non-blocking, according to the state of 'blocking'.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void setBlocking(@NonNull FileDescriptor fd, boolean blocking) throws IOException {
+    @libcore.api.CorePlatformApi
+    public static void setBlocking(FileDescriptor fd, boolean blocking) throws IOException {
         try {
             int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
             if (!blocking) {
@@ -270,34 +220,20 @@ public final class IoUtils {
     }
 
     /**
-     * Returns the contents of {@code absolutePath} as a byte array.
-     *
-     * @param absolutePath path to a file to read
-     * @return contents of the file at {@code absolutePath} as byte array
-     * @throws IOException if there was I/O error
-     *
-     * @hide
+     * Returns the contents of 'path' as a byte array.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static @NonNull byte[] readFileAsByteArray(@NonNull String absolutePath) throws IOException {
+    @libcore.api.CorePlatformApi
+    public static byte[] readFileAsByteArray(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
     }
 
     /**
-     * Returns the contents of {@code absolutePath} as a {@link String}. The contents are assumed to be UTF-8.
-     *
-     * @param absolutePath path to a file to read
-     * @return contents of the file at {@code absolutePath} as {@link String}
-     * @throws IOException if there was I/O error
-     *
-     * @hide
+     * Returns the contents of 'path' as a string. The contents are assumed to be UTF-8.
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static @NonNull String readFileAsString(@NonNull String absolutePath) throws IOException {
+    @libcore.api.CorePlatformApi
+    public static String readFileAsString(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toString(StandardCharsets.UTF_8);
     }
 
@@ -309,10 +245,10 @@ public final class IoUtils {
      * supposed to be best-effort.
      *
      * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
-     *
-     * @hide
      */
-    public static void deleteContents(@NonNull File dir) throws IOException {
+    @libcore.api.CorePlatformApi
+    @Deprecated
+    public static void deleteContents(File dir) throws IOException {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -332,8 +268,6 @@ public final class IoUtils {
      * remove read permission from more directories. Everyone else should just open(2) and then
      * use the fd, but the loadLibrary API is broken by its need to ask ClassLoaders where to
      * find a .so rather than just calling dlopen(3).
-     *
-     * @hide
      */
     public static boolean canOpenReadOnly(String path) {
         try {
@@ -346,9 +280,6 @@ public final class IoUtils {
         }
     }
 
-    /**
-     * @hide
-     */
     public static void throwInterruptedIoException() throws InterruptedIOException {
         // This is typically thrown in response to an
         // InterruptedException which does not leave the thread in an

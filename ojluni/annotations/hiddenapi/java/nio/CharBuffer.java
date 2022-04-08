@@ -155,7 +155,7 @@ public abstract class CharBuffer extends java.nio.Buffer
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     abstract java.lang.String toString(int start, int end);
 
     public final int length() {

@@ -38,10 +38,6 @@
 
 package java.text;
 
-import android.icu.text.Normalizer2;
-
-import java.util.function.Supplier;
-
 /**
  * This class provides the method <code>normalize</code> which transforms Unicode
  * text into an equivalent composed or decomposed form, allowing for easier
@@ -127,27 +123,27 @@ public final class Normalizer {
         /**
          * Canonical decomposition.
          */
-        NFD(Normalizer2::getNFDInstance),
+        NFD(android.icu.text.Normalizer.NFD),
 
         /**
          * Canonical decomposition, followed by canonical composition.
          */
-        NFC(Normalizer2::getNFCInstance),
+        NFC(android.icu.text.Normalizer.NFC),
 
         /**
          * Compatibility decomposition.
          */
-        NFKD(Normalizer2::getNFKDInstance),
+        NFKD(android.icu.text.Normalizer.NFKD),
 
         /**
          * Compatibility decomposition, followed by canonical composition.
          */
-        NFKC(Normalizer2::getNFKCInstance);
+        NFKC(android.icu.text.Normalizer.NFKC);
 
-        private final Supplier<Normalizer2> icuNormalizer;
+        private final android.icu.text.Normalizer.Mode icuMode;
 
-        Form(Supplier<Normalizer2> icuNormalizer) {
-            this.icuNormalizer = icuNormalizer;
+        Form(android.icu.text.Normalizer.Mode icuMode) {
+            this.icuMode = icuMode;
         }
     }
     // END Android-changed: remove static modifier and add mapping to equivalent ICU values.
@@ -168,7 +164,7 @@ public final class Normalizer {
      */
     public static String normalize(CharSequence src, Form form) {
         // Android-changed: Switched to ICU.
-        return form.icuNormalizer.get().normalize(src);
+        return android.icu.text.Normalizer.normalize(src.toString(), form.icuMode);
     }
 
     /**
@@ -186,6 +182,6 @@ public final class Normalizer {
      */
     public static boolean isNormalized(CharSequence src, Form form) {
         // Android-changed: Switched to ICU.
-        return form.icuNormalizer.get().isNormalized(src);
+        return android.icu.text.Normalizer.isNormalized(src.toString(), form.icuMode, 0);
     }
 }

@@ -47,11 +47,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since   JDK1.0
  */
 public final class FileDescriptor {
-    // Android-changed: Removed parent reference counting.
-    // The creator is responsible for closing the file descriptor.
+    // Android-changed: Removed parent reference counting. Creator is responsible for closing
+    // the file descriptor.
 
-    // Android-changed: Renamed fd to descriptor.
-    // Renaming is to avoid issues with JNI/reflection fetching the descriptor value.
+    // Android-changed: Renamed fd to descriptor to avoid issues with JNI/reflection
+    // fetching the descriptor value.
     private int descriptor;
 
     // Android-added: Track fd owner to guard against accidental closure. http://b/110100358
@@ -62,9 +62,6 @@ public final class FileDescriptor {
     // Android-added: value of ownerId indicating that a FileDescriptor is unowned.
     /** @hide */
     public static final long NO_OWNER = 0L;
-
-    // Android-added: lock for release$.
-    private final Object releaseLock = new Object();
 
     /**
      * Constructs an (invalid) FileDescriptor
@@ -145,11 +142,11 @@ public final class FileDescriptor {
      */
     public native void sync() throws SyncFailedException;
 
-    // Android-removed: initIDs not used to allow compile-time initialization.
+    // Android-removed: initIDs not used to allow compile-time intialization
     /* This routine initializes JNI field offsets for the class */
     //private static native void initIDs();
 
-    // Android-added: Needed for framework to access descriptor value.
+    // Android-added: Needed for framework to access descriptor value
     /**
      * Returns the int descriptor. It's highly unlikely you should be calling this. Please discuss
      * your needs with a libcore maintainer before using this method.
@@ -159,7 +156,7 @@ public final class FileDescriptor {
         return descriptor;
     }
 
-    // Android-added: Needed for framework to access descriptor value.
+    // Android-added: Needed for framework to access descriptor value
     /**
      * Sets the int descriptor. It's highly unlikely you should be calling this. Please discuss
      * your needs with a libcore maintainer before using this method.
@@ -214,26 +211,19 @@ public final class FileDescriptor {
 
     /**
      * Returns a copy of this FileDescriptor, and sets this to an invalid state.
-     *
-     * The returned instance is not necessarily {@code valid()}, if the original FileDescriptor
-     * was invalid, or if another thread concurrently calls {@code release$()}.
-     *
      * @hide internal use only
      */
     public FileDescriptor release$() {
       FileDescriptor result = new FileDescriptor();
-      synchronized (releaseLock) {
-          result.descriptor = this.descriptor;
-          result.ownerId = this.ownerId;
-          this.descriptor = -1;
-          this.ownerId = FileDescriptor.NO_OWNER;
-      }
-
+      result.descriptor = this.descriptor;
+      result.ownerId = this.ownerId;
+      this.descriptor = -1;
+      this.ownerId = FileDescriptor.NO_OWNER;
       return result;
     }
     // END Android-added: Methods to enable ownership enforcement of Unix file descriptors.
 
-    // Android-added: Needed for framework to test if it's a socket.
+    // Android-added: Needed for framework to test if it's a socket
     /**
      * @hide internal use only
      */
@@ -264,5 +254,5 @@ public final class FileDescriptor {
             }
         );
     }
-// Android-removed: Removed method required for parents reference counting.
+// Android-removed: Removed method required for parents reference counting
 }

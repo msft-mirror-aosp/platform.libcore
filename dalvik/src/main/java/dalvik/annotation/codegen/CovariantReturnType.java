@@ -16,15 +16,12 @@
 
 package dalvik.annotation.codegen;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import libcore.api.CorePlatformApi;
 
 /**
  * Indicates to the platform toolchain that there is an upcoming public SDK API change for a method.
@@ -64,39 +61,29 @@ import java.lang.annotation.Target;
 @Repeatable(CovariantReturnType.CovariantReturnTypes.class)
 @Retention(RetentionPolicy.CLASS)
 @Target({ ElementType.METHOD})
-@SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@CorePlatformApi
 public @interface CovariantReturnType {
 
     /**
      * The return type of the synthetic method to generate. Must be a subclass of the return type
      * of the method being annotated.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @CorePlatformApi
     Class<?> returnType();
 
     /**
      * The last Android API level not to have the generated synthetic method. The annotation can be
      * removed and the actual return type updated when support for this API level is dropped.
-     *
-     * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @CorePlatformApi
     int presentAfter();
 
     /** @hide */
     @Retention(RetentionPolicy.CLASS)
     @Target({ElementType.METHOD})
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @CorePlatformApi
     @interface CovariantReturnTypes {
-        /** @hide */
-        @SystemApi(client = MODULE_LIBRARIES)
-        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+        @CorePlatformApi
         CovariantReturnType[] value();
     }
 }

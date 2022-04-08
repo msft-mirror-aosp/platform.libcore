@@ -229,11 +229,7 @@ public abstract class SocketImpl implements SocketOptions {
 
     // Android-added: getFD$() for testing.
     /**
-     * Gets socket's underlying {@link FileDescriptor}.
-     *
      * @hide used by java.nio tests
-     *
-     * @return socket's underlying {@link FileDescriptor}.
      */
     public FileDescriptor getFD$() {
         return fd;

@@ -16,9 +16,6 @@
 
 package android.system;
 
-import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
-
-import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
 
 /**
@@ -30,32 +27,21 @@ public final class OsConstants {
     }
 
     /**
-     * Returns the index of the element in the {@link StructCapUserData} (cap_user_data)
-     * array that this capability is stored in.
-     *
-     * @param x capability
-     * @return index of the element in the {@link StructCapUserData} array storing this capability
-     *
+     * Returns the index of the element in the cap_user_data array that this capability is stored
+     * in.
      * @hide
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static int CAP_TO_INDEX(int x) { return x >>> 5; }
 
     /**
-     * Returns the mask for the given capability. This is relative to the capability's
-     * {@link StructCapUserData} (cap_user_data) element, the index of which can be
-     * retrieved with {@link CAP_TO_INDEX}.
-     *
-     * @param x capability
-     * @return mask for given capability
-     *
+     * Returns the mask for the given capability. This is relative to the capability's cap_user_data
+     * element, the index of which can be retrieved with CAP_TO_INDEX.
      * @hide
      */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static int CAP_TO_MASK(int x) { return 1 << (x & 31); }
 
     /**
@@ -133,15 +119,6 @@ public final class OsConstants {
     public static final int AF_NETLINK = placeholder();
     public static final int AF_PACKET = placeholder();
     public static final int AF_UNIX = placeholder();
-
-    /**
-     * The virt-vsock address family, linux specific.
-     * It is used with {@code struct sockaddr_vm} from uapi/linux/vm_sockets.h.
-     *
-     * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
-     * @see VmSocketAddress
-     */
-    public static final int AF_VSOCK = placeholder();
     public static final int AF_UNSPEC = placeholder();
     public static final int AI_ADDRCONFIG = placeholder();
     public static final int AI_ALL = placeholder();
@@ -151,47 +128,9 @@ public final class OsConstants {
     public static final int AI_PASSIVE = placeholder();
     public static final int AI_V4MAPPED = placeholder();
     public static final int ARPHRD_ETHER = placeholder();
-
-    /**
-      * The virtio-vsock {@code svmPort} value to bind for any available port.
-      *
-      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
-      * @see VmSocketAddress
-      */
-    public static final int VMADDR_PORT_ANY = placeholder();
-
-    /**
-      * The virtio-vsock {@code svmCid} value to listens for all CIDs.
-      *
-      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
-      * @see VmSocketAddress
-      */
-    public static final int VMADDR_CID_ANY = placeholder();
-
-    /**
-      * The virtio-vsock {@code svmCid} value for host communication.
-      *
-      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
-      * @see VmSocketAddress
-      */
-    public static final int VMADDR_CID_LOCAL = placeholder();
-
-    /**
-      * The virtio-vsock {@code svmCid} value for loopback communication.
-      *
-      * @see <a href="https://man7.org/linux/man-pages/man7/vsock.7.html">vsock(7)</a>
-      * @see VmSocketAddress
-      */
-    public static final int VMADDR_CID_HOST = placeholder();
-
-    /**
-     * ARP protocol loopback device identifier.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int ARPHRD_LOOPBACK = placeholder();
     public static final int CAP_AUDIT_CONTROL = placeholder();
     public static final int CAP_AUDIT_WRITE = placeholder();
@@ -292,6 +231,9 @@ public final class OsConstants {
     public static final int ENOLINK = placeholder();
     public static final int ENOMEM = placeholder();
     public static final int ENOMSG = placeholder();
+    /** @hide */
+    @UnsupportedAppUsage
+    @libcore.api.CorePlatformApi
     public static final int ENONET = placeholder();
     public static final int ENOPROTOOPT = placeholder();
     public static final int ENOSPC = placeholder();
@@ -324,15 +266,9 @@ public final class OsConstants {
     public static final int ETIME = placeholder();
     public static final int ETIMEDOUT = placeholder();
     public static final int ETXTBSY = placeholder();
-    /**
-     * "Too many users" error.
-     * See <a href="https://man7.org/linux/man-pages/man3/errno.3.html">errno(3)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int EUSERS = placeholder();
     // On Linux, EWOULDBLOCK == EAGAIN. Use EAGAIN instead, to reduce confusion.
     public static final int EXDEV = placeholder();
@@ -418,31 +354,15 @@ public final class OsConstants {
     public static final int IP_RECVTOS = placeholder();
     public static final int IP_TOS = placeholder();
     public static final int IP_TTL = placeholder();
-    /**
-     * Version constant to be used in {@link StructCapUserHeader} with
-     * {@link Os#capset(StructCapUserHeader, StructCapUserData[])} and
-     * {@link Os#capget(StructCapUserHeader)}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int _LINUX_CAPABILITY_VERSION_3 = placeholder();
     public static final int MAP_FIXED = placeholder();
     public static final int MAP_ANONYMOUS = placeholder();
-    /**
-     * Flag argument for {@code mmap(long, long, int, int, FileDescriptor, long)}.
-     *
-     * See <a href="http://man7.org/linux/man-pages/man2/mmap.2.html">mmap(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int MAP_POPULATE = placeholder();
     public static final int MAP_PRIVATE = placeholder();
     public static final int MAP_SHARED = placeholder();
@@ -480,26 +400,9 @@ public final class OsConstants {
     public static final int O_APPEND = placeholder();
     public static final int O_CLOEXEC = placeholder();
     public static final int O_CREAT = placeholder();
-    /**
-     * Flag for {@code Os#open(String, int, int)}.
-     *
-     * When enabled, tries to minimize cache effects of the I/O to and from this
-     * file. In general this will degrade performance, but it is
-     * useful in special situations, such as when applications do
-     * their own caching. File I/O is done directly to/from
-     * user-space buffers. The {@link O_DIRECT} flag on its own makes an
-     * effort to transfer data synchronously, but does not give
-     * the guarantees of the {@link O_SYNC} flag that data and necessary
-     * metadata are transferred. To guarantee synchronous I/O,
-     * {@link O_SYNC} must be used in addition to {@link O_DIRECT}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/open.2.html">open(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int O_DIRECT = placeholder();
     public static final int O_EXCL = placeholder();
     public static final int O_NOCTTY = placeholder();
@@ -521,30 +424,13 @@ public final class OsConstants {
     public static final int POLLRDNORM = placeholder();
     public static final int POLLWRBAND = placeholder();
     public static final int POLLWRNORM = placeholder();
-    /**
-     * Reads or changes the ambient capability set of the calling thread.
-     * Has to be used as a first argument for {@link Os#prctl(int, long, long, long, long)}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/prctl.2.html">prctl(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int PR_CAP_AMBIENT = placeholder();
-    /**
-     * The capability specified in {@code arg3} of {@link Os#prctl(int, long, long, long, long)}
-     * is added to the ambient set. The specified capability must already
-     * be present in both the permitted and the inheritable sets of the process.
-     * Has to be used as a second argument for {@link Os#prctl(int, long, long, long, long)}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/prctl.2.html">prctl(2)</a>.
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int PR_CAP_AMBIENT_RAISE = placeholder();
     public static final int PR_GET_DUMPABLE = placeholder();
     public static final int PR_SET_DUMPABLE = placeholder();
@@ -554,38 +440,18 @@ public final class OsConstants {
     public static final int PROT_READ = placeholder();
     public static final int PROT_WRITE = placeholder();
     public static final int R_OK = placeholder();
-    /**
-     * Specifies a value one greater than the maximum file
-     * descriptor number that can be opened by this process.
-     *
-     * <p>Attempts ({@link Os#open(String, int, int)}, {@link Os#pipe()},
-     * {@link Os#dup(java.io.FileDescriptor)}, etc.) to exceed this
-     * limit yield the error {@link EMFILE}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man3/vlimit.3.html">getrlimit(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int RLIMIT_NOFILE = placeholder();
     public static final int RT_SCOPE_HOST = placeholder();
     public static final int RT_SCOPE_LINK = placeholder();
     public static final int RT_SCOPE_NOWHERE = placeholder();
     public static final int RT_SCOPE_SITE = placeholder();
     public static final int RT_SCOPE_UNIVERSE = placeholder();
-    /**
-     * Bitmask for IPv4 addresses add/delete events multicast groups mask.
-     * Used in {@link NetlinkSocketAddress}.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man7/netlink.7.html">netlink(7)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int RTMGRP_IPV4_IFADDR = placeholder();
     /** @hide */
     @UnsupportedAppUsage
@@ -694,7 +560,6 @@ public final class OsConstants {
     public static final int SOCK_SEQPACKET = placeholder();
     public static final int SOCK_STREAM = placeholder();
     public static final int SOL_SOCKET = placeholder();
-    public static final int SOL_UDP = placeholder();
     public static final int SO_BINDTODEVICE = placeholder();
     public static final int SO_BROADCAST = placeholder();
     public static final int SO_DEBUG = placeholder();
@@ -719,40 +584,16 @@ public final class OsConstants {
     public static final int SO_SNDLOWAT = placeholder();
     public static final int SO_SNDTIMEO = placeholder();
     public static final int SO_TYPE = placeholder();
-    /**
-     * Bitmask for flags argument of
-     * {@link splice(java.io.FileDescriptor, Int64Ref, FileDescriptor, Int64Ref, long, int)}.
-     *
-     * Attempt to move pages instead of copying.  This is only a
-     * hint to the kernel: pages may still be copied if the
-     * kernel cannot move the pages from the pipe, or if the pipe
-     * buffers don't refer to full pages.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/splice.2.html">splice(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int SPLICE_F_MOVE = placeholder();
     /** @hide */
     @UnsupportedAppUsage
     public static final int SPLICE_F_NONBLOCK = placeholder();
-    /**
-     * Bitmask for flags argument of
-     * {@link splice(java.io.FileDescriptor, Int64Ref, FileDescriptor, Int64Ref, long, int)}.
-     *
-     * <p>Indicates that more data will be coming in a subsequent splice. This is
-     * a helpful hint when the {@code fdOut} refers to a socket.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/splice.2.html">splice(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int SPLICE_F_MORE = placeholder();
     public static final int STDERR_FILENO = placeholder();
     public static final int STDIN_FILENO = placeholder();
@@ -791,35 +632,20 @@ public final class OsConstants {
     public static final int S_IXUSR = placeholder();
     public static final int TCP_NODELAY = placeholder();
     public static final int TCP_USER_TIMEOUT = placeholder();
-    public static final int UDP_GRO = placeholder();
-    public static final int UDP_SEGMENT = placeholder();
-    /**
-     * Get the number of bytes in the output buffer.
-     *
-     * See <a href="https://man7.org/linux/man-pages/man2/ioctl.2.html">ioctl(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int TIOCOUTQ = placeholder();
-    /**
-     * Sockopt option to encapsulate ESP packets in UDP.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int UDP_ENCAP = placeholder();
     /** @hide */
     @UnsupportedAppUsage
     public static final int UDP_ENCAP_ESPINUDP_NON_IKE = placeholder();
     /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int UDP_ENCAP_ESPINUDP = placeholder();
     /** @hide */
     @UnsupportedAppUsage
@@ -831,32 +657,12 @@ public final class OsConstants {
     public static final int WSTOPPED = placeholder();
     public static final int WUNTRACED = placeholder();
     public static final int W_OK = placeholder();
-    /**
-     * {@code flags} option for {@link Os#setxattr(String, String, byte[], int)}.
-     *
-     * <p>Performs a pure create, which fails if the named attribute exists already.
-     *
-     * See <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @libcore.api.CorePlatformApi
     public static final int XATTR_CREATE = placeholder();
-    /**
-     * {@code flags} option for {@link Os#setxattr(String, String, byte[], int)}.
-     *
-     * <p>Perform a pure replace operation, which fails if the named attribute
-     * does not already exist.
-     *
-     * See <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>.
-     *
-     * @hide
-     */
+    /** @hide */
     @UnsupportedAppUsage
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static final int XATTR_REPLACE = placeholder();
     public static final int X_OK = placeholder();
     public static final int _SC_2_CHAR_TERM = placeholder();

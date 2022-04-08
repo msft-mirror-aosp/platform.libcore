@@ -31,7 +31,7 @@ import android.compat.annotation.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Inet6Address extends java.net.InetAddress {
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     Inet6Address() {
         throw new RuntimeException("Stub!");
     }
@@ -177,7 +177,7 @@ public final class Inet6Address extends java.net.InetAddress {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     public static final java.net.InetAddress ANY;
 
     static {
@@ -206,7 +206,7 @@ public final class Inet6Address extends java.net.InetAddress {
         UNSAFE = null;
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private final transient java.net.Inet6Address.Inet6AddressHolder holder6;
 
     {
@@ -301,16 +301,16 @@ public final class Inet6Address extends java.net.InetAddress {
             throw new RuntimeException("Stub!");
         }
 
-        @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+        @UnsupportedAppUsage
         byte[] ipaddress;
 
-        @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+        @UnsupportedAppUsage
         int scope_id;
 
-        @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+        @UnsupportedAppUsage
         boolean scope_id_set;
 
-        @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+        @UnsupportedAppUsage
         java.net.NetworkInterface scope_ifname;
 
         boolean scope_ifname_set;

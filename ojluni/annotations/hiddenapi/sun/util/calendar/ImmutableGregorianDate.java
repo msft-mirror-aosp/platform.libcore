@@ -242,7 +242,7 @@ class ImmutableGregorianDate extends sun.util.calendar.BaseCalendar.Date {
         throw new RuntimeException("Stub!");
     }
 
-    @android.compat.annotation.UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @android.compat.annotation.UnsupportedAppUsage
     private void unsupported() {
         throw new RuntimeException("Stub!");
     }

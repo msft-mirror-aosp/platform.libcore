@@ -93,34 +93,21 @@ class Inet4Address extends InetAddress {
      *  serialized */
     private static final long serialVersionUID = 3286316764910316507L;
 
-    // BEGIN Android-added: Define special-purpose IPv4 address.
-    /**
-     * Reserved address for {@code INADDR_ANY}, to specify any IPv4 address at all.
-     *
-     * @hide
-     */
+    // BEGIN Android-added: Define special-purpose IPv4 address
+    /** @hide */
     public static final InetAddress ANY = new Inet4Address(null, new byte[] { 0, 0, 0, 0 });
 
-    /**
-     * Broadcast address to transmit to all devices on network.
-     *
-     * @hide
-     */
+    /** @hide */
     public static final InetAddress ALL =
             new Inet4Address(null, new byte[] { (byte) 255, (byte) 255,
                   (byte) 255, (byte) 255 });
-
-    /**
-     * Loopback address to the local host.
-     *
-     * @hide
-     */
+    /** @hide */
     public static final InetAddress LOOPBACK =
             new Inet4Address("localhost", new byte[] { 127, 0, 0, 1 });
-    // END Android-added: Define special-purpose IPv4 address.
+    // END Android-added: Define special-purpose IPv4 address
 
 
-    // BEGIN Android-removed: Android doesn't need to call native init.
+    // BEGIN Android-removed: Android doesn't need to call native init
     /*
      * Perform initializations.
      *
@@ -128,7 +115,7 @@ class Inet4Address extends InetAddress {
         init();
     }
     */
-    // END Android-removed: Android doesn't need to call native init.
+    // END Android-removed: Android doesn't need to call native init
     Inet4Address() {
         super();
         holder().hostName = null;
@@ -404,11 +391,11 @@ class Inet4Address extends InetAddress {
         return (src[0] & 0xff) + "." + (src[1] & 0xff) + "." + (src[2] & 0xff) + "." + (src[3] & 0xff);
     }
 
-    // BEGIN Android-removed: Android doesn't need to call native init.
+    // BEGIN Android-removed: Android doesn't need to call native init
     /*
      * Perform class load-time initializations.
      *
     private static native void init();
     */
-    // END Android-removed: Android doesn't need to call native init.
+    // END Android-removed: Android doesn't need to call native init
 }

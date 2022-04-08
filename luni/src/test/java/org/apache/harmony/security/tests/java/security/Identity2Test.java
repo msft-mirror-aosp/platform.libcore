@@ -253,9 +253,6 @@ public class Identity2Test extends junit.framework.TestCase {
         java.security.Certificate[] certs = sub.certificates();
         assertEquals("Certificate not contained in the identity",
                      certs[0], certImpl);
-
-        sub.removeCertificate(certs[0]);
-        assertEquals(0, sub.certificates().length);
     }
 
     /**
@@ -336,7 +333,7 @@ public class Identity2Test extends junit.framework.TestCase {
      * java.security.Identity#toString()
      */
     public void test_toString() throws Exception {
-        Identity sub = new IdentitySubclass("test", null);
+        IdentitySubclass sub = new IdentitySubclass("test", null);
         assertNotNull(sub.toString());
         assertTrue("The String returned is not valid", sub.toString().length() > 0);
         // Regression for HARMONY-1566
@@ -347,7 +344,7 @@ public class Identity2Test extends junit.framework.TestCase {
      * java.security.Identity#toString(boolean)
      */
     public void test_toStringZ() throws Exception {
-        Identity sub = new IdentitySubclass("test", null);
+        IdentitySubclass sub = new IdentitySubclass("test", null);
         assertNotNull(sub.toString(true));
         assertTrue("The String returned is not valid", sub.toString(true).length() > 0);
     }

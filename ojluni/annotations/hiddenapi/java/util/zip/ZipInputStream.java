@@ -100,12 +100,12 @@ public class ZipInputStream extends java.util.zip.InflaterInputStream
 
     private boolean entryEOF = false;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private int flag;
 
     private long remaining;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private byte[] tmpbuf;
 
     private java.util.zip.ZipCoder zc;

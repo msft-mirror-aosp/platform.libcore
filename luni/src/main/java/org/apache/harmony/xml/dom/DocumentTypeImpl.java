@@ -81,12 +81,12 @@ public final class DocumentTypeImpl extends LeafNodeImpl implements DocumentType
     }
 
     public NamedNodeMap getEntities() {
-        // TODO Fake. Implement this later, if at all (we're DOM level 2 only).
+        // TODO Dummy. Implement this later, if at all (we're DOM level 2 only).
         return null;
     }
 
     public String getInternalSubset() {
-        // TODO Fake. Implement this later, if at all (we're DOM level 2 only).
+        // TODO Dummy. Implement this later, if at all (we're DOM level 2 only).
         return null;
     }
 
@@ -95,7 +95,7 @@ public final class DocumentTypeImpl extends LeafNodeImpl implements DocumentType
     }
 
     public NamedNodeMap getNotations() {
-        // TODO Fake. Implement this later, if at all (we're DOM level 2 only).
+        // TODO Dummy. Implement this later, if at all (we're DOM level 2 only).
         return null;
     }
 

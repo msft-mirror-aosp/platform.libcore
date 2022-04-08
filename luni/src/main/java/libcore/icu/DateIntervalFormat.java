@@ -22,20 +22,27 @@ import android.icu.util.ULocale;
 
 import java.text.FieldPosition;
 import java.util.TimeZone;
+import libcore.util.BasicLruCache;
 
 import static libcore.icu.DateUtilsBridge.FORMAT_UTC;
 
 /**
- * This class is only kept for @UnsupportedAppUsage, and should not used by libcore/frameworks.
+ * Exposes icu4j's DateIntervalFormat.
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class DateIntervalFormat {
+
+  private static final BasicLruCache<String, android.icu.text.DateIntervalFormat> CACHED_FORMATTERS
+          = new BasicLruCache<>(8);
 
   private DateIntervalFormat() {
   }
 
+  // This is public DateUtils API in frameworks/base.
   @UnsupportedAppUsage
+  @libcore.api.CorePlatformApi
   public static String formatDateRange(long startMs, long endMs, int flags, String olsonId) {
     if ((flags & FORMAT_UTC) != 0) {
       olsonId = "UTC";
@@ -48,7 +55,7 @@ public final class DateIntervalFormat {
     return formatDateRange(icuLocale, icuTimeZone, startMs, endMs, flags);
   }
 
-  // This is our slightly more sensible internal API. (A better replacement would take a
+  // This is our slightly more sensible internal API. (A truly sane replacement would take a
   // skeleton instead of int flags.)
   public static String formatDateRange(ULocale icuLocale, android.icu.util.TimeZone icuTimeZone,
       long startMs, long endMs, int flags) {
@@ -81,11 +88,25 @@ public final class DateIntervalFormat {
     }
 
     String skeleton = DateUtilsBridge.toSkeleton(startCalendar, endCalendar, flags);
-    android.icu.text.DateIntervalFormat formatter =
-            android.icu.text.DateIntervalFormat.getInstance(skeleton, icuLocale);
+    synchronized (CACHED_FORMATTERS) {
+      android.icu.text.DateIntervalFormat formatter =
+          getFormatter(skeleton, icuLocale, icuTimeZone);
+      return formatter.format(startCalendar, endCalendar, new StringBuffer(),
+          new FieldPosition(0)).toString();
+    }
+  }
+
+  private static android.icu.text.DateIntervalFormat getFormatter(String skeleton, ULocale locale,
+      android.icu.util.TimeZone icuTimeZone) {
+    String key = skeleton + "\t" + locale + "\t" + icuTimeZone;
+    android.icu.text.DateIntervalFormat formatter = CACHED_FORMATTERS.get(key);
+    if (formatter != null) {
+      return formatter;
+    }
+    formatter = android.icu.text.DateIntervalFormat.getInstance(skeleton, locale);
     formatter.setTimeZone(icuTimeZone);
-    return formatter.format(startCalendar, endCalendar, new StringBuffer(),
-        new FieldPosition(0)).toString();
+    CACHED_FORMATTERS.put(key, formatter);
+    return formatter;
   }
 
   private static boolean isExactlyMidnight(Calendar c) {

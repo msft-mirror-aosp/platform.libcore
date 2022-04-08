@@ -16,7 +16,7 @@
 
 #define LOG_TAG "AsynchronousCloseMonitor"
 
-#include <nativehelper/JNIPlatformHelp.h>
+#include <nativehelper/JNIHelp.h>
 #include <nativehelper/jni_macros.h>
 
 #include "AsynchronousCloseMonitor.h"

@@ -56,7 +56,7 @@ class Locales {
         Locales oldLocales = getDefault();
         Locales newLocales = new Locales(uncategorizedLocale, displayLocale, formatLocale);
         newLocales.setAsDefault();
-        assertEquals(newLocales, getDefault());
+        assertEquals(newLocales, getDefault()); // sanity check
         return oldLocales;
     }
 

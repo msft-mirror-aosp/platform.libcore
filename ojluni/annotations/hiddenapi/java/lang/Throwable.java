@@ -105,7 +105,7 @@ public class Throwable implements java.io.Serializable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private static native java.lang.Object nativeFillInStackTrace();
 
     public java.lang.StackTraceElement[] getStackTrace() {
@@ -166,7 +166,7 @@ public class Throwable implements java.io.Serializable {
     @UnsupportedAppUsage
     private java.lang.StackTraceElement[] stackTrace;
 
-    @UnsupportedAppUsage(maxTargetSdk = 30, trackingBug = 170729553)
+    @UnsupportedAppUsage
     private java.util.List<java.lang.Throwable> suppressedExceptions;
 
     @SuppressWarnings({"unchecked", "deprecation", "all"})

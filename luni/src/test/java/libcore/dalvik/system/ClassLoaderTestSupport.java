@@ -58,17 +58,15 @@ class ClassLoaderTestSupport {
             return;
         }
 
-        // The runtime may create files in the background. Loop until we remove all such files.
-        while (!dir.delete()) {
-            File[] files = dir.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    cleanUpDir(file);
-                } else {
-                    assertTrue(file.delete());
-                }
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                cleanUpDir(file);
+            } else {
+                assertTrue(file.delete());
             }
         }
+        assertTrue(dir.delete());
     }
 
     /**

@@ -53,10 +53,10 @@ public class Cleaner extends java.lang.ref.PhantomReference<java.lang.Object> {
         throw new RuntimeException("Stub!");
     }
 
-    private static final java.lang.ref.ReferenceQueue<java.lang.Object> fakeQueue;
+    private static final java.lang.ref.ReferenceQueue<java.lang.Object> dummyQueue;
 
     static {
-        fakeQueue = null;
+        dummyQueue = null;
     }
 
     private static sun.misc.Cleaner first;
