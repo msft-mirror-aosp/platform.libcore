@@ -48,7 +48,9 @@ import static org.testng.Assert.assertTrue;
  */
 public class Zip64SizeTest {
 
-    private static final int BUFFER_SIZE = 2048;
+    // Android-changed: Speed up the test with a larger buffer
+    // private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 1024 * 1024; // 1MB
     // ZIP file to create
     // Android-changed: Create file in a temp dir.
     // private static final String ZIP_FILE_NAME = "Zip64SizeTest.zip";
@@ -73,7 +75,9 @@ public class Zip64SizeTest {
      * correct size is returned from the ZIP64 Extended information.
      * @throws IOException
      */
-    @Test
+    // Android-changed: Disabled the test as it's long-running for CTS. http://b/227925195
+    // TODO: Enable this test on host or non-CTS device environment.
+    // @Test
     // Android-changed: The test method needs to be public.
     // private static void validateZipEntrySizes() throws IOException {
     public void validateZipEntrySizes() throws IOException {
