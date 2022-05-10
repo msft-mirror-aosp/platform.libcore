@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.io.Os;
+import libcore.junit.util.compat.CoreCompatChangeRule.EnableCompatChanges;
 
 import static android.system.OsConstants.AF_INET;
 import static android.system.OsConstants.IFF_LOOPBACK;
@@ -111,13 +112,6 @@ public class NetworkInterfaceTest extends TestCase {
                     }
                 }
             }
-        }
-    }
-
-    public void testGetHardwareAddress_returnsNull() throws Exception {
-        // Hardware addresses should be unavailable to non-system apps.
-        for (NetworkInterface nif : Collections.list(getNetworkInterfaces())) {
-            assertNull(nif.getHardwareAddress());
         }
     }
 
