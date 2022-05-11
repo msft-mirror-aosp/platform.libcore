@@ -16,15 +16,17 @@
 
 package org.apache.harmony.dalvik.ddmc;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
-import dalvik.annotation.optimization.FastNative;
 
 /**
  * Declarations for some VM-internal DDM stuff.
  *
  * @hide
  */
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@SystemApi(client = MODULE_LIBRARIES)
 public final class DdmVmInternal {
 
     /* do not instantiate */
@@ -36,8 +38,10 @@ public final class DdmVmInternal {
      * This is built into the VM, since that's where threads get managed.
      *
      * @param enabled {@code true} to enable thread notification; {@code false} to disable
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     native public static void setThreadNotifyEnabled(boolean enabled);
 
     /**
@@ -64,7 +68,9 @@ public final class DdmVmInternal {
      * Enable or disable "recent allocation" tracking.
      *
      * @param enabled {@code true} to enable recent allocation tracking; {@code false} to disable
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     native public static void setRecentAllocationsTrackingEnabled(boolean enabled);
 }

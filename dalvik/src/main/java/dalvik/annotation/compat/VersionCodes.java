@@ -67,8 +67,20 @@ public class VersionCodes {
     public static final int R = 30;
 
     /**
-     * The version code for Android S (API version TBD).
+     * The version code for Android S (API version 31).
      */
     @IntraCoreApi
-    public static final int S = CUR_DEVELOPMENT;
+    public static final int S = 31;
+
+    /**
+     * The version code for Android Sv2 (API version 32).
+     */
+    @IntraCoreApi
+    public static final int S_V2 = 32;
+
+    /**
+     * The version code for Android T (API version 33).
+     */
+    @IntraCoreApi
+    public static final int TIRAMISU = 33;
 }

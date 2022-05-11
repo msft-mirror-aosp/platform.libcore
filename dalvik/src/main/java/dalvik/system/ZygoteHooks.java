@@ -16,6 +16,11 @@
 
 package dalvik.system;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
+
+import libcore.icu.DecimalFormatData;
 import libcore.icu.ICU;
 
 import java.io.File;
@@ -24,6 +29,10 @@ import java.lang.reflect.Method;
 import java.lang.ClassNotFoundException;
 import java.lang.NoSuchMethodException;
 import java.lang.ReflectiveOperationException;
+import libcore.icu.SimpleDateFormatData;
+
+import sun.util.locale.BaseLocale;
+import java.util.Locale;
 
 /**
  * Provides hooks for the zygote to call back into the runtime to perform
@@ -31,10 +40,11 @@ import java.lang.ReflectiveOperationException;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@SystemApi(client = MODULE_LIBRARIES)
 public final class ZygoteHooks {
     private static long token;
     private static Method enableMemoryMappedDataMethod;
+    private static boolean inZygoteProcess = true;
 
     /** All methods are static, no need to instantiate. */
     private ZygoteHooks() {
@@ -43,18 +53,24 @@ public final class ZygoteHooks {
     /**
      * Called by the zygote when starting up. It marks the point when any thread
      * start should be an error, as only internal daemon threads are allowed there.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static native void startZygoteNoThreadCreation();
 
     /**
      * Called when the zygote begins preloading classes and data.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void onBeginPreload() {
         com.android.i18n.system.ZygoteHooks.onBeginPreload();
 
         ICU.initializeCacheInZygote();
+        DecimalFormatData.initializeCacheInZygote();
+        SimpleDateFormatData.initializeCacheInZygote();
 
         // Look up JaCoCo on the boot classpath, if it exists. This will be used later for enabling
         // memory-mapped Java coverage.
@@ -72,8 +88,10 @@ public final class ZygoteHooks {
 
     /**
      * Called when the zygote has completed preloading classes and data.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void onEndPreload() {
         com.android.i18n.system.ZygoteHooks.onEndPreload();
 
@@ -84,11 +102,23 @@ public final class ZygoteHooks {
     }
 
     /**
+     * Called after GC but before fork, it cleans stale cache entries in
+     * BaseLocale and Locale, so to avoid the cleaning to happen in every
+     * child process.
+     */
+    private static void cleanLocaleCaches() {
+        BaseLocale.cleanCache();
+        Locale.cleanCache();
+    }
+
+    /**
      * Runs several special GCs to try to clean up a few generations of
      * softly- and final-reachable objects, along with any other garbage.
      * This is only useful just before a fork().
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void gcAndFinalize() {
         final VMRuntime runtime = VMRuntime.getRuntime();
 
@@ -97,14 +127,17 @@ public final class ZygoteHooks {
          */
         System.gc();
         runtime.runFinalizationSync();
+        cleanLocaleCaches();
         System.gc();
     }
 
     /**
      * Called by the zygote when startup is finished. It marks the point when it is
      * conceivable that threads would be started again, e.g., restarting daemons.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static native void stopZygoteNoThreadCreation();
 
     /**
@@ -113,8 +146,10 @@ public final class ZygoteHooks {
      * the child process and {@link #postForkCommon()} on both the parent and the child
      * process. {@code postForkCommon} is called after {@code postForkChild} in
      * the child process.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void preFork() {
         Daemons.stop();
         token = nativePreFork();
@@ -126,8 +161,10 @@ public final class ZygoteHooks {
      * before {@code postForkChild} for system server.
      *
      * @param runtimeFlags The flags listed in com.android.internal.os.Zygote passed to the runtime.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void postForkSystemServer(int runtimeFlags) {
         nativePostForkSystemServer(runtimeFlags);
     }
@@ -140,11 +177,16 @@ public final class ZygoteHooks {
      * @param isChildZygote Whether the child process is a child zygote.
      * @param instructionSet The instruction set of the child, used to determine
      *                       whether to use a native bridge.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void postForkChild(int runtimeFlags, boolean isSystemServer,
             boolean isChildZygote, String instructionSet) {
         nativePostForkChild(token, runtimeFlags, isSystemServer, isChildZygote, instructionSet);
+        if (!isChildZygote) {
+          inZygoteProcess = false;
+        }
 
         Math.setRandomSeedInternal(System.currentTimeMillis());
 
@@ -163,8 +205,10 @@ public final class ZygoteHooks {
      * Called by the zygote in both the parent and child processes after
      * every fork. In the child process, this method is called after
      * {@code postForkChild}.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void postForkCommon() {
         // Notify the runtime before creating new threads.
         nativePostZygoteFork();
@@ -174,19 +218,24 @@ public final class ZygoteHooks {
     /**
      * Is it safe to keep all ART daemon threads stopped indefinitely in the zygote?
      * The answer may change from false to true dynamically, but not in the other
-     * direction.
+     * direction. Only called in Zygote.
      *
      * @return {@code true} if it's safe to keep all ART daemon threads stopped
      *         indefinitely in the zygote; and {@code false} otherwise
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static boolean isIndefiniteThreadSuspensionSafe() {
-        // TODO: Make this return true if we're done with JIT compilation.
-        //
-        // We only care about JIT compilation that affects other processes.
-        // The zygote itself doesn't run appreciable amounts of Java code when
-        // running single-threaded.
-        return !nativeZygoteJitEnabled();
+        return nativeZygoteLongSuspendOk();
+    }
+
+    /**
+     * Are we still in a zygote?
+     * @hide
+     */
+    public static boolean inZygote() {
+      return inZygoteProcess;
     }
 
     // Hook for SystemServer specific early initialization post-forking.
@@ -200,7 +249,7 @@ public final class ZygoteHooks {
                                                    boolean isSystemServer, boolean isZygote,
                                                    String instructionSet);
 
-    private static native boolean nativeZygoteJitEnabled();
+    private static native boolean nativeZygoteLongSuspendOk();
 
     /**
      * We must not fork until we're single-threaded again. Wait until /proc shows we're

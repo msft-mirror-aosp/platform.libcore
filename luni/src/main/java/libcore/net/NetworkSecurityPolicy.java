@@ -16,6 +16,9 @@
 
 package libcore.net;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
 
 /**
@@ -31,7 +34,7 @@ import android.compat.annotation.UnsupportedAppUsage;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@SystemApi(client = MODULE_LIBRARIES)
 @libcore.api.IntraCoreApi
 public abstract class NetworkSecurityPolicy {
 
@@ -41,8 +44,10 @@ public abstract class NetworkSecurityPolicy {
      * Constructs a default {@code NetworkSecurityPolicy}.
      *
      * @see {@link #DefaultNetworkSecurityPolicy}.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.IntraCoreApi
     public NetworkSecurityPolicy() {
     }
@@ -51,8 +56,10 @@ public abstract class NetworkSecurityPolicy {
      * Gets current singleton {@code NetworkSecurityPolicy} instance.
      *
      * @return the current {@code NetworkSecurityPolicy}.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.IntraCoreApi
     public static NetworkSecurityPolicy getInstance() {
         return instance;
@@ -62,8 +69,10 @@ public abstract class NetworkSecurityPolicy {
      * Sets current singleton instance
      *
      * @param policy new {@code NetworlSecurityPolicy} instance.
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public static void setInstance(NetworkSecurityPolicy policy) {
         if (policy == null) {
             throw new NullPointerException("policy == null");
@@ -91,9 +100,11 @@ public abstract class NetworkSecurityPolicy {
      * honor it.
      *
      * @return {@code true} if cleartext traffic is permitted and {@code false} otherwise.
+     *
+     * @hide
      */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public abstract boolean isCleartextTrafficPermitted();
 
     /**
@@ -105,8 +116,10 @@ public abstract class NetworkSecurityPolicy {
      *
      * @param hostname hostname to check if cleartext traffic is permitted for
      * @return {@code true} if cleartext traffic is permitted and {@code false} otherwise
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     public abstract boolean isCleartextTrafficPermitted(String hostname);
 
     /**
@@ -119,14 +132,18 @@ public abstract class NetworkSecurityPolicy {
      *                 is required
      * @return {@code true} if certificate transparency verification is required and
      *         {@code false} otherwise
+     *
+     * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.IntraCoreApi
     public abstract boolean isCertificateTransparencyVerificationRequired(String hostname);
 
     /**
      * Default network security policy that allows cleartext traffic and does not require
      * certificate transparency verification.
+     *
+     * @hide
      */
     public static final class DefaultNetworkSecurityPolicy extends NetworkSecurityPolicy {
         @Override

@@ -16,6 +16,9 @@
 
 package libcore.net.event;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
 import android.compat.annotation.UnsupportedAppUsage;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+@SystemApi(client = MODULE_LIBRARIES)
 public final class NetworkEventDispatcher {
 
   private static final NetworkEventDispatcher instance = new NetworkEventDispatcher();
@@ -37,9 +40,11 @@ public final class NetworkEventDispatcher {
    * Returns the shared {@link NetworkEventDispatcher} instance.
    *
    * @return singleton instance of {@link NetworkEventDispatcher}
+   *
+   * @hide
    */
   @UnsupportedAppUsage
-  @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+  @SystemApi(client = MODULE_LIBRARIES)
   public static NetworkEventDispatcher getInstance() {
     return instance;
   }
@@ -51,6 +56,8 @@ public final class NetworkEventDispatcher {
   /**
    * Registers a listener to be notified when network events occur.
    * It can be deregistered using {@link #removeListener(NetworkEventListener)}
+   *
+   * @hide
    */
   @UnsupportedAppUsage
   public void addListener(NetworkEventListener toAdd) {
@@ -63,6 +70,8 @@ public final class NetworkEventDispatcher {
   /**
    * De-registers a listener previously added with {@link #addListener(NetworkEventListener)}. If
    * the listener was not previously registered this is a no-op.
+   *
+   * @hide
    */
   public void removeListener(NetworkEventListener toRemove) {
     for (NetworkEventListener listener : listeners) {
@@ -75,8 +84,10 @@ public final class NetworkEventDispatcher {
 
   /**
    * Notifies registered listeners of a network configuration change.
+   *
+   * @hide
    */
-  @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
+  @SystemApi(client = MODULE_LIBRARIES)
   public void dispatchNetworkConfigurationChange() {
     for (NetworkEventListener listener : listeners) {
       try {
