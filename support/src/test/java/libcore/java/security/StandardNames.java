@@ -67,6 +67,7 @@ public final class StandardNames {
     public static final boolean IS_RI
             = !"Dalvik Core Library".equals(System.getProperty("java.specification.name"));
 
+    public static final String JSSE_PROVIDER_NAME = (IS_RI) ? "SunJSSE" : "AndroidOpenSSL";
     public static final String SECURITY_PROVIDER_NAME = (IS_RI) ? "SUN" : "BC";
 
     public static final String KEY_STORE_ALGORITHM = (IS_RI) ? "JKS" : "BKS";
@@ -415,12 +416,12 @@ public final class StandardNames {
             provide("SecretKeyFactory", "HmacSHA256");
             provide("SecretKeyFactory", "HmacSHA384");
             provide("SecretKeyFactory", "HmacSHA512");
-            provide("SecretKeyFactory", "SCRYPT");
             provide("Signature", "SHA1withRSA/PSS");
             provide("Signature", "SHA224withRSA/PSS");
             provide("Signature", "SHA256withRSA/PSS");
             provide("Signature", "SHA384withRSA/PSS");
             provide("Signature", "SHA512withRSA/PSS");
+            provide("Signature", "ED25519");
 
             // different names: ARCFOUR vs ARC4
             unprovide("Cipher", "ARCFOUR");
