@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -82,9 +82,6 @@ import java.time.format.ResolverStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
-
-import sun.util.locale.provider.CalendarDataUtility;
 
 /**
  * Fields and units specific to the ISO-8601 calendar system,
@@ -104,7 +101,7 @@ import sun.util.locale.provider.CalendarDataUtility;
  * The complete date is expressed using three fields:
  * <ul>
  * <li>{@link #DAY_OF_QUARTER DAY_OF_QUARTER} - the day within the quarter, from 1 to 90, 91 or 92
- * <li>{@link #QUARTER_OF_YEAR QUARTER_OF_YEAR} - the quarter within the year, from 1 to 4
+ * <li>{@link #QUARTER_OF_YEAR QUARTER_OF_YEAR} - the week within the week-based-year
  * <li>{@link ChronoField#YEAR YEAR} - the standard ISO year
  * </ul>
  *
@@ -138,19 +135,15 @@ import sun.util.locale.provider.CalendarDataUtility;
  * <p>
  * For example:
  *
- * <table class=striped style="text-align: left">
+ * <table cellpadding="0" cellspacing="3" border="0" style="text-align: left; width: 50%;">
  * <caption>Examples of Week based Years</caption>
- * <thead>
- * <tr><th scope="col">Date</th><th scope="col">Day-of-week</th><th scope="col">Field values</th></tr>
- * </thead>
- * <tbody>
- * <tr><th scope="row">2008-12-28</th><td>Sunday</td><td>Week 52 of week-based-year 2008</td></tr>
- * <tr><th scope="row">2008-12-29</th><td>Monday</td><td>Week 1 of week-based-year 2009</td></tr>
- * <tr><th scope="row">2008-12-31</th><td>Wednesday</td><td>Week 1 of week-based-year 2009</td></tr>
- * <tr><th scope="row">2009-01-01</th><td>Thursday</td><td>Week 1 of week-based-year 2009</td></tr>
- * <tr><th scope="row">2009-01-04</th><td>Sunday</td><td>Week 1 of week-based-year 2009</td></tr>
- * <tr><th scope="row">2009-01-05</th><td>Monday</td><td>Week 2 of week-based-year 2009</td></tr>
- * </tbody>
+ * <tr><th>Date</th><th>Day-of-week</th><th>Field values</th></tr>
+ * <tr><th>2008-12-28</th><td>Sunday</td><td>Week 52 of week-based-year 2008</td></tr>
+ * <tr><th>2008-12-29</th><td>Monday</td><td>Week 1 of week-based-year 2009</td></tr>
+ * <tr><th>2008-12-31</th><td>Wednesday</td><td>Week 1 of week-based-year 2009</td></tr>
+ * <tr><th>2009-01-01</th><td>Thursday</td><td>Week 1 of week-based-year 2009</td></tr>
+ * <tr><th>2009-01-04</th><td>Sunday</td><td>Week 1 of week-based-year 2009</td></tr>
+ * <tr><th>2009-01-05</th><td>Monday</td><td>Week 2 of week-based-year 2009</td></tr>
  * </table>
  *
  * @implSpec
@@ -408,12 +401,6 @@ public final class IsoFields {
                 long moy = temporal.getLong(MONTH_OF_YEAR);
                 return ((moy + 2) / 3);
             }
-            public ValueRange rangeRefinedBy(TemporalAccessor temporal) {
-                if (isSupportedBy(temporal) == false) {
-                    throw new UnsupportedTemporalTypeException("Unsupported field: QuarterOfYear");
-                }
-                return super.rangeRefinedBy(temporal);
-            }
             @SuppressWarnings("unchecked")
             @Override
             public <R extends Temporal> R adjustInto(R temporal, long newValue) {
@@ -431,21 +418,12 @@ public final class IsoFields {
             @Override
             public String getDisplayName(Locale locale) {
                 Objects.requireNonNull(locale, "locale");
-                // BEGIN Android-changed: Use ICU name values.
-                /*
-                LocaleResources lr = LocaleProviderAdapter.getResourceBundleBased()
-                                            .getLocaleResources(
-                                                CalendarDataUtility
-                                                    .findRegionOverride(locale));
-                ResourceBundle rb = lr.getJavaTimeFormatData();
-                return rb.containsKey("field.week") ? rb.getString("field.week") : toString();
-                 */
+                // Android-changed: Use ICU name values.
                 DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
                         .getInstance(ULocale.forLocale(locale));
                 String icuName = dateTimePatternGenerator
                         .getAppendItemName(DateTimePatternGenerator.WEEK_OF_YEAR);
                 return icuName != null && !icuName.isEmpty() ? icuName : toString();
-                // END Android-changed: Use ICU name values.
             }
 
             @Override
@@ -552,12 +530,6 @@ public final class IsoFields {
                 }
                 return getWeekBasedYear(LocalDate.from(temporal));
             }
-            public ValueRange rangeRefinedBy(TemporalAccessor temporal) {
-                if (isSupportedBy(temporal) == false) {
-                    throw new UnsupportedTemporalTypeException("Unsupported field: WeekBasedYear");
-                }
-                return super.rangeRefinedBy(temporal);
-            }
             @SuppressWarnings("unchecked")
             @Override
             public <R extends Temporal> R adjustInto(R temporal, long newValue) {
@@ -600,6 +572,9 @@ public final class IsoFields {
         //-------------------------------------------------------------------------
         private static final int[] QUARTER_DAYS = {0, 90, 181, 273, 0, 91, 182, 274};
 
+        private static boolean isIso(TemporalAccessor temporal) {
+            return Chronology.from(temporal).equals(IsoChronology.INSTANCE);
+        }
 
         private static void ensureIso(TemporalAccessor temporal) {
             if (isIso(temporal) == false) {
@@ -707,7 +682,7 @@ public final class IsoFields {
 
         @Override
         public boolean isSupportedBy(Temporal temporal) {
-            return temporal.isSupported(EPOCH_DAY) && isIso(temporal);
+            return temporal.isSupported(EPOCH_DAY);
         }
 
         @SuppressWarnings("unchecked")
@@ -718,8 +693,9 @@ public final class IsoFields {
                     return (R) temporal.with(WEEK_BASED_YEAR,
                             Math.addExact(temporal.get(WEEK_BASED_YEAR), amount));
                 case QUARTER_YEARS:
-                    return (R) temporal.plus(amount / 4, YEARS)
-                            .plus((amount % 4) * 3, MONTHS);
+                    // no overflow (256 is multiple of 4)
+                    return (R) temporal.plus(amount / 256, YEARS)
+                            .plus((amount % 256) * 3, MONTHS);
                 default:
                     throw new IllegalStateException("Unreachable");
             }
@@ -745,9 +721,5 @@ public final class IsoFields {
         public String toString() {
             return name;
         }
-    }
-
-    static boolean isIso(TemporalAccessor temporal) {
-        return Chronology.from(temporal).equals(IsoChronology.INSTANCE);
     }
 }

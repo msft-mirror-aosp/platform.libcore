@@ -37,7 +37,7 @@ package java.io;
  * example when an attempt is made to open a read-only file for writing.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 
 public class FileNotFoundException extends IOException {

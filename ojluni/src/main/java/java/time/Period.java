@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -83,6 +83,8 @@ import java.time.temporal.TemporalAmount;
 import java.time.temporal.TemporalQueries;
 import java.time.temporal.TemporalUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -144,7 +146,8 @@ public final class Period
     /**
      * The set of supported units.
      */
-    private static final List<TemporalUnit> SUPPORTED_UNITS = List.of(YEARS, MONTHS, DAYS);
+    private static final List<TemporalUnit> SUPPORTED_UNITS =
+            Collections.unmodifiableList(Arrays.<TemporalUnit>asList(YEARS, MONTHS, DAYS));
 
     /**
      * The number of years.
@@ -320,17 +323,17 @@ public final class Period
         Objects.requireNonNull(text, "text");
         Matcher matcher = PATTERN.matcher(text);
         if (matcher.matches()) {
-            int negate = (charMatch(text, matcher.start(1), matcher.end(1), '-') ? -1 : 1);
-            int yearStart = matcher.start(2), yearEnd = matcher.end(2);
-            int monthStart = matcher.start(3), monthEnd = matcher.end(3);
-            int weekStart = matcher.start(4), weekEnd = matcher.end(4);
-            int dayStart = matcher.start(5), dayEnd = matcher.end(5);
-            if (yearStart >= 0 || monthStart >= 0 || weekStart >= 0 || dayStart >= 0) {
+            int negate = ("-".equals(matcher.group(1)) ? -1 : 1);
+            String yearMatch = matcher.group(2);
+            String monthMatch = matcher.group(3);
+            String weekMatch = matcher.group(4);
+            String dayMatch = matcher.group(5);
+            if (yearMatch != null || monthMatch != null || dayMatch != null || weekMatch != null) {
                 try {
-                    int years = parseNumber(text, yearStart, yearEnd, negate);
-                    int months = parseNumber(text, monthStart, monthEnd, negate);
-                    int weeks = parseNumber(text, weekStart, weekEnd, negate);
-                    int days = parseNumber(text, dayStart, dayEnd, negate);
+                    int years = parseNumber(text, yearMatch, negate);
+                    int months = parseNumber(text, monthMatch, negate);
+                    int weeks = parseNumber(text, weekMatch, negate);
+                    int days = parseNumber(text, dayMatch, negate);
                     days = Math.addExact(days, Math.multiplyExact(weeks, 7));
                     return create(years, months, days);
                 } catch (NumberFormatException ex) {
@@ -341,15 +344,11 @@ public final class Period
         throw new DateTimeParseException("Text cannot be parsed to a Period", text, 0);
     }
 
-    private static boolean charMatch(CharSequence text, int start, int end, char c) {
-        return (start >= 0 && end == start + 1 && text.charAt(start) == c);
-    }
-
-    private static int parseNumber(CharSequence text, int start, int end, int negate) {
-        if (start < 0 || end < 0) {
+    private static int parseNumber(CharSequence text, String str, int negate) {
+        if (str == null) {
             return 0;
         }
-        int val = Integer.parseInt(text, start, end, 10);
+        int val = Integer.parseInt(str);
         try {
             return Math.multiplyExact(val, negate);
         } catch (ArithmeticException ex) {
@@ -812,7 +811,7 @@ public final class Period
      * Returns a copy of this period with the years and months normalized.
      * <p>
      * This normalizes the years and months units, leaving the days unit unchanged.
-     * The months unit is adjusted to have an absolute value less than 12,
+     * The months unit is adjusted to have an absolute value less than 11,
      * with the years unit being adjusted to compensate. For example, a period of
      * "1 Year and 15 months" will be normalized to "2 years and 3 months".
      * <p>

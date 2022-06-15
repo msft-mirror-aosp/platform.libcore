@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -34,8 +34,9 @@ package java.security.spec;
  *
  * @since 1.5
  */
-// Android-added: implements AlgorithmParameterSpec in order to maintain backwards compatibility.
-public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {
+public class ECGenParameterSpec implements AlgorithmParameterSpec {
+
+    private String name;
 
     /**
      * Creates a parameter specification for EC parameter
@@ -43,27 +44,25 @@ public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmP
      * {@code stdName} in order to generate the corresponding
      * (precomputed) elliptic curve domain parameters. For the
      * list of supported names, please consult the documentation
-     * of the provider whose implementation will be used.
-     *
+     * of provider whose implementation will be used.
      * @param stdName the standard name of the to-be-generated EC
-     *                domain parameters.
-     * @throws NullPointerException if {@code stdName}
-     *                              is null.
+     * domain parameters.
+     * @exception NullPointerException if {@code stdName}
+     * is null.
      */
     public ECGenParameterSpec(String stdName) {
-        super(stdName);
+        if (stdName == null) {
+            throw new NullPointerException("stdName is null");
+        }
+        this.name = stdName;
     }
-
 
     /**
      * Returns the standard or predefined name of the
      * to-be-generated EC domain parameters.
      * @return the standard or predefined name.
      */
-    // Android-added: function overridden in order to maintain backwards compatibility.
-    @Override
     public String getName() {
-      return super.getName();
+        return name;
     }
 }
-

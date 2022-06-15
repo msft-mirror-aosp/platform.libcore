@@ -77,6 +77,8 @@ import java.time.temporal.TemporalQueries;
 import java.time.temporal.TemporalUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.time.temporal.ValueRange;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,7 +105,8 @@ final class ChronoPeriodImpl
     /**
      * The set of supported units.
      */
-    private static final List<TemporalUnit> SUPPORTED_UNITS = List.of(YEARS, MONTHS, DAYS);
+    private static final List<TemporalUnit> SUPPORTED_UNITS =
+            Collections.unmodifiableList(Arrays.<TemporalUnit>asList(YEARS, MONTHS, DAYS));
 
     /**
      * The chronology.

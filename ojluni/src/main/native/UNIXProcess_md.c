@@ -58,10 +58,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
-// Android-added: Use raw syscalls instead of libc functions in the child.
-#ifdef __linux__
-#include <sys/syscall.h>
-#endif
 
 #ifdef __APPLE__
 #include <crt_externs.h>
@@ -404,29 +400,16 @@ restartableClose(int fd)
     return err;
 }
 
-// Android-added: in the child process, we want to avoid using the libc
-// close() function because it is sometimes intercepted by other libraries and
-// could cause a deadlock.
-static int closeInChild(int fd)
-{
-#ifdef __linux__
-    return syscall(__NR_close, fd);
-#else
-    return close(fd);
-#endif
-}
-
 static int
 closeSafely(int fd)
 {
     return (fd == -1) ? 0 : restartableClose(fd);
 }
 
-// Android-added: See closeInChild.
 static int
-closeSafelyInChild(int fd)
+isAsciiDigit(char c)
 {
-    return (fd == -1) ? 0 : closeInChild(fd);
+  return c >= '0' && c <= '9';
 }
 
 // Android-changed: Fuchsia: Alias *64 on Fuchsia builds. http://b/119496969
@@ -438,56 +421,6 @@ closeSafelyInChild(int fd)
 #else
 #define FD_DIR "/proc/self/fd"
 #endif
-
-// Android-changed: opendir is not async-signal-safe and should not be called
-// after forking. This can cause a deadlock if both of these conditions are met:
-// - The program is running under a binary translation tool such as Valgrind
-//   which emulates the vfork syscall using fork.
-// - The malloc mutex was locked at the time of the fork, which remains
-//   permanently locked in the child process.
-//
-// As a workaround, we access the directory directly with the getdents syscall
-// using a stack-allocated buffer.
-#ifdef __linux__
-static int
-closeDescriptors(void)
-{
-    int dir_fd;
-    char buffer[4096];
-    long available_bytes;
-    int from_fd = FAIL_FILENO + 1;
-
-    // Close one file descriptor to guarantee that we have enough free FDs to
-    // open FD_DIR.
-    closeInChild(from_fd);
-
-    if ((dir_fd = syscall(__NR_openat, AT_FDCWD, FD_DIR, O_CLOEXEC | O_DIRECTORY | O_RDONLY)) == -1)
-        return 0;
-
-    // See closeInChild for why we are using a raw syscall here.
-    while ((available_bytes = syscall(__NR_getdents64, dir_fd, buffer, sizeof(buffer))) > 0) {
-        char *p = buffer;
-        while (available_bytes > 0) {
-            struct dirent64 *dirp = (struct dirent64 *)p;
-            p += dirp->d_reclen;
-            available_bytes -= dirp->d_reclen;
-
-            int fd = atoi(dirp->d_name);
-            if (fd >= from_fd && fd != dir_fd)
-                closeInChild(fd);
-        }
-    }
-
-    closeInChild(dir_fd);
-
-    return 1;
-}
-#else
-static int
-isAsciiDigit(char c)
-{
-  return c >= '0' && c <= '9';
-}
 
 static int
 closeDescriptors(void)
@@ -503,8 +436,8 @@ closeDescriptors(void)
      * the lowest numbered file descriptor, just like open().  So we
      * close a couple explicitly.  */
 
-    closeInChild(from_fd);          /* for possible use by opendir() */
-    closeInChild(from_fd + 1);      /* another one for good luck */
+    restartableClose(from_fd);          /* for possible use by opendir() */
+    restartableClose(from_fd + 1);      /* another one for good luck */
 
     if ((dp = opendir(FD_DIR)) == NULL)
         return 0;
@@ -516,21 +449,20 @@ closeDescriptors(void)
         int fd;
         if (isAsciiDigit(dirp->d_name[0]) &&
             (fd = strtol(dirp->d_name, NULL, 10)) >= from_fd + 2)
-            closeInChild(fd);
+            restartableClose(fd);
     }
 
     closedir(dp);
 
     return 1;
 }
-#endif
 
 static int
 moveDescriptor(int fd_from, int fd_to)
 {
     if (fd_from != fd_to) {
         if ((restartableDup2(fd_from, fd_to) == -1) ||
-            (closeInChild(fd_from) == -1))
+            (restartableClose(fd_from) == -1))
             return -1;
     }
     return 0;
@@ -804,10 +736,10 @@ childProcess(void *arg)
     /* Close the parent sides of the pipes.
        Closing pipe fds here is redundant, since closeDescriptors()
        would do it anyways, but a little paranoia is a good thing. */
-    if ((closeSafelyInChild(p->in[1])   == -1) ||
-        (closeSafelyInChild(p->out[0])  == -1) ||
-        (closeSafelyInChild(p->err[0])  == -1) ||
-        (closeSafelyInChild(p->fail[0]) == -1))
+    if ((closeSafely(p->in[1])   == -1) ||
+        (closeSafely(p->out[0])  == -1) ||
+        (closeSafely(p->err[0])  == -1) ||
+        (closeSafely(p->fail[0]) == -1))
         goto WhyCantJohnnyExec;
 
     /* Give the child sides of the pipes the right fileno's. */
@@ -819,7 +751,7 @@ childProcess(void *arg)
         goto WhyCantJohnnyExec;
 
     if (p->redirectErrorStream) {
-        if ((closeSafelyInChild(p->err[1]) == -1) ||
+        if ((closeSafely(p->err[1]) == -1) ||
             (restartableDup2(STDOUT_FILENO, STDERR_FILENO) == -1))
             goto WhyCantJohnnyExec;
     } else {
@@ -836,7 +768,7 @@ childProcess(void *arg)
         int max_fd = (int)sysconf(_SC_OPEN_MAX);
         int fd;
         for (fd = FAIL_FILENO + 1; fd < max_fd; fd++)
-            if (closeInChild(fd) == -1 && errno != EBADF)
+            if (restartableClose(fd) == -1 && errno != EBADF)
                 goto WhyCantJohnnyExec;
     }
 
@@ -864,7 +796,7 @@ childProcess(void *arg)
         int errnum = errno;
         restartableWrite(FAIL_FILENO, &errnum, sizeof(errnum));
     }
-    closeInChild(FAIL_FILENO);
+    restartableClose(FAIL_FILENO);
     _exit(-1);
     return 0;  /* Suppress warning "no return value from function" */
 }

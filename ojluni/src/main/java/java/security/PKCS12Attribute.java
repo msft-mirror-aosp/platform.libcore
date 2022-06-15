@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ public final class PKCS12Attribute implements KeyStore.Entry.Attribute {
         Pattern.compile("^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2})+$");
     private String name;
     private String value;
-    private final byte[] encoded;
+    private byte[] encoded;
     private int hashValue = -1;
 
     /**
@@ -85,8 +85,7 @@ public final class PKCS12Attribute implements KeyStore.Entry.Attribute {
         // Validate value
         int length = value.length();
         String[] values;
-        if (length > 1 &&
-                value.charAt(0) == '[' && value.charAt(length - 1) == ']') {
+        if (value.charAt(0) == '[' && value.charAt(length - 1) == ']') {
             values = value.substring(1, length - 1).split(", ");
         } else {
             values = new String[]{ value };
@@ -199,7 +198,7 @@ public final class PKCS12Attribute implements KeyStore.Entry.Attribute {
         if (!(obj instanceof PKCS12Attribute)) {
             return false;
         }
-        return Arrays.equals(encoded, ((PKCS12Attribute) obj).encoded);
+        return Arrays.equals(encoded, ((PKCS12Attribute) obj).getEncoded());
     }
 
     /**
@@ -210,11 +209,10 @@ public final class PKCS12Attribute implements KeyStore.Entry.Attribute {
      */
     @Override
     public int hashCode() {
-        int h = hashValue;
-        if (h == -1) {
-            hashValue = h = Arrays.hashCode(encoded);
+        if (hashValue == -1) {
+            Arrays.hashCode(encoded);
         }
-        return h;
+        return hashValue;
     }
 
     /**
@@ -254,9 +252,6 @@ public final class PKCS12Attribute implements KeyStore.Entry.Attribute {
     private void parse(byte[] encoded) throws IOException {
         DerInputStream attributeValue = new DerInputStream(encoded);
         DerValue[] attrSeq = attributeValue.getSequence(2);
-        if (attrSeq.length != 2) {
-            throw new IOException("Invalid length for PKCS12Attribute");
-        }
         ObjectIdentifier type = attrSeq[0].getOID();
         DerInputStream attrContent =
             new DerInputStream(attrSeq[1].toByteArray());

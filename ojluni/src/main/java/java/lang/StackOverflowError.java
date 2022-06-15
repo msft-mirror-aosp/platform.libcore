@@ -30,7 +30,7 @@ package java.lang;
  * recurses too deeply.
  *
  * @author unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class StackOverflowError extends VirtualMachineError {

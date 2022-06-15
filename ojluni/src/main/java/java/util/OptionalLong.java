@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,27 +27,18 @@ package java.util;
 import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import java.util.stream.LongStream;
 
 // Android-changed: removed ValueBased paragraph.
 /**
  * A container object which may or may not contain a {@code long} value.
- * If a value is present, {@code isPresent()} returns {@code true}. If no
- * value is present, the object is considered <i>empty</i> and
- * {@code isPresent()} returns {@code false}.
+ * If a value is present, {@code isPresent()} will return {@code true} and
+ * {@code getAsLong()} will return the value.
  *
  * <p>Additional methods that depend on the presence or absence of a contained
  * value are provided, such as {@link #orElse(long) orElse()}
- * (returns a default value if no value is present) and
- * {@link #ifPresent(LongConsumer) ifPresent()} (performs an
- * action if a value is present).
- *
- *
- * @apiNote
- * {@code OptionalLong} is primarily intended for use as a method return type where
- * there is a clear need to represent "no result." A variable whose type is
- * {@code OptionalLong} should never itself be {@code null}; it should always point
- * to an {@code OptionalLong} instance.
+ * (return a default value if value not present) and
+ * {@link #ifPresent(java.util.function.LongConsumer) ifPresent()} (execute a block
+ * of code if the value is present).
  *
  * @since 1.8
  */
@@ -75,25 +66,24 @@ public final class OptionalLong {
     }
 
     /**
-     * Returns an empty {@code OptionalLong} instance.  No value is present for
-     * this {@code OptionalLong}.
+     * Returns an empty {@code OptionalLong} instance.  No value is present for this
+     * OptionalLong.
      *
-     * @apiNote
-     * Though it may be tempting to do so, avoid testing if an object is empty
-     * by comparing with {@code ==} against instances returned by
-     * {@code OptionalLong.empty()}.  There is no guarantee that it is a singleton.
+     * @apiNote Though it may be tempting to do so, avoid testing if an object
+     * is empty by comparing with {@code ==} against instances returned by
+     * {@code Option.empty()}. There is no guarantee that it is a singleton.
      * Instead, use {@link #isPresent()}.
      *
-     * @return an empty {@code OptionalLong}.
+     *  @return an empty {@code OptionalLong}.
      */
     public static OptionalLong empty() {
         return EMPTY;
     }
 
     /**
-     * Construct an instance with the described value.
+     * Construct an instance with the value present.
      *
-     * @param value the long value to describe
+     * @param value the long value to be present
      */
     private OptionalLong(long value) {
         this.isPresent = true;
@@ -101,9 +91,9 @@ public final class OptionalLong {
     }
 
     /**
-     * Returns an {@code OptionalLong} describing the given value.
+     * Return an {@code OptionalLong} with the specified value present.
      *
-     * @param value the value to describe
+     * @param value the value to be present
      * @return an {@code OptionalLong} with the value present
      */
     public static OptionalLong of(long value) {
@@ -111,14 +101,13 @@ public final class OptionalLong {
     }
 
     /**
-     * If a value is present, returns the value, otherwise throws
-     * {@code NoSuchElementException}.
+     * If a value is present in this {@code OptionalLong}, returns the value,
+     * otherwise throws {@code NoSuchElementException}.
      *
-     * @apiNote
-     * The preferred alternative to this method is {@link #orElseThrow()}.
+     * @return the value held by this {@code OptionalLong}
+     * @throws NoSuchElementException if there is no value present
      *
-     * @return the value described by this {@code OptionalLong}
-     * @throws NoSuchElementException if no value is present
+     * @see OptionalLong#isPresent()
      */
     public long getAsLong() {
         if (!isPresent) {
@@ -128,87 +117,31 @@ public final class OptionalLong {
     }
 
     /**
-     * If a value is present, returns {@code true}, otherwise {@code false}.
+     * Return {@code true} if there is a value present, otherwise {@code false}.
      *
-     * @return {@code true} if a value is present, otherwise {@code false}
+     * @return {@code true} if there is a value present, otherwise {@code false}
      */
     public boolean isPresent() {
         return isPresent;
     }
 
     /**
-     * If a value is not present, returns {@code true}, otherwise
-     * {@code false}.
+     * Have the specified consumer accept the value if a value is present,
+     * otherwise do nothing.
      *
-     * @return  {@code true} if a value is not present, otherwise {@code false}
-     * @since   11
+     * @param consumer block to be executed if a value is present
+     * @throws NullPointerException if value is present and {@code consumer} is
+     * null
      */
-    public boolean isEmpty() {
-        return !isPresent;
+    public void ifPresent(LongConsumer consumer) {
+        if (isPresent)
+            consumer.accept(value);
     }
 
     /**
-     * If a value is present, performs the given action with the value,
-     * otherwise does nothing.
+     * Return the value if present, otherwise return {@code other}.
      *
-     * @param action the action to be performed, if a value is present
-     * @throws NullPointerException if value is present and the given action is
-     *         {@code null}
-     */
-    public void ifPresent(LongConsumer action) {
-        if (isPresent) {
-            action.accept(value);
-        }
-    }
-
-    /**
-     * If a value is present, performs the given action with the value,
-     * otherwise performs the given empty-based action.
-     *
-     * @param action the action to be performed, if a value is present
-     * @param emptyAction the empty-based action to be performed, if no value is
-     *        present
-     * @throws NullPointerException if a value is present and the given action
-     *         is {@code null}, or no value is present and the given empty-based
-     *         action is {@code null}.
-     * @since 9
-     */
-    public void ifPresentOrElse(LongConsumer action, Runnable emptyAction) {
-        if (isPresent) {
-            action.accept(value);
-        } else {
-            emptyAction.run();
-        }
-    }
-
-    /**
-     * If a value is present, returns a sequential {@link LongStream} containing
-     * only that value, otherwise returns an empty {@code LongStream}.
-     *
-     * @apiNote
-     * This method can be used to transform a {@code Stream} of optional longs
-     * to an {@code LongStream} of present longs:
-     * <pre>{@code
-     *     Stream<OptionalLong> os = ..
-     *     LongStream s = os.flatMapToLong(OptionalLong::stream)
-     * }</pre>
-     *
-     * @return the optional value as an {@code LongStream}
-     * @since 9
-     */
-    public LongStream stream() {
-        if (isPresent) {
-            return LongStream.of(value);
-        } else {
-            return LongStream.empty();
-        }
-    }
-
-    /**
-     * If a value is present, returns the value, otherwise returns
-     * {@code other}.
-     *
-     * @param other the value to be returned, if no value is present
+     * @param other the value to be returned if there is no value present
      * @return the value, if present, otherwise {@code other}
      */
     public long orElse(long other) {
@@ -216,52 +149,36 @@ public final class OptionalLong {
     }
 
     /**
-     * If a value is present, returns the value, otherwise returns the result
-     * produced by the supplying function.
+     * Return the value if present, otherwise invoke {@code other} and return
+     * the result of that invocation.
      *
-     * @param supplier the supplying function that produces a value to be returned
-     * @return the value, if present, otherwise the result produced by the
-     *         supplying function
-     * @throws NullPointerException if no value is present and the supplying
-     *         function is {@code null}
+     * @param other a {@code LongSupplier} whose result is returned if no value
+     * is present
+     * @return the value if present otherwise the result of {@code other.getAsLong()}
+     * @throws NullPointerException if value is not present and {@code other} is
+     * null
      */
-    public long orElseGet(LongSupplier supplier) {
-        return isPresent ? value : supplier.getAsLong();
+    public long orElseGet(LongSupplier other) {
+        return isPresent ? value : other.getAsLong();
     }
 
     /**
-     * If a value is present, returns the value, otherwise throws
-     * {@code NoSuchElementException}.
+     * Return the contained value, if present, otherwise throw an exception
+     * to be created by the provided supplier.
      *
-     * @return the value described by this {@code OptionalLong}
-     * @throws NoSuchElementException if no value is present
-     * @since 10
-     */
-    public long orElseThrow() {
-        if (!isPresent) {
-            throw new NoSuchElementException("No value present");
-        }
-        return value;
-    }
-
-    /**
-     * If a value is present, returns the value, otherwise throws an exception
-     * produced by the exception supplying function.
-     *
-     * @apiNote
-     * A method reference to the exception constructor with an empty argument
-     * list can be used as the supplier. For example,
+     * @apiNote A method reference to the exception constructor with an empty
+     * argument list can be used as the supplier. For example,
      * {@code IllegalStateException::new}
      *
      * @param <X> Type of the exception to be thrown
-     * @param exceptionSupplier the supplying function that produces an
-     *        exception to be thrown
-     * @return the value, if present
-     * @throws X if no value is present
-     * @throws NullPointerException if no value is present and the exception
-     *         supplying function is {@code null}
+     * @param exceptionSupplier The supplier which will return the exception to
+     * be thrown
+     * @return the present value
+     * @throws X if there is no value present
+     * @throws NullPointerException if no value is present and
+     * {@code exceptionSupplier} is null
      */
-    public<X extends Throwable> long orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+    public<X extends Throwable> long orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (isPresent) {
             return value;
         } else {
@@ -270,8 +187,8 @@ public final class OptionalLong {
     }
 
     /**
-     * Indicates whether some other object is "equal to" this
-     * {@code OptionalLong}.  The other object is considered equal if:
+     * Indicates whether some other object is "equal to" this OptionalLong. The
+     * other object is considered equal if:
      * <ul>
      * <li>it is also an {@code OptionalLong} and;
      * <li>both instances have no value present or;
@@ -279,8 +196,8 @@ public final class OptionalLong {
      * </ul>
      *
      * @param obj an object to be tested for equality
-     * @return {@code true} if the other object is "equal to" this object
-     *         otherwise {@code false}
+     * @return {code true} if the other object is "equal to" this object
+     * otherwise {@code false}
      */
     @Override
     public boolean equals(Object obj) {
@@ -299,11 +216,10 @@ public final class OptionalLong {
     }
 
     /**
-     * Returns the hash code of the value, if present, otherwise {@code 0}
-     * (zero) if no value is present.
+     * Returns the hash code value of the present value, if any, or 0 (zero) if
+     * no value is present.
      *
-     * @return hash code value of the present value or {@code 0} if no value is
-     *         present
+     * @return hash code value of the present value or 0 if no value is present
      */
     @Override
     public int hashCode() {
@@ -311,13 +227,14 @@ public final class OptionalLong {
     }
 
     /**
-     * Returns a non-empty string representation of this {@code OptionalLong}
-     * suitable for debugging.  The exact presentation format is unspecified and
-     * may vary between implementations and versions.
+     * {@inheritDoc}
      *
-     * @implSpec
-     * If a value is present the result must include its string representation
-     * in the result.  Empty and present {@code OptionalLong}s must be
+     * Returns a non-empty string representation of this object suitable for
+     * debugging. The exact presentation format is unspecified and may vary
+     * between implementations and versions.
+     *
+     * @implSpec If a value is present the result must include its string
+     * representation in the result. Empty and present instances must be
      * unambiguously differentiable.
      *
      * @return the string representation of this instance

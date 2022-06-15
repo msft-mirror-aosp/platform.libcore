@@ -31,7 +31,7 @@ package java.lang;
  * or security problem.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class VerifyError extends LinkageError {

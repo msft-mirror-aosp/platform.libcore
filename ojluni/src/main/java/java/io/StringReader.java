@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ package java.io;
  * A character stream whose source is a string.
  *
  * @author      Mark Reinhold
- * @since       1.1
+ * @since       JDK1.1
  */
 
 public class StringReader extends Reader {
@@ -84,7 +84,6 @@ public class StringReader extends Reader {
      *             stream has been reached
      *
      * @exception  IOException  If an I/O error occurs
-     * @exception  IndexOutOfBoundsException {@inheritDoc}
      */
     public int read(char cbuf[], int off, int len) throws IOException {
         synchronized (lock) {
@@ -142,8 +141,8 @@ public class StringReader extends Reader {
      */
     public boolean ready() throws IOException {
         synchronized (lock) {
-            ensureOpen();
-            return true;
+        ensureOpen();
+        return true;
         }
     }
 
@@ -194,12 +193,9 @@ public class StringReader extends Reader {
      * Closes the stream and releases any system resources associated with
      * it. Once the stream has been closed, further read(),
      * ready(), mark(), or reset() invocations will throw an IOException.
-     * Closing a previously closed stream has no effect. This method will block
-     * while there is another thread blocking on the reader.
+     * Closing a previously closed stream has no effect.
      */
     public void close() {
-        synchronized (lock) {
-            str = null;
-        }
+        str = null;
     }
 }

@@ -85,6 +85,5 @@ filegroup {
         "socket_tagger_util.cpp",
         "OnLoad.cpp",
         "JniConstants.cpp",
-        "jdk_internal_misc_VM.cpp",
     ],
 }

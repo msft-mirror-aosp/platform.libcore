@@ -32,7 +32,7 @@ package java.net;
  * was refused remotely (e.g., no process is listening on the
  * remote address/port).
  *
- * @since   1.1
+ * @since   JDK1.1
  */
 public class ConnectException extends SocketException {
     private static final long serialVersionUID = 3831404271622369215L;

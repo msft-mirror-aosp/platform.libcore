@@ -317,7 +317,7 @@ class FileInputStream extends InputStream
         }
 
         // Android-added: Tracking of unbuffered I/O.
-        tracker.trackIo(len, IoTracker.Mode.READ);
+        tracker.trackIo(len);
 
         // Android-changed: Use IoBridge instead of calling native method.
         return IoBridge.read(fd, b, off, len);

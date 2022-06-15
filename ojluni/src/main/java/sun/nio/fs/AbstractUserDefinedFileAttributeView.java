@@ -83,7 +83,7 @@ abstract class AbstractUserDefinedFileAttributeView
                 names = list();
                 break;
             } else {
-                if (name.isEmpty())
+                if (name.length() == 0)
                     throw new IllegalArgumentException();
                 names.add(name);
             }

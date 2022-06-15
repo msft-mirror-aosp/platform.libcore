@@ -30,11 +30,13 @@ package java.nio;
 
 @libcore.api.Hide
 @android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class DirectByteBuffer extends java.nio.MappedByteBuffer implements sun.nio.ch.DirectBuffer {
 
 @libcore.api.Hide
 @android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public DirectByteBuffer(int cap, long addr, java.io.FileDescriptor fd, java.lang.Runnable unmapper, boolean isReadOnly) { super(0, 0, 0, 0); throw new RuntimeException("Stub!"); }
 
 @libcore.api.Hide
@@ -54,6 +56,7 @@ public final java.nio.ByteBuffer asReadOnlyBuffer() { throw new RuntimeException
 
 @libcore.api.Hide
 @android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final long address() { throw new RuntimeException("Stub!"); }
 
 @libcore.api.Hide
@@ -181,6 +184,7 @@ public final boolean isAccessible() { throw new RuntimeException("Stub!"); }
 
 @libcore.api.Hide
 @android.annotation.SystemApi(client = android.annotation.SystemApi.Client.MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final void setAccessible(boolean value) { throw new RuntimeException("Stub!"); }
 }
 

@@ -31,6 +31,7 @@ import libcore.util.Objects;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class StructCapUserHeader {
     /**
      * Version of the header. Note this is not final as capget() may mutate the field when an
@@ -60,6 +61,7 @@ public final class StructCapUserHeader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public StructCapUserHeader(int version, int pid) {
         this.version = version;
         this.pid = pid;

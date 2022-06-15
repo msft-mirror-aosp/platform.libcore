@@ -59,7 +59,7 @@ import java.util.Arrays;
  * @author  James Gosling
  * @see     java.io.StreamTokenizer#nextToken()
  * @see     java.io.StreamTokenizer#TT_EOF
- * @since   1.0
+ * @since   JDK1.0
  */
 
 public class StreamTokenizer {
@@ -240,7 +240,7 @@ public class StreamTokenizer {
      * Create a tokenizer that parses the given character stream.
      *
      * @param r  a Reader object providing the input stream.
-     * @since   1.1
+     * @since   JDK1.1
      */
     public StreamTokenizer(Reader r) {
         this();

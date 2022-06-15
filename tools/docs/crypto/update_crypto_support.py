@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Copyright (C) 2017 The Android Open Source Project
 #
@@ -273,7 +273,8 @@ def main():
             new_data, f, indent=2, sort_keys=True, separators=(',', ': '))
         f.close()
     else:
-        print(json.dumps(new_data, indent=2, sort_keys=True, separators=(',', ': ')))
+        print json.dumps(
+            new_data, indent=2, sort_keys=True, separators=(',', ': '))
 
 
 if __name__ == '__main__':

@@ -25,7 +25,8 @@
 
 package java.lang;
 
-import jdk.internal.HotSpotIntrinsicCandidate;
+// Android-removed: Unsupported @HotSpotIntrinsicCandidate annotation.
+// import jdk.internal.HotSpotIntrinsicCandidate;
 import libcore.util.HexEncoding;
 
 /**
@@ -101,7 +102,8 @@ public final class Byte extends Number implements Comparable<Byte> {
      * @return a {@code Byte} instance representing {@code b}.
      * @since  1.5
      */
-    @HotSpotIntrinsicCandidate
+    // Android-removed: Unsupported @HotSpotIntrinsicCandidate annotation.
+    // @HotSpotIntrinsicCandidate
     public static Byte valueOf(byte b) {
         final int offset = 128;
         return ByteCache.cache[(int)b + offset];
@@ -336,7 +338,8 @@ public final class Byte extends Number implements Comparable<Byte> {
      * Returns the value of this {@code Byte} as a
      * {@code byte}.
      */
-    @HotSpotIntrinsicCandidate
+    // Android-removed: Unsupported @HotSpotIntrinsicCandidate annotation.
+    // @HotSpotIntrinsicCandidate
     public byte byteValue() {
         return value;
     }

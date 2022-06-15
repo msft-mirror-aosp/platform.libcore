@@ -203,7 +203,7 @@ public abstract class Collection8Test extends JSR166TestCase {
             () -> c.iterator().forEachRemaining(null),
             () -> c.spliterator().forEachRemaining(null),
             () -> c.spliterator().tryAdvance(null),
-            () -> c.toArray((Object[])null));
+            () -> c.toArray(null));
 
         if (!impl.permitsNulls()) {
             assertThrows(

@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public class Chunk {
 
     /**
@@ -40,6 +41,7 @@ public class Chunk {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public int type;                // chunk type
     /**
      * @hide
@@ -73,6 +75,7 @@ public class Chunk {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public Chunk(int type, byte[] data, int offset, int length) {
         this.type = type;
         this.data = data;
@@ -91,6 +94,7 @@ public class Chunk {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public Chunk(int type, ByteBuffer buf) {
         this.type = type;
 

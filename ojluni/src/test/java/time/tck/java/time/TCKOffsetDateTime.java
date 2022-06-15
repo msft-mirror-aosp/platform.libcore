@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -104,6 +104,10 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Clock;
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -235,17 +239,16 @@ public class TCKOffsetDateTime extends AbstractDateTimeTest {
     //-----------------------------------------------------------------------
     @Test
     public void now() {
-        final long DELTA = 20_000_000_000L;    // 20 seconds of nanos leeway
         OffsetDateTime expected = OffsetDateTime.now(Clock.systemDefaultZone());
         OffsetDateTime test = OffsetDateTime.now();
         long diff = Math.abs(test.toLocalTime().toNanoOfDay() - expected.toLocalTime().toNanoOfDay());
-        if (diff >= DELTA) {
+        if (diff >= 100000000) {
             // may be date change
             expected = OffsetDateTime.now(Clock.systemDefaultZone());
             test = OffsetDateTime.now();
             diff = Math.abs(test.toLocalTime().toNanoOfDay() - expected.toLocalTime().toNanoOfDay());
         }
-        assertTrue(diff < DELTA);
+        assertTrue(diff < 100000000);  // less than 0.1 secs
     }
 
     //-----------------------------------------------------------------------
@@ -472,12 +475,24 @@ public class TCKOffsetDateTime extends AbstractDateTimeTest {
     //-----------------------------------------------------------------------
     @Test(expectedExceptions=NullPointerException.class)
     public void constructor_nullTime() throws Throwable  {
-        OffsetDateTime.of(null, OFFSET_PONE);
+        Constructor<OffsetDateTime> con = OffsetDateTime.class.getDeclaredConstructor(LocalDateTime.class, ZoneOffset.class);
+        con.setAccessible(true);
+        try {
+            con.newInstance(null, OFFSET_PONE);
+        } catch (InvocationTargetException ex) {
+            throw ex.getCause();
+        }
     }
 
     @Test(expectedExceptions=NullPointerException.class)
     public void constructor_nullOffset() throws Throwable  {
-        OffsetDateTime.of(LocalDateTime.of(LocalDate.of(2008, 6, 30), LocalTime.of(11, 30)), null);
+        Constructor<OffsetDateTime> con = OffsetDateTime.class.getDeclaredConstructor(LocalDateTime.class, ZoneOffset.class);
+        con.setAccessible(true);
+        try {
+            con.newInstance(LocalDateTime.of(LocalDate.of(2008, 6, 30), LocalTime.of(11, 30)), null);
+        } catch (InvocationTargetException ex) {
+            throw ex.getCause();
+        }
     }
 
     //-----------------------------------------------------------------------

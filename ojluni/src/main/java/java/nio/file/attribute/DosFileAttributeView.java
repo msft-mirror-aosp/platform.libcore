@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -41,32 +41,27 @@ import java.io.IOException;
  * BasicFileAttributeView}, and in addition, the following attributes are
  * supported:
  * <blockquote>
- * <table class="striped">
- * <caption style="display:none">Supported attributes</caption>
- * <thead>
+ * <table border="1" cellpadding="8" summary="Supported attributes">
  *   <tr>
- *     <th scope="col"> Name </th>
- *     <th scope="col"> Type </th>
+ *     <th> Name </th>
+ *     <th> Type </th>
  *   </tr>
- * </thead>
- * <tbody>
  *   <tr>
- *     <th scope="row"> readonly </th>
+ *     <td> readonly </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> hidden </th>
+ *     <td> hidden </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> system </th>
+ *     <td> system </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> archive </th>
+ *     <td> archive </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
- * </tbody>
  * </table>
  * </blockquote>
  *

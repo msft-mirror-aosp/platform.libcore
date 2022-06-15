@@ -95,7 +95,6 @@ package java.text;
  * @see          Collator
  * @see          RuleBasedCollator
  * @author       Helena Shih
- * @since 1.1
  */
 
 public abstract class CollationKey implements Comparable<CollationKey> {
@@ -109,7 +108,7 @@ public abstract class CollationKey implements Comparable<CollationKey> {
      * zero if this is greater than target.
      * @see java.text.Collator#compare
      */
-    public abstract int compareTo(CollationKey target);
+    abstract public int compareTo(CollationKey target);
 
     /**
      * Returns the String that this CollationKey represents.
@@ -129,7 +128,7 @@ public abstract class CollationKey implements Comparable<CollationKey> {
      *
      * @return a byte array representation of the CollationKey
      */
-    public abstract byte[] toByteArray();
+    abstract public byte[] toByteArray();
 
 
   /**
@@ -146,5 +145,5 @@ public abstract class CollationKey implements Comparable<CollationKey> {
         this.source = source;
     }
 
-    private final String source;
+    final private String source;
 }

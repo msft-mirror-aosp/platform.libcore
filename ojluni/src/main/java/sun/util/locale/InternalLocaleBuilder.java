@@ -331,7 +331,7 @@ public final class InternalLocaleBuilder {
                 done.add(key);
             }
         }
-        if (privateuse != null && !privateuse.isEmpty()) {
+        if (privateuse != null && privateuse.length() > 0) {
             // privateuse string contains prefix, e.g. "x-abc-def"
             if (extensions == null) {
                 extensions = new HashMap<>(1);
@@ -406,19 +406,19 @@ public final class InternalLocaleBuilder {
         // Validate base locale fields before updating internal state.
         // LocaleExtensions always store validated/canonicalized values,
         // so no checks are necessary.
-        if (!language.isEmpty() && !LanguageTag.isLanguage(language)) {
+        if (language.length() > 0 && !LanguageTag.isLanguage(language)) {
             throw new LocaleSyntaxException("Ill-formed language: " + language);
         }
 
-        if (!script.isEmpty() && !LanguageTag.isScript(script)) {
+        if (script.length() > 0 && !LanguageTag.isScript(script)) {
             throw new LocaleSyntaxException("Ill-formed script: " + script);
         }
 
-        if (!region.isEmpty() && !LanguageTag.isRegion(region)) {
+        if (region.length() > 0 && !LanguageTag.isRegion(region)) {
             throw new LocaleSyntaxException("Ill-formed region: " + region);
         }
 
-        if (!variant.isEmpty()) {
+        if (variant.length() > 0) {
             // BEGIN Android-added: normalize separators to "_"
             variant = variant.replaceAll(LanguageTag.SEP, BaseLocale.SEP);
             // END Android-added: normalize separators to "_"

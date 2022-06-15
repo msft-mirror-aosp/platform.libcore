@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -41,52 +41,47 @@ import java.io.IOException;
  * <p> Where dynamic access to file attributes is required, the attributes
  * supported by this attribute view have the following names and types:
  * <blockquote>
- *  <table class="striped">
- *  <caption style="display:none">Supported attributes</caption>
- *  <thead>
+ *  <table border="1" cellpadding="8" summary="Supported attributes">
  *   <tr>
- *     <th scope="col"> Name </th>
- *     <th scope="col"> Type </th>
+ *     <th> Name </th>
+ *     <th> Type </th>
  *   </tr>
- *  </thead>
- *  <tbody>
  *  <tr>
- *     <th scope="row"> "lastModifiedTime" </th>
+ *     <td> "lastModifiedTime" </td>
  *     <td> {@link FileTime} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "lastAccessTime" </th>
+ *     <td> "lastAccessTime" </td>
  *     <td> {@link FileTime} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "creationTime" </th>
+ *     <td> "creationTime" </td>
  *     <td> {@link FileTime} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "size" </th>
+ *     <td> "size" </td>
  *     <td> {@link Long} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "isRegularFile" </th>
+ *     <td> "isRegularFile" </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "isDirectory" </th>
+ *     <td> "isDirectory" </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "isSymbolicLink" </th>
+ *     <td> "isSymbolicLink" </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "isOther" </th>
+ *     <td> "isOther" </td>
  *     <td> {@link Boolean} </td>
  *   </tr>
  *   <tr>
- *     <th scope="row"> "fileKey" </th>
+ *     <td> "fileKey" </td>
  *     <td> {@link Object} </td>
  *   </tr>
- * </tbody>
  * </table>
  * </blockquote>
  *

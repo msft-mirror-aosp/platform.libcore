@@ -606,7 +606,7 @@ public class StampedLockTest extends JSR166TestCase {
             }});
 
         running.await();
-        waitForThreadToEnterWaitState(t, 2000);
+        waitForThreadToEnterWaitState(t, 100);
         t.interrupt();
         awaitTermination(t);
         releaseWriteLock(lock, s);

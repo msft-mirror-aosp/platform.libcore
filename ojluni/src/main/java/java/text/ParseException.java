@@ -45,7 +45,6 @@ package java.text;
  * @see java.text.Format
  * @see java.text.FieldPosition
  * @author      Mark Davis
- * @since 1.1
  */
 public
 class ParseException extends Exception {

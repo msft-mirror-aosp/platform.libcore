@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2009, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,11 +25,10 @@
 
 package sun.nio.ch;
 
+import java.nio.channels.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.io.IOException;
-import java.nio.channels.MembershipKey;
-import java.nio.channels.MulticastChannel;
 import java.util.HashSet;
 
 /**
@@ -44,10 +43,11 @@ class MembershipKeyImpl
     private final NetworkInterface interf;
     private final InetAddress source;
 
-    private volatile boolean invalid;
+    // true when key is valid
+    private volatile boolean valid = true;
 
     // lock used when creating or accessing blockedSet
-    private final Object stateLock = new Object();
+    private Object stateLock = new Object();
 
     // set of source addresses that are blocked
     private HashSet<InetAddress> blockedSet;
@@ -134,12 +134,12 @@ class MembershipKeyImpl
     }
 
     public boolean isValid() {
-        return !invalid;
+        return valid;
     }
 
     // package-private
     void invalidate() {
-        invalid = true;
+        valid = false;
     }
 
     public void drop() {
@@ -184,7 +184,7 @@ class MembershipKeyImpl
 
             // created blocked set if required and add source address
             if (blockedSet == null)
-                blockedSet = new HashSet<>();
+                blockedSet = new HashSet<InetAddress>();
             blockedSet.add(toBlock);
         }
         return this;

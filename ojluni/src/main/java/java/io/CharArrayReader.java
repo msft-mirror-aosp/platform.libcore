@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2005, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ package java.io;
  * character-input stream.
  *
  * @author      Herb Jellinek
- * @since       1.1
+ * @since       JDK1.1
  */
 public class CharArrayReader extends Reader {
     /** The character buffer. */
@@ -62,13 +62,13 @@ public class CharArrayReader extends Reader {
      * Creates a CharArrayReader from the specified array of chars.
      *
      * <p> The resulting reader will start reading at the given
-     * {@code offset}.  The total number of {@code char} values that can be
-     * read from this reader will be either {@code length} or
-     * {@code buf.length-offset}, whichever is smaller.
+     * <tt>offset</tt>.  The total number of <tt>char</tt> values that can be
+     * read from this reader will be either <tt>length</tt> or
+     * <tt>buf.length-offset</tt>, whichever is smaller.
      *
      * @throws IllegalArgumentException
-     *         If {@code offset} is negative or greater than
-     *         {@code buf.length}, or if {@code length} is negative, or if
+     *         If <tt>offset</tt> is negative or greater than
+     *         <tt>buf.length</tt>, or if <tt>length</tt> is negative, or if
      *         the sum of these two values is negative.
      *
      * @param buf       Input buffer (not copied)
@@ -116,7 +116,6 @@ public class CharArrayReader extends Reader {
      *          the end of the stream has been reached
      *
      * @exception   IOException  If an I/O error occurs
-     * @exception   IndexOutOfBoundsException {@inheritDoc}
      */
     public int read(char b[], int off, int len) throws IOException {
         synchronized (lock) {
@@ -131,11 +130,12 @@ public class CharArrayReader extends Reader {
             if (pos >= count) {
                 return -1;
             }
-
+            // BEGIN Android-changed: Backport of OpenJDK 9b132 fix to avoid integer overflow.
             int avail = count - pos;
             if (len > avail) {
                 len = avail;
             }
+            // END Android-changed: Backport of OpenJDK 9b132 fix to avoid integer overflow.
             if (len <= 0) {
                 return 0;
             }
@@ -160,11 +160,12 @@ public class CharArrayReader extends Reader {
     public long skip(long n) throws IOException {
         synchronized (lock) {
             ensureOpen();
-
+            // BEGIN Android-changed: Backport of OpenJDK 9b132 fix to avoid integer overflow.
             long avail = count - pos;
             if (n > avail) {
                 n = avail;
             }
+            // END Android-changed: Backport of OpenJDK 9b132 fix to avoid integer overflow.
             if (n < 0) {
                 return 0;
             }
@@ -229,12 +230,9 @@ public class CharArrayReader extends Reader {
      * Closes the stream and releases any system resources associated with
      * it.  Once the stream has been closed, further read(), ready(),
      * mark(), reset(), or skip() invocations will throw an IOException.
-     * Closing a previously closed stream has no effect. This method will block
-     * while there is another thread blocking on the reader.
+     * Closing a previously closed stream has no effect.
      */
     public void close() {
-        synchronized (lock) {
-            buf = null;
-        }
+        buf = null;
     }
 }

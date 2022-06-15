@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,9 +25,9 @@
 
 package java.lang;
 
-import jdk.internal.math.FloatingDecimal;
-import jdk.internal.math.DoubleConsts;
-import jdk.internal.HotSpotIntrinsicCandidate;
+import sun.misc.FloatingDecimal;
+import sun.misc.FpUtils;
+import sun.misc.DoubleConsts;
 
 /**
  * The {@code Double} class wraps a value of the primitive type
@@ -44,7 +44,7 @@ import jdk.internal.HotSpotIntrinsicCandidate;
  * @author  Lee Boynton
  * @author  Arthur van Hoff
  * @author  Joseph D. Darcy
- * @since 1.0
+ * @since JDK1.0
  */
 public final class Double extends Number implements Comparable<Double> {
     /**
@@ -133,7 +133,7 @@ public final class Double extends Number implements Comparable<Double> {
      * The {@code Class} instance representing the primitive type
      * {@code double}.
      *
-     * @since 1.1
+     * @since JDK1.1
      */
     @SuppressWarnings("unchecked")
     public static final Class<Double>   TYPE = (Class<Double>) Class.getPrimitiveClass("double");
@@ -255,27 +255,23 @@ public final class Double extends Number implements Comparable<Double> {
      *
      * </ul>
      *
-     * <table class="striped">
+     * <table border>
      * <caption>Examples</caption>
-     * <thead>
-     * <tr><th scope="col">Floating-point Value</th><th scope="col">Hexadecimal String</th>
-     * </thead>
-     * <tbody style="text-align:right">
-     * <tr><th scope="row">{@code 1.0}</th> <td>{@code 0x1.0p0}</td>
-     * <tr><th scope="row">{@code -1.0}</th>        <td>{@code -0x1.0p0}</td>
-     * <tr><th scope="row">{@code 2.0}</th> <td>{@code 0x1.0p1}</td>
-     * <tr><th scope="row">{@code 3.0}</th> <td>{@code 0x1.8p1}</td>
-     * <tr><th scope="row">{@code 0.5}</th> <td>{@code 0x1.0p-1}</td>
-     * <tr><th scope="row">{@code 0.25}</th>        <td>{@code 0x1.0p-2}</td>
-     * <tr><th scope="row">{@code Double.MAX_VALUE}</th>
+     * <tr><th>Floating-point Value</th><th>Hexadecimal String</th>
+     * <tr><td>{@code 1.0}</td> <td>{@code 0x1.0p0}</td>
+     * <tr><td>{@code -1.0}</td>        <td>{@code -0x1.0p0}</td>
+     * <tr><td>{@code 2.0}</td> <td>{@code 0x1.0p1}</td>
+     * <tr><td>{@code 3.0}</td> <td>{@code 0x1.8p1}</td>
+     * <tr><td>{@code 0.5}</td> <td>{@code 0x1.0p-1}</td>
+     * <tr><td>{@code 0.25}</td>        <td>{@code 0x1.0p-2}</td>
+     * <tr><td>{@code Double.MAX_VALUE}</td>
      *     <td>{@code 0x1.fffffffffffffp1023}</td>
-     * <tr><th scope="row">{@code Minimum Normal Value}</th>
+     * <tr><td>{@code Minimum Normal Value}</td>
      *     <td>{@code 0x1.0p-1022}</td>
-     * <tr><th scope="row">{@code Maximum Subnormal Value}</th>
+     * <tr><td>{@code Maximum Subnormal Value}</td>
      *     <td>{@code 0x0.fffffffffffffp-1022}</td>
-     * <tr><th scope="row">{@code Double.MIN_VALUE}</th>
+     * <tr><td>{@code Double.MIN_VALUE}</td>
      *     <td>{@code 0x0.0000000000001p-1022}</td>
-     * </tbody>
      * </table>
      * @param   d   the {@code double} to be converted.
      * @return a hex string representation of the argument.
@@ -305,7 +301,7 @@ public final class Double extends Number implements Comparable<Double> {
             if(d == 0.0) {
                 answer.append("0.0p0");
             } else {
-                boolean subnormal = (d < Double.MIN_NORMAL);
+                boolean subnormal = (d < DoubleConsts.MIN_NORMAL);
 
                 // Isolate significand bits and OR in a high-order bit
                 // so that the string representation has a known
@@ -333,7 +329,7 @@ public final class Double extends Number implements Comparable<Double> {
                 // exponent (the representation of a subnormal uses
                 // E_min -1).
                 answer.append(subnormal ?
-                              Double.MIN_EXPONENT:
+                              DoubleConsts.MIN_EXPONENT:
                               Math.getExponent(d));
             }
             return answer.toString();
@@ -519,7 +515,6 @@ public final class Double extends Number implements Comparable<Double> {
      * @return a {@code Double} instance representing {@code d}.
      * @since  1.5
      */
-    @HotSpotIntrinsicCandidate
     public static Double valueOf(double d) {
         return new Double(d);
     }
@@ -578,7 +573,7 @@ public final class Double extends Number implements Comparable<Double> {
      * @since 1.8
      */
     public static boolean isFinite(double d) {
-        return Math.abs(d) <= Double.MAX_VALUE;
+        return Math.abs(d) <= DoubleConsts.MAX_VALUE;
     }
 
     /**
@@ -593,13 +588,7 @@ public final class Double extends Number implements Comparable<Double> {
      * represents the primitive {@code double} argument.
      *
      * @param   value   the value to be represented by the {@code Double}.
-     *
-     * @deprecated
-     * It is rarely appropriate to use this constructor. The static factory
-     * {@link #valueOf(double)} is generally a better choice, as it is
-     * likely to yield significantly better space and time performance.
      */
-    @Deprecated(since="9")
     public Double(double value) {
         this.value = value;
     }
@@ -611,16 +600,10 @@ public final class Double extends Number implements Comparable<Double> {
      * {@code double} value as if by the {@code valueOf} method.
      *
      * @param  s  a string to be converted to a {@code Double}.
-     * @throws    NumberFormatException if the string does not contain a
+     * @throws    NumberFormatException  if the string does not contain a
      *            parsable number.
-     *
-     * @deprecated
-     * It is rarely appropriate to use this constructor.
-     * Use {@link #parseDouble(String)} to convert a string to a
-     * {@code double} primitive, or use {@link #valueOf(String)}
-     * to convert a string to a {@code Double} object.
+     * @see       java.lang.Double#valueOf(java.lang.String)
      */
-    @Deprecated(since="9")
     public Double(String s) throws NumberFormatException {
         value = parseDouble(s);
     }
@@ -668,7 +651,7 @@ public final class Double extends Number implements Comparable<Double> {
      * @return  the {@code double} value represented by this object
      *          converted to type {@code byte}
      * @jls 5.1.3 Narrowing Primitive Conversions
-     * @since 1.1
+     * @since JDK1.1
      */
     public byte byteValue() {
         return (byte)value;
@@ -681,7 +664,7 @@ public final class Double extends Number implements Comparable<Double> {
      * @return  the {@code double} value represented by this object
      *          converted to type {@code short}
      * @jls 5.1.3 Narrowing Primitive Conversions
-     * @since 1.1
+     * @since JDK1.1
      */
     public short shortValue() {
         return (short)value;
@@ -718,7 +701,7 @@ public final class Double extends Number implements Comparable<Double> {
      * @return  the {@code double} value represented by this object
      *          converted to type {@code float}
      * @jls 5.1.3 Narrowing Primitive Conversions
-     * @since 1.0
+     * @since JDK1.0
      */
     public float floatValue() {
         return (float)value;
@@ -729,7 +712,6 @@ public final class Double extends Number implements Comparable<Double> {
      *
      * @return the {@code double} value represented by this object
      */
-    @HotSpotIntrinsicCandidate
     public double doubleValue() {
         return value;
     }
@@ -850,12 +832,15 @@ public final class Double extends Number implements Comparable<Double> {
      * @param   value   a {@code double} precision floating-point number.
      * @return the bits that represent the floating-point number.
      */
-    @HotSpotIntrinsicCandidate
     public static long doubleToLongBits(double value) {
-        if (!isNaN(value)) {
-            return doubleToRawLongBits(value);
-        }
-        return 0x7ff8000000000000L;
+        long result = doubleToRawLongBits(value);
+        // Check for NaN based on values of bit fields, maximum
+        // exponent and nonzero significand.
+        if ( ((result & DoubleConsts.EXP_BIT_MASK) ==
+              DoubleConsts.EXP_BIT_MASK) &&
+             (result & DoubleConsts.SIGNIF_BIT_MASK) != 0L)
+            result = 0x7ff8000000000000L;
+        return result;
     }
 
     /**
@@ -894,7 +879,6 @@ public final class Double extends Number implements Comparable<Double> {
      * @return the bits that represent the floating-point number.
      * @since 1.3
      */
-    @HotSpotIntrinsicCandidate
     public static native long doubleToRawLongBits(double value);
 
     /**
@@ -958,7 +942,6 @@ public final class Double extends Number implements Comparable<Double> {
      * @return  the {@code double} floating-point value with the same
      *          bit pattern.
      */
-    @HotSpotIntrinsicCandidate
     public static native double longBitsToDouble(long bits);
 
     /**

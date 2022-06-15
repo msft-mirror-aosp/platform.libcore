@@ -44,7 +44,7 @@ package java.io;
  * @author  Frank Yellin
  * @see     java.io.DataInput
  * @see     java.io.DataOutputStream
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 interface DataOutput {

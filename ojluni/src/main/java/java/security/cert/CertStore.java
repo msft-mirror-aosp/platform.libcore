@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,7 +33,6 @@ import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Collection;
-import java.util.Objects;
 
 import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
@@ -61,17 +60,26 @@ import sun.security.jca.GetInstance.Instance;
  * and CRLs stored in one or more directories using the LDAP protocol and the
  * schema as defined in the RFC service attribute.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard {@code CertStore} type:
- * <ul>
- * <li>{@code Collection}</li>
- * </ul>
+ * <p> Android provides the following <code>CertStore</code> types:
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>Collection</td>
+ *       <td>1+</td>
+ *     </tr>
+ *   </tbody>
+ * </table>
+ *
  * This type is described in the <a href=
- * "{@docRoot}/../specs/security/standard-names.html#certstore-types">
+ * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#CertStore">
  * CertStore section</a> of the
- * Java Security Standard Algorithm Names Specification.
- * Consult the release documentation for your implementation to see if any
- * other types are supported.
+ * Java Cryptography Architecture Standard Algorithm Name Documentation.
  *
  * <p>
  * <b>Concurrent Access</b>
@@ -202,40 +210,29 @@ public class CertStore {
      * Note that the specified {@code CertStoreParameters} object is
      * cloned.
      *
-     * @implNote
-     * The JDK Reference Implementation additionally uses the
-     * {@code jdk.security.provider.preferred}
-     * {@link Security#getProperty(String) Security} property to determine
-     * the preferred provider order for the specified algorithm. This
-     * may be different than the order of providers returned by
-     * {@link Security#getProviders() Security.getProviders()}.
-     *
      * @param type the name of the requested {@code CertStore} type.
      * See the CertStore section in the <a href=
-     * "{@docRoot}/../specs/security/standard-names.html#certstore-types">
-     * Java Security Standard Algorithm Names Specification</a>
+     * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#CertStore">
+     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
      * for information about standard types.
      *
      * @param params the initialization parameters (may be {@code null}).
      *
      * @return a {@code CertStore} object that implements the specified
-     *          {@code CertStore} type
+     *          {@code CertStore} type.
+     *
+     * @throws NoSuchAlgorithmException if no Provider supports a
+     *          CertStoreSpi implementation for the specified type.
      *
      * @throws InvalidAlgorithmParameterException if the specified
-     *         initialization parameters are inappropriate for this
-     *         {@code CertStore}
-     *
-     * @throws NoSuchAlgorithmException if no {@code Provider} supports a
-     *         {@code CertStoreSpi} implementation for the specified type
-     *
-     * @throws NullPointerException if {@code type} is {@code null}
+     *          initialization parameters are inappropriate for this
+     *          {@code CertStore}.
      *
      * @see java.security.Provider
      */
     public static CertStore getInstance(String type, CertStoreParameters params)
             throws InvalidAlgorithmParameterException,
             NoSuchAlgorithmException {
-        Objects.requireNonNull(type, "null type name");
         try {
             Instance instance = GetInstance.getInstance("CertStore",
                 CertStoreSpi.class, type, params);
@@ -247,8 +244,7 @@ public class CertStore {
     }
 
     private static CertStore handleException(NoSuchAlgorithmException e)
-            throws NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException {
+            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         Throwable cause = e.getCause();
         if (cause instanceof InvalidAlgorithmParameterException) {
             throw (InvalidAlgorithmParameterException)cause;
@@ -276,8 +272,8 @@ public class CertStore {
      *
      * @param type the requested {@code CertStore} type.
      * See the CertStore section in the <a href=
-     * "{@docRoot}/../specs/security/standard-names.html#certstore-types">
-     * Java Security Standard Algorithm Names Specification</a>
+     * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#CertStore">
+     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
      * for information about standard types.
      *
      * @param params the initialization parameters (may be {@code null}).
@@ -285,23 +281,21 @@ public class CertStore {
      * @param provider the name of the provider.
      *
      * @return a {@code CertStore} object that implements the
-     *          specified type
+     *          specified type.
      *
-     * @throws IllegalArgumentException if the {@code provider} is
-     *         {@code null} or empty
+     * @throws NoSuchAlgorithmException if a CertStoreSpi
+     *          implementation for the specified type is not
+     *          available from the specified provider.
      *
      * @throws InvalidAlgorithmParameterException if the specified
-     *         initialization parameters are inappropriate for this
-     *         {@code CertStore}
-     *
-     * @throws NoSuchAlgorithmException if a {@code CertStoreSpi}
-     *         implementation for the specified type is not
-     *         available from the specified provider
+     *          initialization parameters are inappropriate for this
+     *          {@code CertStore}.
      *
      * @throws NoSuchProviderException if the specified provider is not
-     *         registered in the security provider list
+     *          registered in the security provider list.
      *
-     * @throws NullPointerException if {@code type} is {@code null}
+     * @exception IllegalArgumentException if the {@code provider} is
+     *          null or empty.
      *
      * @see java.security.Provider
      */
@@ -309,7 +303,6 @@ public class CertStore {
             CertStoreParameters params, String provider)
             throws InvalidAlgorithmParameterException,
             NoSuchAlgorithmException, NoSuchProviderException {
-        Objects.requireNonNull(type, "null type name");
         try {
             Instance instance = GetInstance.getInstance("CertStore",
                 CertStoreSpi.class, type, params, provider);
@@ -337,8 +330,8 @@ public class CertStore {
      *
      * @param type the requested {@code CertStore} type.
      * See the CertStore section in the <a href=
-     * "{@docRoot}/../specs/security/standard-names.html#certstore-types">
-     * Java Security Standard Algorithm Names Specification</a>
+     * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#CertStore">
+     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
      * for information about standard types.
      *
      * @param params the initialization parameters (may be {@code null}).
@@ -346,27 +339,24 @@ public class CertStore {
      * @param provider the provider.
      *
      * @return a {@code CertStore} object that implements the
-     *          specified type
+     *          specified type.
      *
-     * @throws IllegalArgumentException if the {@code provider} is
-     *         null
+     * @exception NoSuchAlgorithmException if a CertStoreSpi
+     *          implementation for the specified type is not available
+     *          from the specified Provider object.
      *
      * @throws InvalidAlgorithmParameterException if the specified
-     *         initialization parameters are inappropriate for this
-     *         {@code CertStore}
+     *          initialization parameters are inappropriate for this
+     *          {@code CertStore}
      *
-     * @throws NoSuchAlgorithmException if a {@code CertStoreSpi}
-     *         implementation for the specified type is not available
-     *         from the specified Provider object
-     *
-     * @throws NullPointerException if {@code type} is {@code null}
+     * @exception IllegalArgumentException if the {@code provider} is
+     *          null.
      *
      * @see java.security.Provider
      */
     public static CertStore getInstance(String type, CertStoreParameters params,
             Provider provider) throws NoSuchAlgorithmException,
             InvalidAlgorithmParameterException {
-        Objects.requireNonNull(type, "null type name");
         try {
             Instance instance = GetInstance.getInstance("CertStore",
                 CertStoreSpi.class, type, params, provider);
@@ -426,9 +416,9 @@ public class CertStore {
      * {@code certstore.type} security property, or the string
      * {@literal "LDAP"} if no such property exists.
      */
-    public static final String getDefaultType() {
+    public final static String getDefaultType() {
         String cstype;
-        cstype = AccessController.doPrivileged(new PrivilegedAction<>() {
+        cstype = AccessController.doPrivileged(new PrivilegedAction<String>() {
             public String run() {
                 return Security.getProperty(CERTSTORE_TYPE);
             }

@@ -317,7 +317,7 @@ public class LinkedHashSetTest extends junit.framework.TestCase {
         }
 
         try {
-            lhs.toArray((Object[]) null);
+            lhs.toArray(null);
             fail("NullPointerException expected");
         } catch (NullPointerException e) {
             //expected

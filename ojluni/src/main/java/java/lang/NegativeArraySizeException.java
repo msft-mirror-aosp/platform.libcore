@@ -29,7 +29,7 @@ package java.lang;
  * Thrown if an application tries to create an array with negative size.
  *
  * @author  unascribed
- * @since   1.0
+ * @since   JDK1.0
  */
 public
 class NegativeArraySizeException extends RuntimeException {

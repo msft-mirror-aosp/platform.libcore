@@ -148,7 +148,7 @@ public class PKIXCertPathValidatorResult implements CertPathValidatorResult {
      *         {@code PKIXCertPathValidatorResult}
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("PKIXCertPathValidatorResult: [\n");
         sb.append("  Trust Anchor: " + trustAnchor.toString() + "\n");
         sb.append("  Policy Tree: " + String.valueOf(policyTree) + "\n");

@@ -30,6 +30,7 @@ import android.annotation.SystemApi;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
+@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public class SneakyThrow {
 
     private SneakyThrow() {
@@ -44,6 +45,7 @@ public class SneakyThrow {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void sneakyThrow(@NonNull Throwable t) {
         SneakyThrow.<RuntimeException>sneakyThrow_(t);
     }
