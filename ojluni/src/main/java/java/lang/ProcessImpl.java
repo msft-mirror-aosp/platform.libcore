@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.ProcessBuilder.Redirect;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
 
 /**
  * This class is for the exclusive use of ProcessBuilder.start() to
@@ -66,7 +67,7 @@ final class ProcessImpl {
         throws IOException
     {
         assert cmdarray != null && cmdarray.length > 0;
-
+        java.lang.System.logI("Process start: " + Arrays.toString(cmdarray));
         // Convert arguments to a contiguous block; it's easier to do
         // memory management in Java than in C.
         byte[][] args = new byte[cmdarray.length-1][];
@@ -94,6 +95,7 @@ final class ProcessImpl {
 
         try {
             if (redirects == null) {
+                java.lang.System.logI("No redirects, no fds");
                 std_fds = new int[] { -1, -1, -1 };
             } else {
                 std_fds = new int[3];
@@ -132,6 +134,7 @@ final class ProcessImpl {
                     // std_fds[2] = fdAccess.get(f2.getFD());
                     std_fds[2] = f2.getFD().getInt$();
                 }
+                java.lang.System.logI("fds: " + Arrays.toString(std_fds));
             }
 
         return new UNIXProcess
@@ -144,10 +147,25 @@ final class ProcessImpl {
         } finally {
             // In theory, close() can throw IOException
             // (although it is rather unlikely to happen here)
-            try { if (f0 != null) f0.close(); }
+            try {
+              if (f0 != null) {
+                f0.close();
+                java.lang.System.logI("fd0: " + f0.getFD().getInt$() + " closed");
+              }
+            }
             finally {
-                try { if (f1 != null) f1.close(); }
-                finally { if (f2 != null) f2.close(); }
+                try {
+                  if (f1 != null) {
+                    f1.close();
+                    java.lang.System.logI("fd1: " + f1.getFD().getInt$() + " closed");
+                  }
+                }
+                finally {
+                  if (f2 != null) {
+                    f2.close();
+                    java.lang.System.logI("fd2: " + f2.getFD().getInt$() + " closed");
+                  }
+                }
             }
         }
     }
