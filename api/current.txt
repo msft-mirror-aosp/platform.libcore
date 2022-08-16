@@ -2140,6 +2140,9 @@ package java.io {
     method public int read() throws java.io.IOException;
   }
 
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE) @java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD}) public @interface Serial {
+  }
+
   public interface Serializable {
   }
 
@@ -3715,6 +3718,35 @@ package java.lang {
     method public boolean isNativeMethod();
   }
 
+  public final class StackWalker {
+    method public void forEach(java.util.function.Consumer<? super java.lang.StackWalker.StackFrame>);
+    method public Class<?> getCallerClass();
+    method public static StackWalker getInstance();
+    method public static StackWalker getInstance(java.lang.StackWalker.Option);
+    method public static StackWalker getInstance(java.util.Set<java.lang.StackWalker.Option>);
+    method public static StackWalker getInstance(java.util.Set<java.lang.StackWalker.Option>, int);
+    method public <T> T walk(java.util.function.Function<? super java.util.stream.Stream<java.lang.StackWalker.StackFrame>,? extends T>);
+  }
+
+  public enum StackWalker.Option {
+    enum_constant public static final java.lang.StackWalker.Option RETAIN_CLASS_REFERENCE;
+    enum_constant public static final java.lang.StackWalker.Option SHOW_HIDDEN_FRAMES;
+    enum_constant public static final java.lang.StackWalker.Option SHOW_REFLECT_FRAMES;
+  }
+
+  public static interface StackWalker.StackFrame {
+    method public int getByteCodeIndex();
+    method public String getClassName();
+    method public Class<?> getDeclaringClass();
+    method public default String getDescriptor();
+    method public String getFileName();
+    method public int getLineNumber();
+    method public String getMethodName();
+    method public default java.lang.invoke.MethodType getMethodType();
+    method public boolean isNativeMethod();
+    method public StackTraceElement toStackTraceElement();
+  }
+
   public final class StrictMath {
     method public static double IEEEremainder(double, double);
     method public static int abs(int);
@@ -3826,11 +3858,13 @@ package java.lang {
     method public boolean equalsIgnoreCase(@Nullable String);
     method @NonNull public static String format(@NonNull String, @NonNull java.lang.Object...);
     method @NonNull public static String format(@NonNull java.util.Locale, @NonNull String, @NonNull java.lang.Object...);
+    method @NonNull public String formatted(@NonNull java.lang.Object...);
     method @Deprecated public void getBytes(int, int, byte[], int);
     method public byte[] getBytes(@NonNull String) throws java.io.UnsupportedEncodingException;
     method public byte[] getBytes(@NonNull java.nio.charset.Charset);
     method public byte[] getBytes();
     method public void getChars(int, int, char[], int);
+    method @NonNull public String indent(int);
     method public int indexOf(int);
     method public int indexOf(int, int);
     method public int indexOf(@NonNull String);
@@ -3860,6 +3894,7 @@ package java.lang {
     method public boolean startsWith(@NonNull String, int);
     method public boolean startsWith(@NonNull String);
     method @NonNull public String strip();
+    method @NonNull public String stripIndent();
     method @NonNull public String stripLeading();
     method @NonNull public String stripTrailing();
     method @NonNull public CharSequence subSequence(int, int);
@@ -3870,6 +3905,7 @@ package java.lang {
     method @NonNull public String toLowerCase();
     method @NonNull public String toUpperCase(@NonNull java.util.Locale);
     method @NonNull public String toUpperCase();
+    method @NonNull public String translateEscapes();
     method @NonNull public String trim();
     method @NonNull public static String valueOf(@Nullable Object);
     method @NonNull public static String valueOf(char[]);
@@ -4247,6 +4283,7 @@ package java.lang.annotation {
     enum_constant public static final java.lang.annotation.ElementType MODULE;
     enum_constant public static final java.lang.annotation.ElementType PACKAGE;
     enum_constant public static final java.lang.annotation.ElementType PARAMETER;
+    enum_constant public static final java.lang.annotation.ElementType RECORD_COMPONENT;
     enum_constant public static final java.lang.annotation.ElementType TYPE;
     enum_constant public static final java.lang.annotation.ElementType TYPE_PARAMETER;
     enum_constant public static final java.lang.annotation.ElementType TYPE_USE;
@@ -13729,13 +13766,18 @@ package java.util {
 
   public class NoSuchElementException extends java.lang.RuntimeException {
     ctor public NoSuchElementException();
+    ctor public NoSuchElementException(String, Throwable);
+    ctor public NoSuchElementException(Throwable);
     ctor public NoSuchElementException(String);
   }
 
   public final class Objects {
     method public static int checkFromIndexSize(int, int, int);
+    method public static long checkFromIndexSize(long, long, long);
     method public static int checkFromToIndex(int, int, int);
+    method public static long checkFromToIndex(long, long, long);
     method public static int checkIndex(int, int);
+    method public static long checkIndex(long, long);
     method public static <T> int compare(T, T, @NonNull java.util.Comparator<? super T>);
     method public static boolean deepEquals(@Nullable Object, @Nullable Object);
     method public static boolean equals(@Nullable Object, @Nullable Object);
