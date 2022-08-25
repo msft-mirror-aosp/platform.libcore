@@ -3183,6 +3183,7 @@ package java.lang {
     ctor public IndexOutOfBoundsException();
     ctor public IndexOutOfBoundsException(String);
     ctor public IndexOutOfBoundsException(int);
+    ctor public IndexOutOfBoundsException(long);
   }
 
   public class InheritableThreadLocal<T> extends java.lang.ThreadLocal<T> {
@@ -3337,6 +3338,8 @@ package java.lang {
     method public static long abs(long);
     method public static float abs(float);
     method public static double abs(double);
+    method public static int absExact(int);
+    method public static long absExact(long);
     method public static double acos(double);
     method public static int addExact(int, int);
     method public static long addExact(long, long);
@@ -3753,6 +3756,8 @@ package java.lang {
     method public static long abs(long);
     method public static float abs(float);
     method public static double abs(double);
+    method public static int absExact(int);
+    method public static long absExact(long);
     method public static double acos(double);
     method public static int addExact(int, int);
     method public static long addExact(long, long);
@@ -3765,6 +3770,8 @@ package java.lang {
     method public static float copySign(float, float);
     method public static double cos(double);
     method public static double cosh(double);
+    method public static int decrementExact(int);
+    method public static long decrementExact(long);
     method public static double exp(double);
     method public static double expm1(double);
     method public static double floor(double);
@@ -3779,6 +3786,8 @@ package java.lang {
     method public static int getExponent(float);
     method public static int getExponent(double);
     method public static double hypot(double, double);
+    method public static int incrementExact(int);
+    method public static long incrementExact(long);
     method public static double log(double);
     method public static double log10(double);
     method public static double log1p(double);
@@ -3795,6 +3804,8 @@ package java.lang {
     method public static long multiplyExact(long, long);
     method public static long multiplyFull(int, int);
     method public static long multiplyHigh(long, long);
+    method public static int negateExact(int);
+    method public static long negateExact(long);
     method public static double nextAfter(double, double);
     method public static float nextAfter(float, double);
     method public static double nextDown(double);
@@ -3858,11 +3869,13 @@ package java.lang {
     method public boolean equalsIgnoreCase(@Nullable String);
     method @NonNull public static String format(@NonNull String, @NonNull java.lang.Object...);
     method @NonNull public static String format(@NonNull java.util.Locale, @NonNull String, @NonNull java.lang.Object...);
+    method @NonNull public String formatted(@NonNull java.lang.Object...);
     method @Deprecated public void getBytes(int, int, byte[], int);
     method public byte[] getBytes(@NonNull String) throws java.io.UnsupportedEncodingException;
     method public byte[] getBytes(@NonNull java.nio.charset.Charset);
     method public byte[] getBytes();
     method public void getChars(int, int, char[], int);
+    method @NonNull public String indent(int);
     method public int indexOf(int);
     method public int indexOf(int, int);
     method public int indexOf(@NonNull String);
@@ -3892,6 +3905,7 @@ package java.lang {
     method public boolean startsWith(@NonNull String, int);
     method public boolean startsWith(@NonNull String);
     method @NonNull public String strip();
+    method @NonNull public String stripIndent();
     method @NonNull public String stripLeading();
     method @NonNull public String stripTrailing();
     method @NonNull public CharSequence subSequence(int, int);
@@ -3902,6 +3916,7 @@ package java.lang {
     method @NonNull public String toLowerCase();
     method @NonNull public String toUpperCase(@NonNull java.util.Locale);
     method @NonNull public String toUpperCase();
+    method @NonNull public String translateEscapes();
     method @NonNull public String trim();
     method @NonNull public static String valueOf(@Nullable Object);
     method @NonNull public static String valueOf(char[]);
@@ -4279,6 +4294,7 @@ package java.lang.annotation {
     enum_constant public static final java.lang.annotation.ElementType MODULE;
     enum_constant public static final java.lang.annotation.ElementType PACKAGE;
     enum_constant public static final java.lang.annotation.ElementType PARAMETER;
+    enum_constant public static final java.lang.annotation.ElementType RECORD_COMPONENT;
     enum_constant public static final java.lang.annotation.ElementType TYPE;
     enum_constant public static final java.lang.annotation.ElementType TYPE_PARAMETER;
     enum_constant public static final java.lang.annotation.ElementType TYPE_USE;
@@ -13761,13 +13777,18 @@ package java.util {
 
   public class NoSuchElementException extends java.lang.RuntimeException {
     ctor public NoSuchElementException();
+    ctor public NoSuchElementException(String, Throwable);
+    ctor public NoSuchElementException(Throwable);
     ctor public NoSuchElementException(String);
   }
 
   public final class Objects {
     method public static int checkFromIndexSize(int, int, int);
+    method public static long checkFromIndexSize(long, long, long);
     method public static int checkFromToIndex(int, int, int);
+    method public static long checkFromToIndex(long, long, long);
     method public static int checkIndex(int, int);
+    method public static long checkIndex(long, long);
     method public static <T> int compare(T, T, @NonNull java.util.Comparator<? super T>);
     method public static boolean deepEquals(@Nullable Object, @Nullable Object);
     method public static boolean equals(@Nullable Object, @Nullable Object);
