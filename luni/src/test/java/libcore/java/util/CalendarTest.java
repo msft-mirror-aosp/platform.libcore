@@ -361,6 +361,23 @@ public class CalendarTest extends junit.framework.TestCase {
         } catch (UnsupportedOperationException expected) {}
     }
 
+    public void testGetCalendarType() {
+        Calendar cal = new FakeCalendar();
+        assertEquals(FakeCalendar.class.getName(), cal.getCalendarType());
+    }
+
+    public void testGetInstance_withFwExtension() {
+        Locale locale = Locale.forLanguageTag("en-US-u-fw-wed");
+        Calendar cal = Calendar.getInstance(locale);
+        assertEquals(Calendar.WEDNESDAY, cal.getFirstDayOfWeek());
+    }
+
+    public void testGetInstance_withTzExtension() {
+        Locale locale = Locale.forLanguageTag("en-u-tz-usden");
+        Calendar cal = Calendar.getInstance(locale);
+        assertEquals("America/Denver", cal.getTimeZone().getID());
+    }
+
     public static class FakeCalendar extends Calendar {
 
         private int[] subclassFields;

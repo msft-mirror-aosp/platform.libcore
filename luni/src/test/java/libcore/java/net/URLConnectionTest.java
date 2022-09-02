@@ -26,6 +26,9 @@ import com.google.mockwebserver.QueueDispatcher;
 import com.google.mockwebserver.RecordedRequest;
 import com.google.mockwebserver.SocketPolicy;
 
+import java.lang.reflect.Field;
+import java.net.ContentHandler;
+import java.net.ContentHandlerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -564,7 +567,7 @@ public final class URLConnectionTest {
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /foo HTTP/1.1", request.getRequestLine());
-        assertEquals("TLSv1.2", request.getSslProtocol());
+        assertEquals("TLSv1.3", request.getSslProtocol());
     }
 
     @Test public void connectViaHttpsReusingConnections() throws IOException, InterruptedException {
@@ -2285,7 +2288,7 @@ public final class URLConnectionTest {
                     + "CN=Local Host 3, "
                     + "CN=Test Intermediate Certificate Authority 2, "
                     + "CN=Test Root Certificate Authority 1"
-                    + "] ECDHE_RSA"),
+                    + "] GENERIC"),
                     trustManager.calls);
         } finally {
             HttpsURLConnection.setDefaultHostnameVerifier(defaultHostnameVerifier);
@@ -2970,6 +2973,59 @@ public final class URLConnectionTest {
         connection.disconnect();
     }
 
+    @Test public void setContentHandlerFactory() throws Exception {
+        // Verify that the static ContentHandlerFactory is null
+        Field f = URLConnection.class.getDeclaredField("factory");
+        f.setAccessible(true);
+        assertNull(f.get(null));
+
+        try {
+            URLConnection.setContentHandlerFactory(new MockContentHandlerFactory());
+            String msg = "ABC";
+            server.enqueue(new MockResponse()
+                    .addHeader("Content-Type: text/plain")
+                    .setBody(msg));
+            server.enqueue(new MockResponse()
+                    .addHeader("Content-Type: " + MockContentHandlerFactory.HANDLED_MIME_TYPE)
+                    .setBody(msg));
+            server.play();
+
+            HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
+            assertEquals("text/plain", connection.getContentType());
+            assertEquals(msg, readAscii((InputStream) connection.getContent()));
+
+            connection = (HttpURLConnection) server.getUrl("/").openConnection();
+            assertEquals(MockContentHandlerFactory.HANDLED_MIME_TYPE, connection.getContentType());
+            assertEquals(MockContentHandler.CONTENT, connection.getContent());
+        } finally {
+            // reset the static ContentHandlerFactory
+            f.set(null, null);
+        }
+    }
+
+    private static class MockContentHandler extends ContentHandler {
+
+        private static final String CONTENT = "SECRET_CONTENT";
+
+        @Override
+        public Object getContent(URLConnection urlc) throws IOException {
+            return CONTENT;
+        }
+    }
+
+    private static class MockContentHandlerFactory implements ContentHandlerFactory {
+
+        private static final String HANDLED_MIME_TYPE = "text/secret";
+
+        @Override
+        public ContentHandler createContentHandler(String mimetype) {
+            if (HANDLED_MIME_TYPE.equals(mimetype)) {
+                return new MockContentHandler();
+            }
+            return null;
+        }
+    }
+
     // http://b/4361656
     @Test public void urlContainsQueryButNoPath() throws Exception {
         server.enqueue(new MockResponse().setBody("A"));
@@ -3080,7 +3136,7 @@ public final class URLConnectionTest {
     }
 
     @Test public void noSslFallback_specifiedProtocols() throws Exception {
-        String[] enabledProtocols = { "TLSv1.2", "TLSv1.1" };
+        String[] enabledProtocols = { "TLSv1.3", "TLSv1.2", "TLSv1.1" };
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
         SSLSocketFactory serverSocketFactory =
                 new LimitedProtocolsSocketFactory(
@@ -3094,7 +3150,7 @@ public final class URLConnectionTest {
 
     @Test public void noSslFallback_defaultProtocols() throws Exception {
         // Will need to be updated if the enabled protocols in Android's SSLSocketFactory change
-        String[] expectedEnabledProtocols = { "TLSv1.2", "TLSv1.1", "TLSv1" };
+        String[] expectedEnabledProtocols = { "TLSv1.3", "TLSv1.2", "TLSv1.1", "TLSv1" };
 
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
         SSLSocketFactory serverSocketFactory = testSSLContext.serverContext.getSocketFactory();

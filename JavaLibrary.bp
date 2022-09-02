@@ -161,6 +161,12 @@ java_defaults {
             "-Xep:UnicodeInCode:WARN", // XML parser uses line feeds in whitespace
         ],
     },
+    lint: {
+        warning_checks: [
+            "SuspiciousIndentation",
+            "NewApi",
+        ],
+    },
     min_sdk_version: "31",
 }
 
@@ -289,8 +295,6 @@ java_library {
         ],
     },
 
-    notice: "ojluni/NOTICE",
-
     hiddenapi_additional_annotations: [
         "core-oj-hiddenapi-annotations",
     ],
@@ -400,8 +404,6 @@ java_defaults {
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
 
-    notice: "ojluni/NOTICE",
-
     installable: false,
     include_srcs: true,
 }
@@ -457,7 +459,6 @@ java_library {
     sdk_version: "none",
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
-    notice: "ojluni/NOTICE",
     installable: false,
     include_srcs: true,
 }
@@ -519,9 +520,11 @@ java_library_static {
         "//cts/apps/CtsVerifier",
         "//cts/tests/tests/keystore",
         "//cts/tests/tests/net",
+        "//cts/hostsidetests/statsdatom/apps/statsdapp",
         "//cts/tests/tests/net/api23Test",
         "//external/apache-harmony",
         "//frameworks/base/core/tests/coretests",
+        "//frameworks/base/apct-tests/perftests/core",
         "//libcore/benchmarks",
         "//packages/apps/KeyChain/tests",
         "//system/timezone/distro/core",
@@ -531,11 +534,33 @@ java_library_static {
     srcs: ["support/src/test/java/**/*.java"],
 
     sdk_version: "core_platform",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
     libs: ["junit"],
     static_libs: [
         "bouncycastle-unbundled",
         "bouncycastle-bcpkix-unbundled",
         "bouncycastle-ocsp-unbundled",
+    ],
+}
+
+// Used to generate the prebuilt file luni/src/test/resources/prebuilt-dex-from-java.dex.
+// The reason why we pre-build this dex file is to stabilize the test result from the
+// dexer / javac / other toolchains change.
+// Regenerate the prebuilt file with the following command:
+//   m core-tests-prebuilt-dex-from-java &&
+//   unzip out/soong/.intermediates/libcore/core-tests-prebuilt-dex-from-java/android_common/dex/core-tests-prebuilt-dex-from-java.jar classes.dex \
+//   -d libcore/luni/src/test/resources/ && mv libcore/luni/src/test/resources/classes.dex libcore/luni/src/test/resources/prebuilt-dex-from-java.dex
+java_test {
+    name: "core-tests-prebuilt-dex-from-java",
+    srcs: ["luni/src/test/dex_src/**/*.java"],
+    compile_dex: true,
+    defaults: ["libcore_java_defaults"],
+    sdk_version: "none",
+    system_modules: "core-all-system-modules",
+
+    visibility: [
+        "//libcore:__subpackages__",
     ],
 }
 
@@ -666,6 +691,7 @@ java_test {
             "-Xep:TryFailThrowable:ERROR",
             "-Xep:ComparisonOutOfRange:ERROR",
             "-Xep:DoNotCall:OFF",
+            "-Xep:ArrayToString:WARN",
         ],
     },
 
@@ -703,6 +729,12 @@ java_test {
         "junit-params",
         "mockito-target",
     ],
+
+    errorprone: {
+        javacflags: [
+            "-Xep:ArrayToString:WARN",
+        ],
+    },
 }
 
 // Builds the core-ojtests library that contains test code from OpenJDK.
@@ -757,6 +789,7 @@ java_test {
         javacflags: [
             "-Xep:AlwaysThrows:OFF",
             "-Xep:DoNotCall:OFF",
+            "-Xep:ArrayToString:WARN",
         ],
     },
 }
@@ -809,6 +842,7 @@ java_test {
         javacflags: [
             "-Xep:AlwaysThrows:OFF",
             "-Xep:DoNotCall:OFF",
+            "-Xep:ArrayToString:WARN",
         ],
     },
 }
@@ -899,21 +933,6 @@ java_system_modules {
     ],
 }
 
-// http://b/129765390 Rewrite links to "platform" or "technotes" folders
-// which are siblings (and thus outside of) {@docRoot}.
-//
-// We have to escape \ as \\ and $ as $$ here because they get resolved by
-// different layers of the build tooling. The arguments are wrapped in '' so
-// that the shell doesn't add yet another level of escaping.
-rewrite_openjdk_doc_args = "--replace-documentation " +
-    // packages whose descendants to apply replacement to (all packages from
-    // libcore/ojluni/src/main/java that contribute to documentation).
-    "com.sun:java:javax:jdk.net:sun " +
-    // regex of the string to replace
-    "'(<a\\s+href\\s?=[\\*\\s]*\")(?:(?:\\{@docRoot\\}/\\.\\./)|(?:(?:\\.\\./)+))((?:platform|technotes).+)\">' " +
-    // replacement (with $1, $2 backreferences to the regex groups)
-    "'$$1https://docs.oracle.com/javase/8/docs/$$2\">' "
-
 java_library {
     name: "framework-api-annotations-lib",
     srcs: [":framework-api-annotations"],
@@ -934,6 +953,10 @@ java_sdk_library {
         "//build/soong/java/core-libraries",
         "//frameworks/base",
         "//frameworks/base/api",
+
+        // DO NOT REMOVE: Legacy visibility, needed for snapshots that are
+        // generated for the S build.
+        "//libcore/mmodules/core_platform_api",
     ],
     srcs: [
         ":core_oj_api_files",
@@ -974,7 +997,6 @@ java_sdk_library {
 
     api_only: true,
     droiddoc_options: [
-        rewrite_openjdk_doc_args,
         "--force-convert-to-warning-nullability-annotations +*:-android.*:+android.icu.*:-dalvik.* ",
         "--hide-annotation libcore.api.Hide",
     ],
@@ -1105,9 +1127,6 @@ java_system_modules {
 // avoid introducing compile time cycles.
 java_library {
     name: "art.module.api.annotations.for.system.modules",
-    visibility: [
-        "//art/libartservice",
-    ],
     srcs: [
         ":api_surface_annotation_files",
     ],
@@ -1132,4 +1151,6 @@ java_library {
         ":api_surface_annotation_files",
     ],
     sdk_version: "core_current",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
 }
