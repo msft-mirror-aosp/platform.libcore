@@ -54,12 +54,14 @@ license {
     license_text: [
         "LICENSE",
         "NOTICE",
+        "ojluni/NOTICE",
     ],
 }
 
 build = [
     "JavaLibrary.bp",
     "NativeCode.bp",
+    "Extras.bp",
 ]
 
 java_genrule {
