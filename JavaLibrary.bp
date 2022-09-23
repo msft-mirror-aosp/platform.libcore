@@ -531,6 +531,8 @@ java_library_static {
     srcs: ["support/src/test/java/**/*.java"],
 
     sdk_version: "core_platform",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
     libs: ["junit"],
     static_libs: [
         "bouncycastle-unbundled",
@@ -919,6 +921,10 @@ java_sdk_library {
         "//build/soong/java/core-libraries",
         "//frameworks/base",
         "//frameworks/base/api",
+
+        // DO NOT REMOVE: Legacy visibility, needed for snapshots that are
+        // generated for the S build.
+        "//libcore/mmodules/core_platform_api",
     ],
     srcs: [
         ":core_oj_api_files",
@@ -1116,4 +1122,6 @@ java_library {
         ":api_surface_annotation_files",
     ],
     sdk_version: "core_current",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
 }
