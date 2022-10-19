@@ -1048,6 +1048,10 @@ package dalvik.bytecode {
 
 package dalvik.system {
 
+  public final class ApplicationRuntime {
+    method @NonNull public static dalvik.system.DexFile.OptimizationInfo getBaseApkOptimizationInfo();
+  }
+
   public class BaseDexClassLoader extends java.lang.ClassLoader {
     ctor public BaseDexClassLoader(String, java.io.File, String, ClassLoader);
     method public String findLibrary(String);
@@ -1064,7 +1068,7 @@ package dalvik.system {
     ctor public DexClassLoader(String, String, String, ClassLoader);
   }
 
-  @Deprecated public final class DexFile {
+  public final class DexFile {
     ctor @Deprecated public DexFile(java.io.File) throws java.io.IOException;
     ctor @Deprecated public DexFile(String) throws java.io.IOException;
     method @Deprecated public void close() throws java.io.IOException;
@@ -1073,6 +1077,12 @@ package dalvik.system {
     method @Deprecated public static boolean isDexOptNeeded(String) throws java.io.FileNotFoundException, java.io.IOException;
     method @Deprecated public Class loadClass(String, ClassLoader);
     method @Deprecated public static dalvik.system.DexFile loadDex(String, String, int) throws java.io.IOException;
+  }
+
+  public static final class DexFile.OptimizationInfo {
+    method public boolean isFullyCompiled();
+    method public boolean isOptimized();
+    method public boolean isVerified();
   }
 
   public final class InMemoryDexClassLoader extends dalvik.system.BaseDexClassLoader {
@@ -2363,6 +2373,7 @@ package java.lang {
     method public char charAt(int);
     method @NonNull public default java.util.stream.IntStream chars();
     method @NonNull public default java.util.stream.IntStream codePoints();
+    method public static int compare(@NonNull CharSequence, @NonNull CharSequence);
     method public int length();
     method @NonNull public CharSequence subSequence(int, int);
     method @NonNull public String toString();
@@ -3756,8 +3767,8 @@ package java.lang {
     method public void runFinalization();
     method @Deprecated public static void runFinalizersOnExit(boolean);
     method public long totalMemory();
-    method public void traceInstructions(boolean);
-    method public void traceMethodCalls(boolean);
+    method @Deprecated public void traceInstructions(boolean);
+    method @Deprecated public void traceMethodCalls(boolean);
   }
 
   public class RuntimeException extends java.lang.Exception {
@@ -4080,7 +4091,7 @@ package java.lang {
     field public static final java.util.Comparator<java.lang.String> CASE_INSENSITIVE_ORDER;
   }
 
-  public final class StringBuffer implements java.lang.Appendable java.lang.CharSequence java.io.Serializable {
+  public final class StringBuffer implements java.lang.Appendable java.lang.CharSequence java.lang.Comparable<java.lang.StringBuffer> java.io.Serializable {
     ctor public StringBuffer();
     ctor public StringBuffer(int);
     ctor public StringBuffer(@NonNull String);
@@ -4104,6 +4115,7 @@ package java.lang {
     method public int codePointAt(int);
     method public int codePointBefore(int);
     method public int codePointCount(int, int);
+    method public int compareTo(@NonNull StringBuffer);
     method @NonNull public StringBuffer delete(int, int);
     method @NonNull public StringBuffer deleteCharAt(int);
     method public void ensureCapacity(int);
@@ -4136,7 +4148,7 @@ package java.lang {
     method public void trimToSize();
   }
 
-  public final class StringBuilder implements java.lang.Appendable java.lang.CharSequence java.io.Serializable {
+  public final class StringBuilder implements java.lang.Appendable java.lang.CharSequence java.lang.Comparable<java.lang.StringBuilder> java.io.Serializable {
     ctor public StringBuilder();
     ctor public StringBuilder(int);
     ctor public StringBuilder(@NonNull String);
@@ -4160,6 +4172,7 @@ package java.lang {
     method public int codePointAt(int);
     method public int codePointBefore(int);
     method public int codePointCount(int, int);
+    method public int compareTo(@NonNull StringBuilder);
     method @NonNull public StringBuilder delete(int, int);
     method @NonNull public StringBuilder deleteCharAt(int);
     method public void ensureCapacity(int);
