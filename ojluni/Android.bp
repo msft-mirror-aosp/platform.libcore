@@ -46,6 +46,7 @@ license {
         "legacy_unencumbered",
     ],
     license_text: [
+        "LICENSE",
         "NOTICE",
     ],
 }
