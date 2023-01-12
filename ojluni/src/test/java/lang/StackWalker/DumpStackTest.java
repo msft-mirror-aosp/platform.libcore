@@ -40,13 +40,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import org.testng.annotations.Test;
 
 public class DumpStackTest {
 
-    // public static void main(String args[]) {
-    @Test
-    public static void main() {
+    public static void main(String args[]) {
         test();
         testThread();
         testLambda();
@@ -267,6 +264,7 @@ public class DumpStackTest {
         "com.android.cts",
         "org.junit",
         "org.testng",
+        "vogar.target",
     };
     private static final boolean isAndroidTestInfra(String classname) {
         for (String pkg : ANDROID_INFRA_PACKAGES) {

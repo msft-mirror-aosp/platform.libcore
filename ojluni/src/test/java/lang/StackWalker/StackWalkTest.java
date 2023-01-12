@@ -145,6 +145,7 @@ public class StackWalkTest {
                 "com.android.cts",
                 "org.junit",
                 "org.testng",
+                "vogar.target",
             };
             for (String pkg : androidInfraPackages) {
                 if (sf.getClassName().startsWith(pkg)) {
@@ -271,11 +272,7 @@ public class StackWalkTest {
         }
     }
 
-    // Android-changed: Add @Test annotation.
-    // public static void main(String[] args) {
-    @org.testng.annotations.Test
-    public static void main() {
-        String[] args = new String[0];
+    public static void main(String[] args) {
         String rand = "-random";
         String randItems = "-random:";
         for(String arg : args) {
