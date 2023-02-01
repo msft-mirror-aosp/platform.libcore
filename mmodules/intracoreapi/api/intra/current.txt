@@ -38,14 +38,12 @@ package dalvik.annotation.compat {
     field @libcore.api.IntraCoreApi public static final int S = 31; // 0x1f
     field @libcore.api.IntraCoreApi public static final int S_V2 = 32; // 0x20
     field @libcore.api.IntraCoreApi public static final int TIRAMISU = 33; // 0x21
+    field @libcore.api.IntraCoreApi public static final int UPSIDE_DOWN_CAKE = 10000; // 0x2710
   }
 
 }
 
 package dalvik.annotation.optimization {
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) @libcore.api.IntraCoreApi public @interface FastNative {
-  }
 
   @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.METHOD}) @libcore.api.IntraCoreApi public @interface ReachabilitySensitive {
   }
