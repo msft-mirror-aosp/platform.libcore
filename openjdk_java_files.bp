@@ -2,6 +2,7 @@
 // members are hidden using @hide javadoc tags.
 filegroup {
     name: "openjdk_javadoc_files",
+    licenses: ["libcore_ojluni_src_main_license"],
     srcs: [
         "ojluni/src/main/java/java/awt/font/NumericShaper.java",
         "ojluni/src/main/java/java/awt/font/TextAttribute.java",
@@ -235,6 +236,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/StringBuilder.java",
         "ojluni/src/main/java/java/lang/StringIndexOutOfBoundsException.java",
         "ojluni/src/main/java/java/lang/String.java",
+        "ojluni/src/main/java/java/lang/StringLatin1.java",
         "ojluni/src/main/java/java/lang/StringUTF16.java",
         "ojluni/src/main/java/java/lang/SuppressWarnings.java",
         "ojluni/src/main/java/java/lang/System.java",
@@ -357,6 +359,7 @@ filegroup {
         "ojluni/src/main/java/java/net/package-info.java",
         "ojluni/src/main/java/java/nio/Bits.java",
         "ojluni/src/main/java/java/nio/Buffer.java",
+        "ojluni/src/main/java/java/nio/BufferMismatch.java",
         "ojluni/src/main/java/java/nio/BufferOverflowException.java",
         "ojluni/src/main/java/java/nio/BufferUnderflowException.java",
         "ojluni/src/main/java/java/nio/ByteBufferAsCharBuffer.java",
@@ -840,6 +843,7 @@ filegroup {
         "ojluni/src/main/java/java/time/LocalDateTime.java",
         "ojluni/src/main/java/java/time/OffsetDateTime.java",
         "ojluni/src/main/java/java/time/Instant.java",
+        "ojluni/src/main/java/java/time/InstantSource.java",
         "ojluni/src/main/java/java/time/temporal/ValueRange.java",
         "ojluni/src/main/java/java/time/temporal/TemporalAmount.java",
         "ojluni/src/main/java/java/time/temporal/ChronoField.java",
@@ -929,6 +933,7 @@ filegroup {
         "ojluni/src/main/java/java/util/HashMap.java",
         "ojluni/src/main/java/java/util/HashSet.java",
         "ojluni/src/main/java/java/util/Hashtable.java",
+        "ojluni/src/main/java/java/util/HexFormat.java",
         "ojluni/src/main/java/java/util/IdentityHashMap.java",
         "ojluni/src/main/java/java/util/IllegalFormatCodePointException.java",
         "ojluni/src/main/java/java/util/IllegalFormatConversionException.java",
@@ -1129,6 +1134,7 @@ filegroup {
         "ojluni/src/main/java/java/util/stream/TerminalOp.java",
         "ojluni/src/main/java/java/util/stream/TerminalSink.java",
         "ojluni/src/main/java/java/util/stream/Tripwire.java",
+        "ojluni/src/main/java/java/util/stream/WhileOps.java",
         "ojluni/src/main/java/java/util/stream/package-info.java",
         "ojluni/src/main/java/java/util/JumboEnumSet.java",
         "ojluni/src/main/java/java/util/LinkedHashMap.java",
@@ -1214,6 +1220,7 @@ filegroup {
         "ojluni/src/main/java/java/util/Vector.java",
         "ojluni/src/main/java/java/util/WeakHashMap.java",
         "ojluni/src/main/java/java/util/XMLUtils.java",
+        "ojluni/src/main/java/java/util/regex/ASCII.java",
         "ojluni/src/main/java/java/util/regex/PatternSyntaxException.java",
         "ojluni/src/main/java/java/util/regex/Pattern.java",
         "ojluni/src/main/java/java/util/regex/Matcher.java",
@@ -1223,6 +1230,7 @@ filegroup {
         "ojluni/src/main/java/java/util/zip/CheckedOutputStream.java",
         "ojluni/src/main/java/java/util/zip/Checksum.java",
         "ojluni/src/main/java/java/util/zip/CRC32.java",
+        "ojluni/src/main/java/java/util/zip/CRC32C.java",
         "ojluni/src/main/java/java/util/zip/DataFormatException.java",
         "ojluni/src/main/java/java/util/zip/DeflaterInputStream.java",
         "ojluni/src/main/java/java/util/zip/Deflater.java",
@@ -1243,6 +1251,7 @@ filegroup {
         "ojluni/src/main/java/java/util/zip/ZipOutputStream.java",
         "ojluni/src/main/java/java/util/zip/ZipUtils.java",
         "ojluni/src/main/java/java/util/zip/ZStreamRef.java",
+        "ojluni/src/main/java/javax/annotation/processing/Generated.java",
         "ojluni/src/main/java/javax/crypto/AEADBadTagException.java",
         "ojluni/src/main/java/javax/crypto/BadPaddingException.java",
         "ojluni/src/main/java/javax/crypto/CipherInputStream.java",
@@ -1395,6 +1404,7 @@ filegroup {
     visibility: [
         "//libcore:__subpackages__",
     ],
+    licenses: ["libcore_ojluni_src_main_license"],
     srcs: [
         "ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java",
         "ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java",
@@ -1403,27 +1413,13 @@ filegroup {
 
 filegroup {
     name: "openjdk_lambda_duplicate_stub_files",
+    licenses: ["libcore_ojluni_src_main_license"],
     srcs: [
         "ojluni/src/lambda/java/java/lang/invoke/CallSite.java",
         "ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java",
         "ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java",
         "ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java",
         "ojluni/src/lambda/java/java/lang/invoke/MethodType.java",
-    ],
-}
-
-// Stubs needed to satisfy javac when compiling source code that contains
-// @Generated annotations, which are produced by some code generation tools.
-// TODO: Remove this source file, this target, and all its dependencies, if
-// the code generation tools (notably dagger) can be fixed.
-// See http://b/123891440.
-filegroup {
-    name: "openjdk_generated_annotation_stub_files",
-    visibility: [
-        "//libcore:__subpackages__",
-    ],
-    srcs: [
-        "ojluni/src/generated-annotation/java/javax/annotation/processing/Generated.java",
     ],
 }
 
@@ -1437,6 +1433,7 @@ filegroup {
 // libcore.api.IntraCoreApi.
 filegroup {
     name: "openjdk_mmodule_extra_files",
+    licenses: ["libcore_ojluni_src_main_license"],
     srcs: [
         "ojluni/src/main/java/java/nio/DirectByteBuffer.java",
         "ojluni/src/main/java/sun/misc/Cleaner.java",
@@ -1456,6 +1453,7 @@ filegroup {
 // Classes not exposed in any API (either public or mmodule).
 filegroup {
     name: "openjdk_internal_files",
+    licenses: ["libcore_ojluni_src_main_license"],
     srcs: [
         "ojluni/src/main/java/com/sun/net/ssl/internal/ssl/X509ExtendedTrustManager.java",
         "ojluni/src/main/java/com/sun/security/cert/internal/x509/X509V1CertImpl.java",
@@ -1467,6 +1465,7 @@ filegroup {
         "ojluni/src/main/java/java/time/zone/IcuZoneRulesProvider.java",
         "ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java",
         "ojluni/src/main/java/java/util/ImmutableCollections.java",
+        "ojluni/src/main/java/java/util/LocaleISOData.java",
         "ojluni/src/main/java/java/util/KeyValueHolder.java",
         "ojluni/src/main/java/java/util/JapaneseImperialCalendar.java",
         "ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java",
@@ -1478,7 +1477,9 @@ filegroup {
         "ojluni/src/main/java/jdk/internal/misc/JavaIOFileDescriptorAccess.java",
         "ojluni/src/main/java/jdk/internal/misc/JavaObjectInputStreamAccess.java",
         "ojluni/src/main/java/jdk/internal/misc/SharedSecrets.java",
+        "ojluni/src/main/java/jdk/internal/misc/TerminatingThreadLocal.java",
         "ojluni/src/main/java/jdk/internal/misc/Unsafe.java",
+        "ojluni/src/main/java/jdk/internal/misc/UnsafeConstants.java",
         "ojluni/src/main/java/jdk/internal/misc/VM.java",
         "ojluni/src/main/java/jdk/internal/ref/Cleaner.java",
         "ojluni/src/main/java/jdk/internal/ref/CleanerFactory.java",
@@ -1487,6 +1488,7 @@ filegroup {
         "ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java",
         "ojluni/src/main/java/jdk/internal/reflect/Reflection.java",
         "ojluni/src/main/java/jdk/internal/vm/annotation/Contended.java",
+        "ojluni/src/main/java/jdk/internal/vm/annotation/IntrinsicCandidate.java",
         "ojluni/src/main/java/jdk/internal/vm/annotation/ReservedStackAccess.java",
         "ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java",
         "ojluni/src/main/java/jdk/internal/util/ArraysSupport.java",
@@ -1874,7 +1876,6 @@ filegroup {
         ":openjdk_mmodule_extra_files",
         ":openjdk_internal_files",
         ":openjdk_lambda_stub_files",
-        ":openjdk_generated_annotation_stub_files",
     ],
 }
 

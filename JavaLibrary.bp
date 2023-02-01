@@ -149,20 +149,38 @@ filegroup {
 
 java_defaults {
     name: "libcore_java_defaults",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     javacflags: [
         //"-Xlint:all",
         //"-Xlint:-serial,-deprecation,-unchecked",
     ],
-    dxflags: ["--core-library"],
+    dxflags: [
+        "--android-platform-build",
+        "--core-library",
+    ],
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF", // Ignore missing @Override.
             "-Xep:ConstantOverflow:WARN", // Known constant overflow in SplittableRandom
             "-Xep:UnicodeInCode:WARN", // XML parser uses line feeds in whitespace
+            "-Xep:ReturnValueIgnored:WARN",
+            "-Xep:HashtableContains:WARN",
+            "-Xep:ComparableType:WARN",
+            "-Xep:IdentityBinaryExpression:WARN",
+            "-Xep:BoxedPrimitiveEquality:WARN",
+            "-Xep:EmptyTopLevelDeclaration:WARN",
+            "-Xep:GetClassOnClass:WARN",
+            "-Xep:NullableOnContainingClass:WARN",
+            "-Xep:GetClassOnAnnotation:WARN",
         ],
     },
     lint: {
-        warning_checks: ["SuspiciousIndentation"],
+        warning_checks: [
+            "SuspiciousIndentation",
+            "NewApi",
+        ],
     },
     min_sdk_version: "31",
 }
@@ -188,7 +206,6 @@ java_library {
         // framework-api-annotations contain API annotations, e.g. @SystemApi.
         ":framework-api-annotations",
         ":openjdk_lambda_stub_files",
-        ":openjdk_generated_annotation_stub_files",
         ":app-compat-annotations-source",
 
         // Use the okhttp source too to allow libcore code to reference it
@@ -295,6 +312,18 @@ java_library {
     hiddenapi_additional_annotations: [
         "core-oj-hiddenapi-annotations",
     ],
+
+    errorprone: {
+        javacflags: [
+            "-Xep:ReturnValueIgnored:WARN",
+            "-Xep:HashtableContains:WARN",
+            "-Xep:ComparableType:WARN",
+            "-Xep:IdentityBinaryExpression:WARN",
+            "-Xep:BoxedPrimitiveEquality:WARN",
+            "-Xep:EmptyTopLevelDeclaration:WARN",
+            "-Xep:GetClassOnClass:WARN",
+        ],
+    },
 }
 
 // Contains parts of core library not associated with OpenJDK. Contains not
@@ -347,6 +376,14 @@ java_library {
             enabled: false,
         },
     },
+
+    errorprone: {
+        javacflags: [
+            "-Xep:EmptyTopLevelDeclaration:WARN",
+            "-Xep:GetClassOnAnnotation:WARN",
+            "-Xep:NullableOnContainingClass:WARN",
+        ],
+    },
 }
 
 // Java library for use on host, e.g. by robolectric or layoutlib.
@@ -354,6 +391,7 @@ java_library {
     name: "core-libart-for-host",
     visibility: [
         "//art/build/sdk",
+        "//external/robolectric",
         "//external/robolectric-shadows",
         "//frameworks/layoutlib",
     ],
@@ -380,7 +418,7 @@ java_library {
 java_library {
     name: "core-oj-hiddenapi-annotations",
     // Do not allow this to be accessed from outside this directory.
-    visibility: ["//visibility:private"],
+    visibility: ["//libcore:__subpackages__"],
     defaults: ["libcore_java_defaults"],
     compile_dex: true,
 
@@ -390,6 +428,12 @@ java_library {
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
     plugins: ["unsupportedappusage-annotation-processor"],
+
+    errorprone: {
+        javacflags: [
+            "-Xep:ComparableType:WARN",
+        ],
+    },
 }
 
 java_defaults {
@@ -430,6 +474,7 @@ java_library {
     visibility: [
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
+        "//frameworks/base",
     ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
@@ -438,19 +483,20 @@ java_library {
     include_srcs: true,
 }
 
-// Creates a jar that exists to satisfy javac when compiling source code that
-// contains @Generated annotations, which are produced by some code generation
-// tools (notably dagger) but aren't part of the Android API.
-// See http://b/123891440.
+// This is an empty jar that exists for backwards compatibility with T (and below).
+// Historically, it existed to satisfy javac when compiling source code that
+// contains @Generated annotations.
+// This is no longer necessary since @Generated was added to ART's Public API
+// surface in U.
 java_library {
     name: "core-generated-annotation-stubs",
     visibility: [
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
+        "//frameworks/base",
     ],
     defaults: ["libcore_java_defaults"],
     srcs: [
-        ":openjdk_generated_annotation_stub_files",
     ],
     hostdex: true,
     sdk_version: "none",
@@ -507,6 +553,13 @@ java_library_static {
     // This builds classes that are in the java.base Java module:
     patch_module: "java.base",
     hostdex: true,
+
+    errorprone: {
+        javacflags: [
+            "-Xep:EmptyTopLevelDeclaration:WARN",
+            "-Xep:GetClassOnAnnotation:WARN",
+        ],
+    },
 }
 
 // Builds the core-tests-support library used by various tests.
@@ -531,12 +584,19 @@ java_library_static {
     srcs: ["support/src/test/java/**/*.java"],
 
     sdk_version: "core_platform",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
     libs: ["junit"],
     static_libs: [
         "bouncycastle-unbundled",
         "bouncycastle-bcpkix-unbundled",
         "bouncycastle-ocsp-unbundled",
     ],
+    errorprone: {
+        javacflags: [
+            "-Xep:BoxedPrimitiveEquality:WARN",
+        ],
+    },
 }
 
 // Used to generate the prebuilt file luni/src/test/resources/prebuilt-dex-from-java.dex.
@@ -575,6 +635,9 @@ java_test {
     errorprone: {
         javacflags: [
             "-Xep:DoNotCall:OFF",
+            "-Xep:ModifyingCollectionWithItself:WARN",
+            "-Xep:ReturnValueIgnored:WARN",
+            "-Xep:HashtableContains:WARN",
         ],
     },
 }
@@ -609,6 +672,18 @@ filegroup {
     path: "ojluni/src",
     srcs: ["ojluni/src/test/javax/**/*"],
     exclude_srcs: ["ojluni/src/test/javax/**/*.java"],
+}
+
+filegroup {
+    name: "core-ojtests-java-resources",
+    // Set path to keep the resources and .class files in the same directory in the jar file.
+    path: "ojluni/src",
+    srcs: [
+        "ojluni/src/test/java/util/regex/**/*",
+        "ojluni/src/test/java/util/Base64/**/*",
+        "ojluni/src/test/java/util/Scanner/**/*",
+    ],
+    exclude_srcs: ["ojluni/src/test/java/**/*.java"],
 }
 
 // Builds the core-tests library.
@@ -678,7 +753,6 @@ java_test {
         "nist-pkix-tests",
         "slf4j-jdk14",
         "sqlite-jdbc",
-        "truth-prebuilt-jar",
     ],
 
     errorprone: {
@@ -686,6 +760,22 @@ java_test {
             "-Xep:TryFailThrowable:ERROR",
             "-Xep:ComparisonOutOfRange:ERROR",
             "-Xep:DoNotCall:OFF",
+            "-Xep:ArrayToString:WARN",
+            "-Xep:SelfEquals:WARN",
+            "-Xep:SelfComparison:WARN",
+            "-Xep:ReturnValueIgnored:WARN",
+            "-Xep:BoxedPrimitiveEquality:WARN",
+            "-Xep:SizeGreaterThanOrEqualsZero:WARN",
+            "-Xep:MisusedDayOfYear:WARN",
+            "-Xep:InvalidTimeZoneID:WARN",
+            "-Xep:CollectionToArraySafeParameter:WARN",
+            "-Xep:ModifyingCollectionWithItself:WARN",
+            "-Xep:ComparableType:WARN",
+            "-Xep:UnusedCollectionModifiedInPlace:WARN",
+            "-Xep:HashtableContains:WARN",
+            "-Xep:DoubleBraceInitialization:WARN",
+            "-Xep:RandomModInteger:WARN",
+            "-Xep:IdentityBinaryExpression:WARN",
         ],
     },
 
@@ -723,112 +813,11 @@ java_test {
         "junit-params",
         "mockito-target",
     ],
-}
-
-// Builds the core-ojtests library that contains test code from OpenJDK.
-java_test {
-    name: "core-ojtests",
-    defaults: ["libcore_java_defaults"],
-    hostdex: true,
-
-    srcs: [
-        "ojluni/src/test/java/**/*.java",
-        "ojluni/src/test/javax/**/*.java",
-        "ojluni/src/test/sun/**/*.java",
-    ],
-    java_resource_dirs: [
-        "ojluni/src/test/java",
-        "ojluni/src/test/resources",
-    ],
-
-    java_resources: [
-        ":core-ojtests-javax-resources",
-    ],
-
-    sdk_version: "none",
-    system_modules: "core-all-system-modules",
-    libs: [
-        "okhttp",
-        "bouncycastle",
-    ],
-
-    static_libs: [
-        "junit",
-        "testng",
-    ],
-
-    // ojluni/src/test/java/util/stream/{bootlib,boottest}
-    // contains tests that are in packages from java.base;
-    // By default, OpenJDK 9's javac will only compile such
-    // code if it's declared to also be in java.base at
-    // compile time.
-    //
-    // For now, we use patch_module to put all sources
-    // and dependencies from this make target into java.base;
-    // other source directories in this make target are in
-    // packages not from java.base; if this becomes a problem
-    // in future, this could be addressed eg. by splitting
-    // boot{lib,test} out into a separate make target,
-    // deleting those tests or moving them to a different
-    // package.
-    patch_module: "java.base",
 
     errorprone: {
         javacflags: [
-            "-Xep:AlwaysThrows:OFF",
-            "-Xep:DoNotCall:OFF",
-        ],
-    },
-}
-
-// Builds the core-ojtests-public library. Excludes any private API tests.
-// Like core-ojtests but smaller.
-java_test {
-    name: "core-ojtests-public",
-    visibility: [
-        "//art/build/sdk",
-        "//cts/tests/libcore/ojluni",
-    ],
-    defaults: ["libcore_java_defaults"],
-    srcs: [
-        "ojluni/src/test/java/**/*.java",
-        "ojluni/src/test/javax/**/*.java",
-        "ojluni/src/test/sun/**/*.java",
-    ],
-    // Filter out the following:
-    // 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
-    //     and won't actually run, and
-    // 2.) util/stream/boot*. Those directories contain classes in the package java.util.stream;
-    //     excluding them means we don't need patch_module: "java.base"
-    exclude_srcs: [
-        "**/DeserializeMethodTest.java",
-        "**/SerializedLambdaTest.java",
-        "ojluni/src/test/java/util/stream/boot*/**/*",
-    ],
-    java_resource_dirs: [
-        "ojluni/src/test/java",
-        "ojluni/src/test/resources",
-        // Include source code as part of JAR
-        "ojluni/src/test/dist",
-    ],
-
-    java_resources: [
-        ":core-ojtests-javax-resources",
-    ],
-
-    sdk_version: "none",
-    system_modules: "core-all-system-modules",
-    libs: [
-        "bouncycastle",
-        "junit",
-        "okhttp",
-        "testng",
-    ],
-
-    errorprone: {
-        javacflags: [
-            "-Xep:AlwaysThrows:OFF",
-            "-Xep:DoNotCall:OFF",
+            "-Xep:ArrayToString:WARN",
+            "-Xep:ReturnValueIgnored:WARN",
         ],
     },
 }
@@ -954,7 +943,6 @@ java_sdk_library {
         // in openjdk_java_files.bp for more details.
         ":openjdk_mmodule_extra_files",
         ":okhttp_api_files",
-
     ],
     libs: [
         // Put framework-api-annotations into libs to avoid exposing the definition of framework's
@@ -1017,58 +1005,6 @@ java_sdk_library {
     dist_group: "android",
 }
 
-// Used when compiling higher-level code against art.module.public.api.stubs.
-//
-// This is only intended for use within core libraries and must not be used
-// from outside.
-java_system_modules {
-    name: "art-module-public-api-stubs-system-modules",
-    visibility: [
-        "//art/build/sdk",
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-        "//external/wycheproof",
-    ],
-    libs: [
-        "art.module.public.api.stubs",
-        // This one is not on device but it's needed when javac compiles code
-        // containing lambdas.
-        "core-lambda-stubs-for-system-modules",
-        // This one is not on device but it's needed when javac compiles code
-        // containing @Generated annotations produced by some code generation
-        // tools.
-        // See http://b/123891440.
-        "core-generated-annotation-stubs",
-
-        // Ensure that core libraries that depend on the public API can access
-        // the UnsupportedAppUsage, CorePlatformApi and IntraCoreApi
-        // annotations.
-        "art.module.api.annotations.for.system.modules",
-
-        // Make nullability annotations available when compiling public stubs.
-        // They are provided as a separate library because while the
-        // annotations are not themselves part of the public API provided by
-        // this module they are used in the stubs.
-        "stub-annotations",
-    ],
-}
-
-// Used when compiling higher-level code against art.module.public.api.stubs.module_lib.
-//
-// This is only intended for use within core libraries and must not be used
-// from outside.
-java_system_modules {
-    name: "art-module-lib-api-stubs-system-modules",
-    visibility: [
-        "//art/build/sdk",
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-    ],
-    libs: [
-        "art.module.public.api.stubs.module_lib",
-    ],
-}
-
 // Target for validating nullability annotations for correctness and
 // completeness. To check that there are no nullability errors:
 //   m art-module-public-api-stubs-nullability-validation
@@ -1113,6 +1049,9 @@ java_system_modules {
 // avoid introducing compile time cycles.
 java_library {
     name: "art.module.api.annotations.for.system.modules",
+    visibility: [
+        "//build/soong/java/core-libraries",
+    ],
     srcs: [
         ":api_surface_annotation_files",
     ],
@@ -1137,4 +1076,33 @@ java_library {
         ":api_surface_annotation_files",
     ],
     sdk_version: "core_current",
+    // Make sure that this will be added to the sdk snapshot for S.
+    min_sdk_version: "S",
+}
+
+java_api_contribution {
+    name: "art-module-public-api-public-stubs",
+    api_surface: "public",
+    api_file: "api/current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
+}
+
+java_api_contribution {
+    name: "art-module-public-api-module-lib-stubs",
+    api_surface: "module-lib",
+    api_file: "api/module-lib-current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
+}
+
+java_api_contribution {
+    name: "art-module-public-api-system-stubs",
+    api_surface: "system",
+    api_file: "api/system-current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
 }
