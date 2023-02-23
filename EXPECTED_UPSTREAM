@@ -1641,12 +1641,13 @@ ojluni/src/main/java/sun/security/provider/certpath/X509CertificatePair.java,jdk
 ojluni/src/main/java/sun/security/timestamp/TimestampToken.java,jdk8u/jdk8u60-b31,jdk/src/share/classes/sun/security/timestamp/TimestampToken.java
 ojluni/src/main/java/sun/security/util/AbstractAlgorithmConstraints.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/AbstractAlgorithmConstraints.java
 ojluni/src/main/java/sun/security/util/AlgorithmDecomposer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/AlgorithmDecomposer.java
-ojluni/src/main/java/sun/security/util/AnchorCertificates.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/AnchorCertificates.java
+ojluni/src/main/java/sun/security/util/AnchorCertificates.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/AnchorCertificates.java
 ojluni/src/main/java/sun/security/util/BitArray.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/BitArray.java
 ojluni/src/main/java/sun/security/util/ByteArrayLexOrder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/ByteArrayLexOrder.java
 ojluni/src/main/java/sun/security/util/ByteArrayTagOrder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/ByteArrayTagOrder.java
 ojluni/src/main/java/sun/security/util/Cache.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/Cache.java
 ojluni/src/main/java/sun/security/util/CertConstraintParameters.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/CertConstraintParameters.java
+ojluni/src/main/java/sun/security/util/ConstraintsParameters.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/ConstraintsParameters.java
 ojluni/src/main/java/sun/security/util/Debug.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/Debug.java
 ojluni/src/main/java/sun/security/util/DerEncoder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/DerEncoder.java
 ojluni/src/main/java/sun/security/util/DerIndefLenConverter.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/DerIndefLenConverter.java
@@ -1655,6 +1656,7 @@ ojluni/src/main/java/sun/security/util/DerInputStream.java,jdk8u/jdk8u121-b13,jd
 ojluni/src/main/java/sun/security/util/DerOutputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/DerOutputStream.java
 ojluni/src/main/java/sun/security/util/DerValue.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/DerValue.java
 ojluni/src/main/java/sun/security/util/DisabledAlgorithmConstraints.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/DisabledAlgorithmConstraints.java
+ojluni/src/main/java/sun/security/util/FilePaths.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/FilePaths.java
 ojluni/src/main/java/sun/security/util/KeyUtil.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/KeyUtil.java
 ojluni/src/main/java/sun/security/util/Length.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/Length.java
 ojluni/src/main/java/sun/security/util/ManifestDigester.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/ManifestDigester.java
@@ -1824,12 +1826,13 @@ ojluni/src/main/native/io_util_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/jav
 ojluni/src/main/native/jlong.h,jdk17u/jdk-17.0.6-ga,src/java.base/share/native/libjava/jlong.h
 ojluni/src/main/native/jlong_md.h,jdk17u/jdk-17.0.6-ga,src/java.base/unix/native/libjava/jlong_md.h
 ojluni/src/main/native/jni_util.c,jdk8u/jdk8u60-b31,jdk/src/share/native/common/jni_util.c
-ojluni/src/main/native/jni_util_md.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/common/jni_util_md.c
+ojluni/src/main/native/jni_util_md.c,jdk17u/jdk-17.0.6-ga,src/java.base/unix/native/libjava/jni_util_md.c
 ojluni/src/main/native/linux_close.cpp,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/linux_close.c
 ojluni/src/main/native/net_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/net/net_util.c
 ojluni/src/main/native/net_util_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/net_util_md.c
 # socket_tagger_util.cpp doesn’t come from the upstream OpenJDK.
-ojluni/src/main/native/zip_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/util/zip/zip_util.c
+ojluni/src/main/native/zip_util.c,jdk17u/jdk-17.0.6-ga,src/java.base/share/native/libzip/zip_util.c
+ojluni/src/main/native/zip_util.h,jdk17u/jdk-17.0.6-ga,src/java.base/share/native/libzip/zip_util.h
 ojluni/src/main/resources/calendars.properties,jdk8u/jdk8u212-b01,jdk/src/share/lib/calendars.properties
 ojluni/src/main/resources/java/time/chrono/hijrah-config-Hijrah-umalqura_islamic-umalqura.properties,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/time/chrono/hijrah-config-Hijrah-umalqura_islamic-umalqura.properties
 ojluni/src/test/java/io/Reader/NullReader.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/NullReader.java
