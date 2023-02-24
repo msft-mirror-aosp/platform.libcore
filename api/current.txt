@@ -315,7 +315,9 @@ package android.system {
     field public static final int IFA_F_DADFAILED;
     field public static final int IFA_F_DEPRECATED;
     field public static final int IFA_F_HOMEADDRESS;
+    field public static final int IFA_F_MANAGETEMPADDR;
     field public static final int IFA_F_NODAD;
+    field public static final int IFA_F_NOPREFIXROUTE;
     field public static final int IFA_F_OPTIMISTIC;
     field public static final int IFA_F_PERMANENT;
     field public static final int IFA_F_SECONDARY;
@@ -748,6 +750,16 @@ package dalvik.annotation {
 
   @Deprecated @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE}) public @interface TestTargetClass {
     method @Deprecated public abstract Class<?> value();
+  }
+
+}
+
+package dalvik.annotation.optimization {
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) public @interface CriticalNative {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) public @interface FastNative {
   }
 
 }
@@ -6120,6 +6132,7 @@ package java.nio {
     method public abstract int arrayOffset();
     method public final int capacity();
     method public java.nio.Buffer clear();
+    method public abstract java.nio.Buffer duplicate();
     method public java.nio.Buffer flip();
     method public abstract boolean hasArray();
     method public final boolean hasRemaining();
@@ -6133,6 +6146,8 @@ package java.nio {
     method public final int remaining();
     method public java.nio.Buffer reset();
     method public java.nio.Buffer rewind();
+    method public abstract java.nio.Buffer slice();
+    method public abstract java.nio.Buffer slice(int, int);
   }
 
   public class BufferOverflowException extends java.lang.RuntimeException {
@@ -6177,6 +6192,7 @@ package java.nio {
     method public abstract short getShort();
     method public abstract short getShort(int);
     method public final boolean hasArray();
+    method public int mismatch(@NonNull java.nio.ByteBuffer);
     method @NonNull public final java.nio.ByteOrder order();
     method @NonNull public final java.nio.ByteBuffer order(@NonNull java.nio.ByteOrder);
     method @NonNull public abstract java.nio.ByteBuffer put(byte);
@@ -6197,6 +6213,7 @@ package java.nio {
     method @NonNull public abstract java.nio.ByteBuffer putShort(short);
     method @NonNull public abstract java.nio.ByteBuffer putShort(int, short);
     method @NonNull public abstract java.nio.ByteBuffer slice();
+    method @NonNull public abstract java.nio.ByteBuffer slice(int, int);
     method @NonNull public static java.nio.ByteBuffer wrap(@NonNull byte[], int, int);
     method @NonNull public static java.nio.ByteBuffer wrap(@NonNull byte[]);
   }
@@ -6224,7 +6241,9 @@ package java.nio {
     method public java.nio.CharBuffer get(char[], int, int);
     method public java.nio.CharBuffer get(char[]);
     method public final boolean hasArray();
+    method public final boolean isEmpty();
     method public final int length();
+    method public int mismatch(java.nio.CharBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.CharBuffer put(char);
     method public abstract java.nio.CharBuffer put(int, char);
@@ -6235,6 +6254,7 @@ package java.nio {
     method public final java.nio.CharBuffer put(String);
     method public int read(java.nio.CharBuffer) throws java.io.IOException;
     method public abstract java.nio.CharBuffer slice();
+    method public abstract java.nio.CharBuffer slice(int, int);
     method public abstract java.nio.CharBuffer subSequence(int, int);
     method public static java.nio.CharBuffer wrap(char[], int, int);
     method public static java.nio.CharBuffer wrap(char[]);
@@ -6255,6 +6275,7 @@ package java.nio {
     method public java.nio.DoubleBuffer get(double[], int, int);
     method public java.nio.DoubleBuffer get(double[]);
     method public final boolean hasArray();
+    method public int mismatch(java.nio.DoubleBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.DoubleBuffer put(double);
     method public abstract java.nio.DoubleBuffer put(int, double);
@@ -6262,6 +6283,7 @@ package java.nio {
     method public java.nio.DoubleBuffer put(double[], int, int);
     method public final java.nio.DoubleBuffer put(double[]);
     method public abstract java.nio.DoubleBuffer slice();
+    method public abstract java.nio.DoubleBuffer slice(int, int);
     method public static java.nio.DoubleBuffer wrap(double[], int, int);
     method public static java.nio.DoubleBuffer wrap(double[]);
   }
@@ -6279,6 +6301,7 @@ package java.nio {
     method public java.nio.FloatBuffer get(float[], int, int);
     method public java.nio.FloatBuffer get(float[]);
     method public final boolean hasArray();
+    method public int mismatch(java.nio.FloatBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.FloatBuffer put(float);
     method public abstract java.nio.FloatBuffer put(int, float);
@@ -6286,6 +6309,7 @@ package java.nio {
     method public java.nio.FloatBuffer put(float[], int, int);
     method public final java.nio.FloatBuffer put(float[]);
     method public abstract java.nio.FloatBuffer slice();
+    method public abstract java.nio.FloatBuffer slice(int, int);
     method public static java.nio.FloatBuffer wrap(float[], int, int);
     method public static java.nio.FloatBuffer wrap(float[]);
   }
@@ -6303,6 +6327,7 @@ package java.nio {
     method public java.nio.IntBuffer get(int[], int, int);
     method public java.nio.IntBuffer get(int[]);
     method public final boolean hasArray();
+    method public int mismatch(java.nio.IntBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.IntBuffer put(int);
     method public abstract java.nio.IntBuffer put(int, int);
@@ -6310,6 +6335,7 @@ package java.nio {
     method public java.nio.IntBuffer put(int[], int, int);
     method public final java.nio.IntBuffer put(int[]);
     method public abstract java.nio.IntBuffer slice();
+    method public abstract java.nio.IntBuffer slice(int, int);
     method public static java.nio.IntBuffer wrap(int[], int, int);
     method public static java.nio.IntBuffer wrap(int[]);
   }
@@ -6331,6 +6357,7 @@ package java.nio {
     method public java.nio.LongBuffer get(long[], int, int);
     method public java.nio.LongBuffer get(long[]);
     method public final boolean hasArray();
+    method public int mismatch(java.nio.LongBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.LongBuffer put(long);
     method public abstract java.nio.LongBuffer put(int, long);
@@ -6338,6 +6365,7 @@ package java.nio {
     method public java.nio.LongBuffer put(long[], int, int);
     method public final java.nio.LongBuffer put(long[]);
     method public abstract java.nio.LongBuffer slice();
+    method public abstract java.nio.LongBuffer slice(int, int);
     method public static java.nio.LongBuffer wrap(long[], int, int);
     method public static java.nio.LongBuffer wrap(long[]);
   }
@@ -6346,6 +6374,7 @@ package java.nio {
     method public final java.nio.MappedByteBuffer force();
     method public final boolean isLoaded();
     method public final java.nio.MappedByteBuffer load();
+    method public abstract java.nio.MappedByteBuffer slice(int, int);
   }
 
   public class ReadOnlyBufferException extends java.lang.UnsupportedOperationException {
@@ -6365,6 +6394,7 @@ package java.nio {
     method public java.nio.ShortBuffer get(short[], int, int);
     method public java.nio.ShortBuffer get(short[]);
     method public final boolean hasArray();
+    method public int mismatch(java.nio.ShortBuffer);
     method public abstract java.nio.ByteOrder order();
     method public abstract java.nio.ShortBuffer put(short);
     method public abstract java.nio.ShortBuffer put(int, short);
@@ -6372,6 +6402,7 @@ package java.nio {
     method public java.nio.ShortBuffer put(short[], int, int);
     method public final java.nio.ShortBuffer put(short[]);
     method public abstract java.nio.ShortBuffer slice();
+    method public abstract java.nio.ShortBuffer slice(int, int);
     method public static java.nio.ShortBuffer wrap(short[], int, int);
     method public static java.nio.ShortBuffer wrap(short[]);
   }
@@ -10581,7 +10612,7 @@ package java.text {
     method public final boolean equals(Object);
     method protected String getName();
     method public final int hashCode();
-    method protected Object readResolve() throws java.io.InvalidObjectException;
+    method @java.io.Serial protected Object readResolve() throws java.io.InvalidObjectException;
     field public static final java.text.AttributedCharacterIterator.Attribute INPUT_METHOD_SEGMENT;
     field public static final java.text.AttributedCharacterIterator.Attribute LANGUAGE;
     field public static final java.text.AttributedCharacterIterator.Attribute READING;
@@ -10880,6 +10911,7 @@ package java.text {
     method public String getInternationalCurrencySymbol();
     method public char getMinusSign();
     method public char getMonetaryDecimalSeparator();
+    method public char getMonetaryGroupingSeparator();
     method public String getNaN();
     method public char getPatternSeparator();
     method public char getPerMill();
@@ -10895,6 +10927,7 @@ package java.text {
     method public void setInternationalCurrencySymbol(String);
     method public void setMinusSign(char);
     method public void setMonetaryDecimalSeparator(char);
+    method public void setMonetaryGroupingSeparator(char);
     method public void setNaN(String);
     method public void setPatternSeparator(char);
     method public void setPerMill(char);
@@ -11082,12 +11115,10 @@ package java.text {
 
 package java.time {
 
-  public abstract class Clock {
+  public abstract class Clock implements java.time.InstantSource {
     ctor protected Clock();
     method public static java.time.Clock fixed(java.time.Instant, java.time.ZoneId);
     method public abstract java.time.ZoneId getZone();
-    method public abstract java.time.Instant instant();
-    method public long millis();
     method public static java.time.Clock offset(java.time.Clock, java.time.Duration);
     method public static java.time.Clock system(java.time.ZoneId);
     method public static java.time.Clock systemDefaultZone();
@@ -11220,6 +11251,16 @@ package java.time {
     field public static final java.time.Instant EPOCH;
     field public static final java.time.Instant MAX;
     field public static final java.time.Instant MIN;
+  }
+
+  public interface InstantSource {
+    method public static java.time.InstantSource fixed(java.time.Instant);
+    method public java.time.Instant instant();
+    method public default long millis();
+    method public static java.time.InstantSource offset(java.time.InstantSource, java.time.Duration);
+    method public static java.time.InstantSource system();
+    method public static java.time.InstantSource tick(java.time.InstantSource, java.time.Duration);
+    method public default java.time.Clock withZone(java.time.ZoneId);
   }
 
   public final class LocalDate implements java.time.chrono.ChronoLocalDate java.io.Serializable java.time.temporal.Temporal java.time.temporal.TemporalAdjuster {
@@ -14342,6 +14383,7 @@ package java.util {
   }
 
   public final class ServiceLoader<S> implements java.lang.Iterable<S> {
+    method public java.util.Optional<S> findFirst();
     method public java.util.Iterator<S> iterator();
     method public static <S> java.util.ServiceLoader<S> load(Class<S>, ClassLoader);
     method public static <S> java.util.ServiceLoader<S> load(Class<S>);
@@ -14843,6 +14885,11 @@ package java.util.concurrent {
     method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit, java.util.concurrent.Executor);
     method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit);
     method public java.util.concurrent.CompletableFuture<T> exceptionally(java.util.function.Function<java.lang.Throwable,? extends T>);
+    method public java.util.concurrent.CompletableFuture<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>);
+    method public java.util.concurrent.CompletableFuture<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>, java.util.concurrent.Executor);
+    method public java.util.concurrent.CompletableFuture<T> exceptionallyCompose(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>);
+    method public java.util.concurrent.CompletableFuture<T> exceptionallyComposeAsync(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>);
+    method public java.util.concurrent.CompletableFuture<T> exceptionallyComposeAsync(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>, java.util.concurrent.Executor);
     method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(Throwable);
     method public static <U> java.util.concurrent.CompletionStage<U> failedStage(Throwable);
     method public T get() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
@@ -14921,6 +14968,11 @@ package java.util.concurrent {
     method public <U> java.util.concurrent.CompletionStage<U> applyToEitherAsync(java.util.concurrent.CompletionStage<? extends T>, java.util.function.Function<? super T,U>);
     method public <U> java.util.concurrent.CompletionStage<U> applyToEitherAsync(java.util.concurrent.CompletionStage<? extends T>, java.util.function.Function<? super T,U>, java.util.concurrent.Executor);
     method public java.util.concurrent.CompletionStage<T> exceptionally(java.util.function.Function<java.lang.Throwable,? extends T>);
+    method public default java.util.concurrent.CompletionStage<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>);
+    method public default java.util.concurrent.CompletionStage<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>, java.util.concurrent.Executor);
+    method public default java.util.concurrent.CompletionStage<T> exceptionallyCompose(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>);
+    method public default java.util.concurrent.CompletionStage<T> exceptionallyComposeAsync(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>);
+    method public default java.util.concurrent.CompletionStage<T> exceptionallyComposeAsync(java.util.function.Function<java.lang.Throwable,? extends java.util.concurrent.CompletionStage<T>>, java.util.concurrent.Executor);
     method public <U> java.util.concurrent.CompletionStage<U> handle(java.util.function.BiFunction<? super T,java.lang.Throwable,? extends U>);
     method public <U> java.util.concurrent.CompletionStage<U> handleAsync(java.util.function.BiFunction<? super T,java.lang.Throwable,? extends U>);
     method public <U> java.util.concurrent.CompletionStage<U> handleAsync(java.util.function.BiFunction<? super T,java.lang.Throwable,? extends U>, java.util.concurrent.Executor);
@@ -15311,9 +15363,9 @@ package java.util.concurrent {
     method public static java.util.concurrent.ScheduledExecutorService newSingleThreadScheduledExecutor(java.util.concurrent.ThreadFactory);
     method public static java.util.concurrent.ExecutorService newWorkStealingPool(int);
     method public static java.util.concurrent.ExecutorService newWorkStealingPool();
-    method public static <T> java.util.concurrent.Callable<T> privilegedCallable(java.util.concurrent.Callable<T>);
-    method public static <T> java.util.concurrent.Callable<T> privilegedCallableUsingCurrentClassLoader(java.util.concurrent.Callable<T>);
-    method public static java.util.concurrent.ThreadFactory privilegedThreadFactory();
+    method @Deprecated public static <T> java.util.concurrent.Callable<T> privilegedCallable(java.util.concurrent.Callable<T>);
+    method @Deprecated public static <T> java.util.concurrent.Callable<T> privilegedCallableUsingCurrentClassLoader(java.util.concurrent.Callable<T>);
+    method @Deprecated public static java.util.concurrent.ThreadFactory privilegedThreadFactory();
     method public static java.util.concurrent.ExecutorService unconfigurableExecutorService(java.util.concurrent.ExecutorService);
     method public static java.util.concurrent.ScheduledExecutorService unconfigurableScheduledExecutorService(java.util.concurrent.ScheduledExecutorService);
   }
@@ -16320,6 +16372,7 @@ package java.util.concurrent.locks {
     method public static void parkNanos(long);
     method public static void parkUntil(Object, long);
     method public static void parkUntil(long);
+    method public static void setCurrentBlocker(Object);
     method public static void unpark(Thread);
   }
 
@@ -18108,6 +18161,16 @@ package java.util.zip {
     field public static final int LOCTIM = 10; // 0xa
     field public static final int LOCVER = 4; // 0x4
     field public static final int STORED = 0; // 0x0
+  }
+
+}
+
+package javax.annotation.processing {
+
+  @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE) @java.lang.annotation.Target({java.lang.annotation.ElementType.PACKAGE, java.lang.annotation.ElementType.TYPE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.LOCAL_VARIABLE, java.lang.annotation.ElementType.PARAMETER}) public @interface Generated {
+    method public abstract String comments() default "";
+    method public abstract String date() default "";
+    method public abstract String[] value();
   }
 
 }
