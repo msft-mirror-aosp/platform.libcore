@@ -206,7 +206,6 @@ java_library {
         // framework-api-annotations contain API annotations, e.g. @SystemApi.
         ":framework-api-annotations",
         ":openjdk_lambda_stub_files",
-        ":openjdk_generated_annotation_stub_files",
         ":app-compat-annotations-source",
 
         // Use the okhttp source too to allow libcore code to reference it
@@ -475,6 +474,7 @@ java_library {
     visibility: [
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
+        "//frameworks/base",
     ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
@@ -483,19 +483,20 @@ java_library {
     include_srcs: true,
 }
 
-// Creates a jar that exists to satisfy javac when compiling source code that
-// contains @Generated annotations, which are produced by some code generation
-// tools (notably dagger) but aren't part of the Android API.
-// See http://b/123891440.
+// This is an empty jar that exists for backwards compatibility with T (and below).
+// Historically, it existed to satisfy javac when compiling source code that
+// contains @Generated annotations.
+// This is no longer necessary since @Generated was added to ART's Public API
+// surface in U.
 java_library {
     name: "core-generated-annotation-stubs",
     visibility: [
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
+        "//frameworks/base",
     ],
     defaults: ["libcore_java_defaults"],
     srcs: [
-        ":openjdk_generated_annotation_stub_files",
     ],
     hostdex: true,
     sdk_version: "none",
@@ -942,7 +943,6 @@ java_sdk_library {
         // in openjdk_java_files.bp for more details.
         ":openjdk_mmodule_extra_files",
         ":okhttp_api_files",
-
     ],
     libs: [
         // Put framework-api-annotations into libs to avoid exposing the definition of framework's
@@ -1005,58 +1005,6 @@ java_sdk_library {
     dist_group: "android",
 }
 
-// Used when compiling higher-level code against art.module.public.api.stubs.
-//
-// This is only intended for use within core libraries and must not be used
-// from outside.
-java_system_modules {
-    name: "art-module-public-api-stubs-system-modules",
-    visibility: [
-        "//art/build/sdk",
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-        "//external/wycheproof",
-    ],
-    libs: [
-        "art.module.public.api.stubs",
-        // This one is not on device but it's needed when javac compiles code
-        // containing lambdas.
-        "core-lambda-stubs-for-system-modules",
-        // This one is not on device but it's needed when javac compiles code
-        // containing @Generated annotations produced by some code generation
-        // tools.
-        // See http://b/123891440.
-        "core-generated-annotation-stubs",
-
-        // Ensure that core libraries that depend on the public API can access
-        // the UnsupportedAppUsage, CorePlatformApi and IntraCoreApi
-        // annotations.
-        "art.module.api.annotations.for.system.modules",
-
-        // Make nullability annotations available when compiling public stubs.
-        // They are provided as a separate library because while the
-        // annotations are not themselves part of the public API provided by
-        // this module they are used in the stubs.
-        "stub-annotations",
-    ],
-}
-
-// Used when compiling higher-level code against art.module.public.api.stubs.module_lib.
-//
-// This is only intended for use within core libraries and must not be used
-// from outside.
-java_system_modules {
-    name: "art-module-lib-api-stubs-system-modules",
-    visibility: [
-        "//art/build/sdk",
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-    ],
-    libs: [
-        "art.module.public.api.stubs.module_lib",
-    ],
-}
-
 // Target for validating nullability annotations for correctness and
 // completeness. To check that there are no nullability errors:
 //   m art-module-public-api-stubs-nullability-validation
@@ -1101,6 +1049,9 @@ java_system_modules {
 // avoid introducing compile time cycles.
 java_library {
     name: "art.module.api.annotations.for.system.modules",
+    visibility: [
+        "//build/soong/java/core-libraries",
+    ],
     srcs: [
         ":api_surface_annotation_files",
     ],
@@ -1127,4 +1078,31 @@ java_library {
     sdk_version: "core_current",
     // Make sure that this will be added to the sdk snapshot for S.
     min_sdk_version: "S",
+}
+
+java_api_contribution {
+    name: "art-module-public-api-public-stubs",
+    api_surface: "public",
+    api_file: "api/current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
+}
+
+java_api_contribution {
+    name: "art-module-public-api-module-lib-stubs",
+    api_surface: "module-lib",
+    api_file: "api/module-lib-current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
+}
+
+java_api_contribution {
+    name: "art-module-public-api-system-stubs",
+    api_surface: "system",
+    api_file: "api/system-current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
 }

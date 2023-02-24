@@ -286,20 +286,6 @@ public abstract class Charset
 
     /* -- Static methods -- */
 
-    // Android-added: Charset.atBugLevel method is needed by the existing version of CharsetDecoder.
-    // TODO: Remove this when CharsetDecoder is upgraded.
-    private static volatile String bugLevel = null;
-
-    static boolean atBugLevel(String bl) {              // package-private
-        String level = bugLevel;
-        if (level == null) {
-            if (!sun.misc.VM.isBooted())
-                return false;
-            bugLevel = level = AccessController.doPrivileged(
-                new GetPropertyAction("sun.nio.cs.bugLevel", ""));
-        }
-        return level.equals(bl);
-    }
 
     /**
      * Checks that the given string is a legal charset name. </p>
@@ -658,7 +644,7 @@ public abstract class Charset
             });
     }
 
-    private static Charset defaultCharset;
+    private static volatile Charset defaultCharset;
 
     /**
      * Returns the default charset of this Java virtual machine.
@@ -684,12 +670,12 @@ public abstract class Charset
             }
         }
         */
-        synchronized (Charset.class) {
-            if (defaultCharset == null) {
+        if (defaultCharset == null) {
+            synchronized (Charset.class) {
                 defaultCharset = java.nio.charset.StandardCharsets.UTF_8;
             }
-            return defaultCharset;
         }
+        return defaultCharset;
     }
 
 
