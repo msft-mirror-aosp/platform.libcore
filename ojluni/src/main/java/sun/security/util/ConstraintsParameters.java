@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,41 +22,45 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package java.security.interfaces;
 
-import java.security.PublicKey;
-import java.security.spec.ECPoint;
+package sun.security.util;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.Set;
 
 /**
- * The interface to an elliptic curve (EC) public key.
- *
- * @author Valerie Peng
- *
- *
- * @see PublicKey
- * @see ECKey
- * @see java.security.spec.ECPoint
- *
- * @since 1.5
+ * This interface contains parameters for checking against constraints that
+ * extend past the publicly available parameters in
+ * java.security.AlgorithmConstraints.
  */
-public interface ECPublicKey extends PublicKey, ECKey {
-
-   /**
-    * The class fingerprint that is set to indicate
-    * serialization compatibility.
-    */
-    // Android-removed: (b/260847206) revert once aosp/master is marked as V.
-    // * @deprecated A {@code serialVersionUID} field in an interface is
-    // * ineffectual. Do not use; no replacement.
-    // */
-    // @Deprecated
-    // @SuppressWarnings("serial")
-    // @java.io.Serial
-    static final long serialVersionUID = -3314988629879632826L;
+public interface ConstraintsParameters {
 
     /**
-     * Returns the public point W.
-     * @return the public point W.
+     * Returns true if a certificate chains back to a trusted JDK root CA.
      */
-    ECPoint getW();
+    boolean anchorIsJdkCA();
+
+    /**
+     * Returns the set of keys that should be checked against the
+     * constraints, or an empty set if there are no keys to be checked.
+     */
+    Set<Key> getKeys();
+
+    /**
+     * Returns the date that should be checked against the constraints, or
+     * null if not set.
+     */
+    Date getDate();
+
+    /**
+     * Returns the Validator variant.
+     */
+    String getVariant();
+
+    /**
+     * Returns an extended message used in exceptions. See
+     * DisabledAlgorithmConstraints for usage.
+     */
+    String extendedExceptionMsg();
 }
