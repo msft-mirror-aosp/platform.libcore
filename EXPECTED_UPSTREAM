@@ -864,7 +864,7 @@ ojluni/src/main/java/java/time/zone/ZoneRules.java,jdk17u/jdk-17.0.6-ga,src/java
 ojluni/src/main/java/java/time/zone/ZoneRulesException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/time/zone/ZoneRulesException.java
 ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/time/zone/ZoneRulesProvider.java
 ojluni/src/main/java/java/time/zone/package-info.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/time/zone/package-info.java
-ojluni/src/main/java/java/util/AbstractCollection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/AbstractCollection.java
+ojluni/src/main/java/java/util/AbstractCollection.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/AbstractCollection.java
 ojluni/src/main/java/java/util/AbstractList.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/AbstractList.java
 ojluni/src/main/java/java/util/AbstractMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/AbstractMap.java
 ojluni/src/main/java/java/util/AbstractQueue.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/AbstractQueue.java
@@ -1941,6 +1941,7 @@ ojluni/src/test/java/lang/invoke/VarHandles/accessibility/pkg/C.java,jdk17u/jdk-
 ojluni/src/test/java/lang/invoke/VarHandles/accessibility/pkg/subpkg/B_extends_A.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/invoke/VarHandles/accessibility/pkg/subpkg/B_extends_A.java
 ojluni/src/test/java/lang/invoke/VarHandles/accessibility/pkg/subpkg/C.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/invoke/VarHandles/accessibility/pkg/subpkg/C.java
 ojluni/src/test/java/lang/invoke/VarHandles/generate-vh-tests.sh,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/generate-vh-tests.sh
+ojluni/src/test/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java
 ojluni/src/test/java/math/BigDecimal/AddTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/AddTests.java
 ojluni/src/test/java/math/BigDecimal/CompareToTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/CompareToTests.java
 ojluni/src/test/java/math/BigDecimal/Constructor.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/Constructor.java
@@ -1989,6 +1990,7 @@ ojluni/src/test/java/net/InetSocketAddress/CreateUnresolved.java,jdk17u/jdk-17.0
 ojluni/src/test/java/net/InetSocketAddress/ToString.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/InetSocketAddress/ToString.java
 ojluni/src/test/java/net/UnixDomainSocketAddress/LengthTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/UnixDomainSocketAddress/LengthTest.java
 ojluni/src/test/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java
+ojluni/src/test/java/nio/Buffer/EqualsCompareTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/nio/Buffer/EqualsCompareTest.java
 ojluni/src/test/java/nio/channels/SelectionKey/AtomicUpdates.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/nio/channels/SelectionKey/AtomicUpdates.java
 ojluni/src/test/java/nio/channels/Selector/ByteServer.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/nio/channels/Selector/ByteServer.java
 ojluni/src/test/java/nio/channels/Selector/SelectAfterRead.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/nio/channels/Selector/SelectAfterRead.java
