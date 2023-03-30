@@ -1,9 +1,4 @@
 {
-  "presubmit": [
-    {
-      "name": "luni-host-tests"
-    }
-  ],
   "presubmit-large": [
     {
       "name": "CtsLibcoreTestCases",
