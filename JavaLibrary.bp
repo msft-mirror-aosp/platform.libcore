@@ -206,7 +206,6 @@ java_library {
         // framework-api-annotations contain API annotations, e.g. @SystemApi.
         ":framework-api-annotations",
         ":openjdk_lambda_stub_files",
-        ":openjdk_generated_annotation_stub_files",
         ":app-compat-annotations-source",
 
         // Use the okhttp source too to allow libcore code to reference it
@@ -476,6 +475,7 @@ java_library {
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
@@ -484,20 +484,21 @@ java_library {
     include_srcs: true,
 }
 
-// Creates a jar that exists to satisfy javac when compiling source code that
-// contains @Generated annotations, which are produced by some code generation
-// tools (notably dagger) but aren't part of the Android API.
-// See http://b/123891440.
+// This is an empty jar that exists for backwards compatibility with T (and below).
+// Historically, it existed to satisfy javac when compiling source code that
+// contains @Generated annotations.
+// This is no longer necessary since @Generated was added to ART's Public API
+// surface in U.
 java_library {
     name: "core-generated-annotation-stubs",
     visibility: [
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["libcore_java_defaults"],
     srcs: [
-        ":openjdk_generated_annotation_stub_files",
     ],
     hostdex: true,
     sdk_version: "none",
@@ -659,6 +660,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java11language"],
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 17 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-17-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java17LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java17language"],
+}
+
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
@@ -744,6 +753,7 @@ java_test {
         "core-java-9-compatibility-tests",
         "core-java-9-language-tests",
         "core-java-11-language-tests",
+        "core-java-17-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
@@ -855,6 +865,7 @@ filegroup {
     name: "known-oj-tags",
     visibility: [
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     srcs: [
         "known_oj_tags.txt",
@@ -944,7 +955,6 @@ java_sdk_library {
         // in openjdk_java_files.bp for more details.
         ":openjdk_mmodule_extra_files",
         ":okhttp_api_files",
-
     ],
     libs: [
         // Put framework-api-annotations into libs to avoid exposing the definition of framework's
@@ -1072,6 +1082,7 @@ java_library {
         "//art/build/sdk",
         "//external/icu/android_icu4j",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     host_supported: true,
     srcs: [
