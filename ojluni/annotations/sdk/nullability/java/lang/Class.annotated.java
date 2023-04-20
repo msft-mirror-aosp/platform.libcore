@@ -37,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.RecordComponent;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -181,4 +182,12 @@ public @libcore.util.NonNull Class<?> @libcore.util.NonNull [] getNestMembers();
 public @libcore.util.Nullable Class<?> @libcore.util.NonNull [] getPermittedSubclasses();
 
 public boolean isSealed() { throw new RuntimeException("Stub!"); }
+
+public @libcore.util.Nullable Class<?> componentType();
+
+public @libcore.util.NonNull Class<?> arrayType();
+
+public @libcore.util.NonNull String descriptorString();
+
+public @libcore.util.Nullable java.lang.reflect.RecordComponent @libcore.util.NonNull [] getRecordComponents();
 }
