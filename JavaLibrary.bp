@@ -475,6 +475,7 @@ java_library {
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
@@ -494,6 +495,7 @@ java_library {
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["libcore_java_defaults"],
     srcs: [
@@ -658,6 +660,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java11language"],
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 17 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-17-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java17LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java17language"],
+}
+
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
@@ -743,6 +753,7 @@ java_test {
         "core-java-9-compatibility-tests",
         "core-java-9-language-tests",
         "core-java-11-language-tests",
+        "core-java-17-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
@@ -854,6 +865,7 @@ filegroup {
     name: "known-oj-tags",
     visibility: [
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     srcs: [
         "known_oj_tags.txt",
@@ -1070,6 +1082,7 @@ java_library {
         "//art/build/sdk",
         "//external/icu/android_icu4j",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     host_supported: true,
     srcs: [
