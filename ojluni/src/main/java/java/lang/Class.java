@@ -48,7 +48,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.net.URL;
@@ -70,6 +72,7 @@ import jdk.internal.misc.Unsafe;
 import jdk.internal.misc.VM;
 import libcore.reflect.GenericSignatureParser;
 import libcore.reflect.InternalNames;
+import libcore.reflect.RecordComponents;
 import libcore.reflect.Types;
 import libcore.util.BasicLruCache;
 import libcore.util.CollectionUtils;
@@ -1425,7 +1428,6 @@ public final class Class<T> implements java.io.Serializable,
      * @return a {@code Class} describing the component type, or {@code null}
      * if this {@code Class} does not describe an array type
      * @since 12
-     * @hide
      */
     @Override
     public Class<?> componentType() {
@@ -1438,13 +1440,13 @@ public final class Class<T> implements java.io.Serializable,
      *
      * @return a {@code Class} describing the array type
      * @since 12
-     * @hide
      */
     @Override
     public Class<?> arrayType() {
         return Array.newInstance(this, 0).getClass();
     }
 
+    // Android-changed: Remove Class#isHidden() and ClassDesc from javadoc.
     /**
      * Returns the descriptor string of the entity (class, interface, array class,
      * primitive type, or {@code void}) represented by this {@code Class} object.
@@ -1452,23 +1454,8 @@ public final class Class<T> implements java.io.Serializable,
      * <p> If this {@code Class} object represents a class or interface,
      * not an array class, then:
      * <ul>
-     * <li> If the class or interface is not {@linkplain Class#isHidden() hidden},
-     *      then the result is a field descriptor (JVMS {@jvms 4.3.2})
-     *      for the class or interface. Calling
-     *      {@link ClassDesc#ofDescriptor(String) ClassDesc::ofDescriptor}
-     *      with the result descriptor string produces a {@link ClassDesc ClassDesc}
-     *      describing this class or interface.
-     * <li> If the class or interface is {@linkplain Class#isHidden() hidden},
-     *      then the result is a string of the form:
-     *      <blockquote>
-     *      {@code "L" +} <em>N</em> {@code + "." + <suffix> + ";"}
-     *      </blockquote>
-     *      where <em>N</em> is the <a href="ClassLoader.html#binary-name">binary name</a>
-     *      encoded in internal form indicated by the {@code class} file passed to
-     *      {@link MethodHandles.Lookup#defineHiddenClass(byte[], boolean, MethodHandles.Lookup.ClassOption...)
-     *      Lookup::defineHiddenClass}, and {@code <suffix>} is an unqualified name.
-     *      A hidden class or interface has no {@linkplain ClassDesc nominal descriptor}.
-     *      The result string is not a type descriptor.
+     * <li> The result is a field descriptor (JVMS {@jvms 4.3.2})
+     *      for the class or interface.
      * </ul>
      *
      * <p> If this {@code Class} object represents an array class, then
@@ -1476,14 +1463,7 @@ public final class Class<T> implements java.io.Serializable,
      * representing the depth of the array nesting, followed by the
      * descriptor string of the element type.
      * <ul>
-     * <li> If the element type is not a {@linkplain Class#isHidden() hidden} class
-     * or interface, then this array class can be described nominally.
-     * Calling {@link ClassDesc#ofDescriptor(String) ClassDesc::ofDescriptor}
-     * with the result descriptor string produces a {@link ClassDesc ClassDesc}
-     * describing this array class.
-     * <li> If the element type is a {@linkplain Class#isHidden() hidden} class or
-     * interface, then this array class cannot be described nominally.
-     * The result string is not a type descriptor.
+     * <li> This array class can be described nominally.
      * </ul>
      *
      * <p> If this {@code Class} object represents a primitive type or
@@ -1499,7 +1479,6 @@ public final class Class<T> implements java.io.Serializable,
      * @return the descriptor string for this {@code Class} object
      * @jvms 4.3.2 Field Descriptors
      * @since 12
-     * @hide
      */
     @Override
     public String descriptorString() {
@@ -2611,6 +2590,74 @@ public final class Class<T> implements java.io.Serializable,
     */
     @FastNative
     public native Field[] getDeclaredFields();
+
+    /**
+     * Returns an array of {@code RecordComponent} objects representing all the
+     * record components of this record class, or {@code null} if this class is
+     * not a record class.
+     *
+     * <p> The components are returned in the same order that they are declared
+     * in the record header. The array is empty if this record class has no
+     * components. If the class is not a record class, that is {@link
+     * #isRecord()} returns {@code false}, then this method returns {@code null}.
+     * Conversely, if {@link #isRecord()} returns {@code true}, then this method
+     * returns a non-null value.
+     *
+     * @apiNote
+     * <p> The following method can be used to find the record canonical constructor:
+     *
+     * <pre>{@code
+     * static <T extends Record> Constructor<T> getCanonicalConstructor(Class<T> cls)
+     *     throws NoSuchMethodException {
+     *   Class<?>[] paramTypes =
+     *     Arrays.stream(cls.getRecordComponents())
+     *           .map(RecordComponent::getType)
+     *           .toArray(Class<?>[]::new);
+     *   return cls.getDeclaredConstructor(paramTypes);
+     * }}</pre>
+     *
+     * @return  An array of {@code RecordComponent} objects representing all the
+     *          record components of this record class, or {@code null} if this
+     *          class is not a record class
+     * @throws  SecurityException
+     *          If a security manager, <i>s</i>, is present and any of the
+     *          following conditions is met:
+     *
+     *          <ul>
+     *
+     *          <li> the caller's class loader is not the same as the
+     *          class loader of this class and invocation of
+     *          {@link SecurityManager#checkPermission
+     *          s.checkPermission} method with
+     *          {@code RuntimePermission("accessDeclaredMembers")}
+     *          denies access to the declared methods within this class
+     *
+     *          <li> the caller's class loader is not the same as or an
+     *          ancestor of the class loader for the current class and
+     *          invocation of {@link SecurityManager#checkPackageAccess
+     *          s.checkPackageAccess()} denies access to the package
+     *          of this class
+     *
+     *          </ul>
+     *
+     * @jls 8.10 Record Classes
+     * @since 16
+     */
+    @CallerSensitive
+    public RecordComponent[] getRecordComponents() {
+        // Android-removed: Android doesn't support SecurityManager.
+        /*
+        @SuppressWarnings("removal")
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkMemberAccess(sm, Member.DECLARED, Reflection.getCallerClass(), true);
+        }
+        */
+        if (!isRecord()) {
+            return null;
+        }
+        return getRecordComponents0();
+    }
 
     /**
      * Populates a list of fields without performing any security or type
@@ -3792,7 +3839,54 @@ public final class Class<T> implements java.io.Serializable,
     private native Constructor<T>[] getDeclaredConstructors0(boolean publicOnly);
     private native Class<?>[]   getDeclaredClasses0();
 
-    *//**
+    */
+
+    /*
+     * Returns an array containing the components of the Record attribute,
+     * or null if the attribute is not present.
+     *
+     * Note that this method returns non-null array on a class with
+     * the Record attribute even if this class is not a record.
+     */
+    // BEGIN Android-changed: Re-implement getRecordComponents0() on ART.
+    // private native RecordComponent[] getRecordComponents0();
+    private RecordComponent[] getRecordComponents0() {
+        RecordComponents libcoreComponents = new RecordComponents(this);
+
+        // Every component should have a type and a name.
+        String[] names = libcoreComponents.getNames();
+        Class<?>[] types = libcoreComponents.getTypes();
+        if (names == null || types == null) {
+            // Return non-null array as per getRecordComponent() javadoc if isRecord()
+            // returns true.
+            return new RecordComponent[0];
+        }
+
+        // class_linker.cc should verify that names and types have the same length, or otherwise,
+        // the class isn't loaded.
+        int size = Math.min(names.length, types.length);
+        RecordComponent[] components = new RecordComponent[size];
+        for (int i = 0; i < size; i++) {
+            String name = names[i];
+            Class<?> type = types[i];
+            components[i] = new RecordComponent(this, name, type, libcoreComponents, i);
+        }
+        return components;
+    }
+
+    /**
+     * Used by {@link libcore.reflect.RecordComponents}
+     *
+     * @hide
+     */
+    @FastNative
+    public native <T2> T2[] getRecordAnnotationElement(String elementName, Class<T2[]> arrayClass);
+    // END Android-changed: Re-implement getRecordComponents0() on ART.
+
+    @FastNative
+    private native boolean       isRecord0();
+
+    /**
      * Helper method to get the method name from arguments.
      *//*
     private String methodToString(String name, Class<?>[] argTypes) {
@@ -3874,6 +3968,30 @@ public final class Class<T> implements java.io.Serializable,
         // don't do the former.
         return (this.getModifiers() & ENUM) != 0 &&
         this.getSuperclass() == java.lang.Enum.class;
+    }
+
+    /**
+     * Returns {@code true} if and only if this class is a record class.
+     *
+     * <p> The {@linkplain #getSuperclass() direct superclass} of a record
+     * class is {@code java.lang.Record}. A record class is {@linkplain
+     * Modifier#FINAL final}. A record class has (possibly zero) record
+     * components; {@link #getRecordComponents()} returns a non-null but
+     * possibly empty value for a record.
+     *
+     * <p> Note that class {@link Record} is not a record class and thus
+     * invoking this method on class {@code Record} returns {@code false}.
+     *
+     * @return true if and only if this class is a record class, otherwise false
+     * @jls 8.10 Record Classes
+     * @since 16
+     */
+    public boolean isRecord() {
+        // this superclass and final modifier check is not strictly necessary
+        // they are intrinsified and serve as a fast-path check
+        return getSuperclass() == java.lang.Record.class &&
+                (this.getModifiers() & Modifier.FINAL) != 0 &&
+                isRecord0();
     }
 
     // Android-remvoed: Remove unsupported ReflectionFactory.
