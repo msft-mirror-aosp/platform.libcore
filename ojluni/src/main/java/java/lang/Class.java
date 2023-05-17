@@ -36,6 +36,7 @@ import java.lang.ref.SoftReference;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamField;
+import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -47,7 +48,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.net.URL;
@@ -69,12 +72,15 @@ import jdk.internal.misc.Unsafe;
 import jdk.internal.misc.VM;
 import libcore.reflect.GenericSignatureParser;
 import libcore.reflect.InternalNames;
+import libcore.reflect.RecordComponents;
 import libcore.reflect.Types;
 import libcore.util.BasicLruCache;
 import libcore.util.CollectionUtils;
 import libcore.util.EmptyArray;
 
 import sun.security.util.SecurityConstants;
+import dalvik.system.ClassExt;
+import sun.invoke.util.Wrapper;
 import sun.reflect.CallerSensitive;
 import sun.reflect.Reflection;
 import sun.reflect.misc.ReflectUtil;
@@ -167,7 +173,8 @@ import sun.reflect.misc.ReflectUtil;
 public final class Class<T> implements java.io.Serializable,
                               GenericDeclaration,
                               Type,
-                              AnnotatedElement {
+                              AnnotatedElement,
+                              TypeDescriptor.OfField<Class<?>> {
     private static final int ANNOTATION= 0x00002000;
     private static final int ENUM      = 0x00004000;
     private static final int SYNTHETIC = 0x00001000;
@@ -1411,6 +1418,97 @@ public final class Class<T> implements java.io.Serializable,
         */
       return componentType;
     }
+    /**
+     * Returns the component type of this {@code Class}, if it describes
+     * an array type, or {@code null} otherwise.
+     *
+     * @implSpec
+     * Equivalent to {@link Class#getComponentType()}.
+     *
+     * @return a {@code Class} describing the component type, or {@code null}
+     * if this {@code Class} does not describe an array type
+     * @since 12
+     */
+    @Override
+    public Class<?> componentType() {
+        return isArray() ? componentType : null;
+    }
+
+    /**
+     * Returns a {@code Class} for an array type whose component type
+     * is described by this {@linkplain Class}.
+     *
+     * @return a {@code Class} describing the array type
+     * @since 12
+     */
+    @Override
+    public Class<?> arrayType() {
+        return Array.newInstance(this, 0).getClass();
+    }
+
+    // Android-changed: Remove Class#isHidden() and ClassDesc from javadoc.
+    /**
+     * Returns the descriptor string of the entity (class, interface, array class,
+     * primitive type, or {@code void}) represented by this {@code Class} object.
+     *
+     * <p> If this {@code Class} object represents a class or interface,
+     * not an array class, then:
+     * <ul>
+     * <li> The result is a field descriptor (JVMS {@jvms 4.3.2})
+     *      for the class or interface.
+     * </ul>
+     *
+     * <p> If this {@code Class} object represents an array class, then
+     * the result is a string consisting of one or more '{@code [}' characters
+     * representing the depth of the array nesting, followed by the
+     * descriptor string of the element type.
+     * <ul>
+     * <li> This array class can be described nominally.
+     * </ul>
+     *
+     * <p> If this {@code Class} object represents a primitive type or
+     * {@code void}, then the result is a field descriptor string which
+     * is a one-letter code corresponding to a primitive type or {@code void}
+     * ({@code "B", "C", "D", "F", "I", "J", "S", "Z", "V"}) (JVMS {@jvms 4.3.2}).
+     *
+     * @apiNote
+     * This is not a strict inverse of {@link #forName};
+     * distinct classes which share a common name but have different class loaders
+     * will have identical descriptor strings.
+     *
+     * @return the descriptor string for this {@code Class} object
+     * @jvms 4.3.2 Field Descriptors
+     * @since 12
+     */
+    @Override
+    public String descriptorString() {
+        if (isPrimitive())
+            return Wrapper.forPrimitiveType(this).basicTypeString();
+
+        if (isArray()) {
+            return "[" + componentType.descriptorString();
+        // Android-changed: Remove check for isHidden()
+        /*
+        } else if (isHidden()) {
+            String name = getName();
+            int index = name.indexOf('/');
+            return new StringBuilder(name.length() + 2)
+                    .append('L')
+                    .append(name.substring(0, index).replace('.', '/'))
+                    .append('.')
+                    .append(name, index + 1, name.length())
+                    .append(';')
+                    .toString();
+        */
+        } else {
+            String name = getName().replace('.', '/');
+            return new StringBuilder(name.length() + 2)
+                    .append('L')
+                    .append(name)
+                    .append(';')
+                    .toString();
+        }
+    }
 
     /**
      * Returns the Java language modifiers for this class or interface, encoded
@@ -2492,6 +2590,74 @@ public final class Class<T> implements java.io.Serializable,
     */
     @FastNative
     public native Field[] getDeclaredFields();
+
+    /**
+     * Returns an array of {@code RecordComponent} objects representing all the
+     * record components of this record class, or {@code null} if this class is
+     * not a record class.
+     *
+     * <p> The components are returned in the same order that they are declared
+     * in the record header. The array is empty if this record class has no
+     * components. If the class is not a record class, that is {@link
+     * #isRecord()} returns {@code false}, then this method returns {@code null}.
+     * Conversely, if {@link #isRecord()} returns {@code true}, then this method
+     * returns a non-null value.
+     *
+     * @apiNote
+     * <p> The following method can be used to find the record canonical constructor:
+     *
+     * <pre>{@code
+     * static <T extends Record> Constructor<T> getCanonicalConstructor(Class<T> cls)
+     *     throws NoSuchMethodException {
+     *   Class<?>[] paramTypes =
+     *     Arrays.stream(cls.getRecordComponents())
+     *           .map(RecordComponent::getType)
+     *           .toArray(Class<?>[]::new);
+     *   return cls.getDeclaredConstructor(paramTypes);
+     * }}</pre>
+     *
+     * @return  An array of {@code RecordComponent} objects representing all the
+     *          record components of this record class, or {@code null} if this
+     *          class is not a record class
+     * @throws  SecurityException
+     *          If a security manager, <i>s</i>, is present and any of the
+     *          following conditions is met:
+     *
+     *          <ul>
+     *
+     *          <li> the caller's class loader is not the same as the
+     *          class loader of this class and invocation of
+     *          {@link SecurityManager#checkPermission
+     *          s.checkPermission} method with
+     *          {@code RuntimePermission("accessDeclaredMembers")}
+     *          denies access to the declared methods within this class
+     *
+     *          <li> the caller's class loader is not the same as or an
+     *          ancestor of the class loader for the current class and
+     *          invocation of {@link SecurityManager#checkPackageAccess
+     *          s.checkPackageAccess()} denies access to the package
+     *          of this class
+     *
+     *          </ul>
+     *
+     * @jls 8.10 Record Classes
+     * @since 16
+     */
+    @CallerSensitive
+    public RecordComponent[] getRecordComponents() {
+        // Android-removed: Android doesn't support SecurityManager.
+        /*
+        @SuppressWarnings("removal")
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkMemberAccess(sm, Member.DECLARED, Reflection.getCallerClass(), true);
+        }
+        */
+        if (!isRecord()) {
+            return null;
+        }
+        return getRecordComponents0();
+    }
 
     /**
      * Populates a list of fields without performing any security or type
@@ -3673,7 +3839,54 @@ public final class Class<T> implements java.io.Serializable,
     private native Constructor<T>[] getDeclaredConstructors0(boolean publicOnly);
     private native Class<?>[]   getDeclaredClasses0();
 
-    *//**
+    */
+
+    /*
+     * Returns an array containing the components of the Record attribute,
+     * or null if the attribute is not present.
+     *
+     * Note that this method returns non-null array on a class with
+     * the Record attribute even if this class is not a record.
+     */
+    // BEGIN Android-changed: Re-implement getRecordComponents0() on ART.
+    // private native RecordComponent[] getRecordComponents0();
+    private RecordComponent[] getRecordComponents0() {
+        RecordComponents libcoreComponents = new RecordComponents(this);
+
+        // Every component should have a type and a name.
+        String[] names = libcoreComponents.getNames();
+        Class<?>[] types = libcoreComponents.getTypes();
+        if (names == null || types == null) {
+            // Return non-null array as per getRecordComponent() javadoc if isRecord()
+            // returns true.
+            return new RecordComponent[0];
+        }
+
+        // class_linker.cc should verify that names and types have the same length, or otherwise,
+        // the class isn't loaded.
+        int size = Math.min(names.length, types.length);
+        RecordComponent[] components = new RecordComponent[size];
+        for (int i = 0; i < size; i++) {
+            String name = names[i];
+            Class<?> type = types[i];
+            components[i] = new RecordComponent(this, name, type, libcoreComponents, i);
+        }
+        return components;
+    }
+
+    /**
+     * Used by {@link libcore.reflect.RecordComponents}
+     *
+     * @hide
+     */
+    @FastNative
+    public native <T2> T2[] getRecordAnnotationElement(String elementName, Class<T2[]> arrayClass);
+    // END Android-changed: Re-implement getRecordComponents0() on ART.
+
+    @FastNative
+    private native boolean       isRecord0();
+
+    /**
      * Helper method to get the method name from arguments.
      *//*
     private String methodToString(String name, Class<?>[] argTypes) {
@@ -3755,6 +3968,30 @@ public final class Class<T> implements java.io.Serializable,
         // don't do the former.
         return (this.getModifiers() & ENUM) != 0 &&
         this.getSuperclass() == java.lang.Enum.class;
+    }
+
+    /**
+     * Returns {@code true} if and only if this class is a record class.
+     *
+     * <p> The {@linkplain #getSuperclass() direct superclass} of a record
+     * class is {@code java.lang.Record}. A record class is {@linkplain
+     * Modifier#FINAL final}. A record class has (possibly zero) record
+     * components; {@link #getRecordComponents()} returns a non-null but
+     * possibly empty value for a record.
+     *
+     * <p> Note that class {@link Record} is not a record class and thus
+     * invoking this method on class {@code Record} returns {@code false}.
+     *
+     * @return true if and only if this class is a record class, otherwise false
+     * @jls 8.10 Record Classes
+     * @since 16
+     */
+    public boolean isRecord() {
+        // this superclass and final modifier check is not strictly necessary
+        // they are intrinsified and serve as a fast-path check
+        return getSuperclass() == java.lang.Record.class &&
+                (this.getModifiers() & Modifier.FINAL) != 0 &&
+                isRecord0();
     }
 
     // Android-remvoed: Remove unsupported ReflectionFactory.
