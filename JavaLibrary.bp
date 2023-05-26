@@ -89,10 +89,18 @@ filegroup {
 // We have to escape \ as \\ and $ as $$ here because they get resolved by
 // different layers of the build tooling. The arguments are wrapped in '' so
 // that the shell doesn't add yet another level of escaping.
-rewrite_openjdk_doc_links = "sed 's" +
-    "!\\({@docRoot}/\\.\\.\\/\\|[./]\\+\\)\\(\\(platform\\|technotes\\).\\+\\)\">" +
+rewrite_openjdk_doc_links = "sed -E 's" +
+    "!(\\{@docRoot\\}/\\.\\./|[./]+)((platform|technotes).+)\">" +
     "!https://docs.oracle.com/javase/8/docs/\\2\">!' " +
-    "$(in) > $(out)"
+    "$(in) " +
+    "| sed -E 's" + // Android doesn't have java.base in the API docs
+    "!(\\{@docRoot\\}/)(java\\.base/)(.+)\">" +
+    "!\\1reference/\\3\">!' " +
+    "| sed -E 's" +
+    "!(\\{@docRoot\\}/\\.\\./)(specs/.+)\">" +
+    "!https://docs.oracle.com/en/java/javase/17/docs/\\2\">!' " +
+    " > $(out) " +
+    "&& ! grep '{@docRoot}/../' $(out)" // exit with 1 if "{@docRoot}/../" still exists.
 
 // OpenJDK source is not annotated with @hide so we need this separate
 // filegroup for just the parts that contribute to the API.
@@ -475,12 +483,16 @@ java_library {
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
         ":openjdk_lambda_stub_files",
     ],
     include_srcs: true,
+    // This jar is packaged as part of the SDK, use -target 8 so that it works
+    // with old JDKs.
+    java_version: "1.8",
 }
 
 // This is an empty jar that exists for backwards compatibility with T (and below).
@@ -494,6 +506,7 @@ java_library {
         "//art/build/sdk",
         "//build/soong/java/core-libraries",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     defaults: ["libcore_java_defaults"],
     srcs: [
@@ -658,6 +671,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java11language"],
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 17 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-17-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java17LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java17language"],
+}
+
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
@@ -743,6 +764,7 @@ java_test {
         "core-java-9-compatibility-tests",
         "core-java-9-language-tests",
         "core-java-11-language-tests",
+        "core-java-17-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
@@ -854,6 +876,7 @@ filegroup {
     name: "known-oj-tags",
     visibility: [
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     srcs: [
         "known_oj_tags.txt",
@@ -1070,6 +1093,7 @@ java_library {
         "//art/build/sdk",
         "//external/icu/android_icu4j",
         "//frameworks/base",
+        "//frameworks/base/api",
     ],
     host_supported: true,
     srcs: [
