@@ -14,7 +14,6 @@
     }
 .end annotation
 
-
 # direct methods
 .method constructor <init>()V
     .registers 1
