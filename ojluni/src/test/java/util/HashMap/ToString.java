@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2007, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Oracle designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Oracle in the LICENSE file that accompanied this code.
+ * published by the Free Software Foundation.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -22,19 +20,23 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package jdk.internal.misc;
-
-import java.io.FileDescriptor;
 
 /*
- * @author Chris Hegarty
+ * @test
+ * @bug 4189821
+ * @summary HashMap's entry.toString threw a null pointer exc if the HashMap
+ *          contained null keys or values.
  */
 
-public interface JavaIOFileDescriptorAccess {
-    public void set(FileDescriptor obj, int fd);
-    public int get(FileDescriptor fd);
+package test.java.util.HashMap;
 
-    // Only valid on Windows
-    public void setHandle(FileDescriptor obj, long handle);
-    public long getHandle(FileDescriptor obj);
+import java.util.HashMap;
+import java.util.Map;
+
+public class ToString {
+    public static void main(String[] args) throws Exception {
+        Map m = new HashMap();
+        m.put(null, null);
+        m.entrySet().iterator().next().toString();
+    }
 }
