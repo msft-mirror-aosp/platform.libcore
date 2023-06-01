@@ -13,26 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package libcore.jdk.internal.misc;
 
-import org.junit.Assert;
+package libcore.java.util;
+
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import jdk.internal.misc.SharedSecrets;
+import java.util.Map;
 
 @RunWith(JUnit4.class)
-public class SharedSecretsTest {
+public final class MapCopyOfTest {
 
-    /**
-     * This test doesn't completely rule out race conditions such as http://b/80495283 (between
-     * FileDescriptor and UnixChannelFactory): Even if this test passes by the time it runs, the
-     * condition that it enforces may not have been true earlier in the runtime start.
-     */
     @Test
-    public void testGetJavaIOFileDescriptorAccess_notNull() {
-        Assert.assertNotNull("SharedSecrets.getJavaIOFileDescriptorAccess can't be null",
-                SharedSecrets.getJavaIOFileDescriptorAccess());
+    public void shouldThrowNPE_whenArgumentIsNull() {
+        assertThrows(NullPointerException.class, () -> Map.Entry.copyOf(null));
     }
+
+    @Test
+    public void createsCopy_whenNonNull() {
+        var key = "this is key";
+        var value = "this is value";
+        var map = Map.of(key, value);
+        var entry = map.entrySet().iterator().next();
+
+        var copy = Map.Entry.copyOf(entry);
+
+        assertSame(copy.getKey(), key);
+        assertSame(copy.getValue(), value);
+    }
+
 }
