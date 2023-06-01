@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,19 +23,11 @@
  * questions.
  */
 
-package sun.misc;
+package jdk.internal.access;
 
-/**
- * A class to define actions to be performed when a regular expression match
- *  occurs.
- * @author  James Gosling
- */
+import java.util.List;
 
-public interface RegexpTarget {
-    /** Gets called when a pattern in a RegexpPool matches.
-      * This method is called by RegexpPool.match() who passes the return
-      * value from found() back to its caller.
-      * @param remainder the string that matched the * in the pattern.
-      */
-    Object found(String remainder);
+public interface JavaUtilCollectionAccess {
+    <E> List<E> listFromTrustedArray(Object[] array);
+    <E> List<E> listFromTrustedArrayNullsAllowed(Object[] array);
 }
