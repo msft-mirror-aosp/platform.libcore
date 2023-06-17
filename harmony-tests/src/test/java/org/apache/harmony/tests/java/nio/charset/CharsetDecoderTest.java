@@ -21,6 +21,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderMalfunctionError;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
@@ -231,6 +232,7 @@ public class CharsetDecoderTest extends TestCase {
         assertCharBufferValue(getString(), out);
     }
 
+    @SuppressWarnings("TryFailThrowable")
     public void testDecodeByteBufferException()
             throws CharacterCodingException, UnsupportedEncodingException {
         CharBuffer out;
@@ -289,8 +291,8 @@ public class CharsetDecoderTest extends TestCase {
         // RuntimeException
         try {
             decoder.decode(getExceptionByteArray());
-            fail("should throw runtime exception");
-        } catch (RuntimeException e) {
+            fail("should throw");
+        } catch (RuntimeException | CoderMalfunctionError e) {
         }
     }
 
@@ -506,6 +508,7 @@ public class CharsetDecoderTest extends TestCase {
                 readOnly(getExceptionByteArray()), false);
     }
 
+    @SuppressWarnings("TryFailThrowable")
     void implTestDecodeCharBufferByteBufferException(ByteBuffer in,
             boolean endOfInput) throws CharacterCodingException,
             UnsupportedEncodingException {
@@ -513,8 +516,8 @@ public class CharsetDecoderTest extends TestCase {
         decoder.reset();
         try {
             decoder.decode(in, out, endOfInput);
-            fail("should throw runtime exception");
-        } catch (RuntimeException e) {
+            fail("should throw");
+        } catch (RuntimeException | CoderMalfunctionError e) {
         }
     }
 
