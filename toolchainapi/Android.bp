@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package {
+    default_applicable_licenses: ["libcore_ojluni_src_main_license"],
+}
+
 // Stub library containing the contributions of ART module to Toolchain
 // API Surface.
 // This is a droidstubs and not a java_sdk_library since "toolchain" does not
@@ -46,4 +50,7 @@ droidstubs {
     // LambdaMetaFactory depends on CallSite etc. which are part of ART's
     // Public API surface
     sdk_version: "current",
+
+    // Use -target 8 so that it works with old JDKs.
+    java_version: "1.8",
 }
