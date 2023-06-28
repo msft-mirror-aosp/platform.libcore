@@ -25,10 +25,14 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import dalvik.annotation.compat.VersionCodes;
 import dalvik.system.InMemoryDexClassLoader;
 import dalvik.system.PathClassLoader;
+import dalvik.system.VMRuntime;
 
 import libcore.io.Streams;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -363,6 +367,7 @@ public class ClassTest {
         assertEquals(expected, clazz.getTypeName());
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test
     public void toGenericString() throws Exception {
         final String outerClassName = getClass().getName();
@@ -392,8 +397,16 @@ public class ClassTest {
         assertToGenericString("public final enum java.lang.annotation.RetentionPolicy",
                 RetentionPolicy.class);
         assertToGenericString("public class java.util.TreeMap<K,V>", TreeMap.class);
+        String wildcardInterfaceName;
+        if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM) {
+            wildcardInterfaceName = "$WildcardInterface<T extends java.lang.Number,"
+                    + "U extends java.util.function.Function"
+                    + "<? extends java.lang.Number, ? super java.lang.Number>>";
+        } else {
+            wildcardInterfaceName = "$WildcardInterface<T,U>";
+        }
         assertToGenericString(
-                "abstract static interface " + outerClassName + "$WildcardInterface<T,U>",
+                "abstract static interface " + outerClassName + wildcardInterfaceName,
                 WildcardInterface.class);
     }
 

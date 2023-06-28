@@ -31,6 +31,9 @@ import dalvik.annotation.optimization.NeverInline;
 import java.io.ObjectStreamField;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Native;
+import java.lang.invoke.MethodHandles;
+import java.lang.constant.Constable;
+import java.lang.constant.ConstantDesc;
 import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
@@ -38,6 +41,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -128,7 +132,8 @@ import libcore.util.CharsetUtils;
  */
 
 public final class String
-    implements java.io.Serializable, Comparable<String>, CharSequence {
+    implements java.io.Serializable, Comparable<String>, CharSequence,
+               Constable, ConstantDesc {
     // BEGIN Android-changed: The character data is managed by the runtime.
     /*
     We only keep track of the length here and compression here. This has several consequences
@@ -4454,6 +4459,30 @@ public final class String
         }
     }
 
+    /**
+     * Returns the string representation of the {@code codePoint}
+     * argument.
+     *
+     * @param   codePoint a {@code codePoint}.
+     * @return  a string of length {@code 1} or {@code 2} containing
+     *          as its single character the argument {@code codePoint}.
+     * @throws IllegalArgumentException if the specified
+     *          {@code codePoint} is not a {@linkplain Character#isValidCodePoint
+     *          valid Unicode code point}.
+     */
+    static String valueOfCodePoint(int codePoint) {
+        if (COMPACT_STRINGS && StringLatin1.canEncode(codePoint)) {
+            return new String(StringLatin1.toBytes((char)codePoint), LATIN1);
+        } else if (Character.isBmpCodePoint(codePoint)) {
+            return new String(StringUTF16.toBytes((char)codePoint), UTF16);
+        } else if (Character.isSupplementaryCodePoint(codePoint)) {
+            return new String(StringUTF16.toBytesSupplementary(codePoint), UTF16);
+        }
+
+        throw new IllegalArgumentException(
+                format("Not a valid Unicode code point: 0x%X", codePoint));
+    }
+
     /*
      * Check {@code begin}, {@code end} against {@code 0} and {@code length}
      * bounds.
@@ -4467,5 +4496,32 @@ public final class String
             throw new StringIndexOutOfBoundsException(
                 "begin " + begin + ", end " + end + ", length " + length);
         }
+    }
+
+    /**
+     * Returns an {@link Optional} containing the nominal descriptor for this
+     * instance, which is the instance itself.
+     *
+     * @return an {@link Optional} describing the {@linkplain String} instance
+     * @since 12
+     * @hide
+     */
+    @Override
+    public Optional<String> describeConstable() {
+        return Optional.of(this);
+    }
+
+    /**
+     * Resolves this instance as a {@link ConstantDesc}, the result of which is
+     * the instance itself.
+     *
+     * @param lookup ignored
+     * @return the {@linkplain String} instance
+     * @since 12
+     * @hide
+     */
+    @Override
+    public String resolveConstantDesc(MethodHandles.Lookup lookup) {
+        return this;
     }
 }
