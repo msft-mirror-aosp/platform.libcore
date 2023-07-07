@@ -88,7 +88,6 @@ public class StringTest extends TestCase {
         public CharsetDecoder newDecoder() { return new EvilCharsetDecoder(this); }
     };
 
-    @SuppressWarnings("TryFailThrowable")
     public void testGetBytes_MaliciousCharset() {
         try {
             String s = "hi";
@@ -96,7 +95,7 @@ public class StringTest extends TestCase {
             // it was given.
             s.getBytes(EVIL_CHARSET);
             fail(); // We shouldn't have got here!
-        } catch (ReadOnlyBufferException | CoderMalfunctionError expected) {
+        } catch (CoderMalfunctionError expected) {
             // We caught you trying to be naughty!
         }
     }
