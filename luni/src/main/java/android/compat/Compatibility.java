@@ -11,7 +11,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
 package android.compat;
@@ -175,7 +175,8 @@ public final class Compatibility {
         @SystemApi(client = MODULE_LIBRARIES)
         default boolean isChangeEnabled(long changeId) {
             // Do not use String.format here (b/160912695)
-            System.logW("No Compatibility callbacks set! Querying change " + changeId);
+            // TODO(b/289900411): Rate limit this log if it's necessary in the release build.
+            // System.logW("No Compatibility callbacks set! Querying change " + changeId);
             return true;
         }
     }
