@@ -5,7 +5,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,8 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
+
+import org.junit.Assert;
 
 /**
  * API unit test for java.nio.charset.CharsetEncoder
@@ -624,7 +626,6 @@ public class CharsetEncoderTest extends TestCase {
 		return CharBuffer.wrap("runtime buffer");
 	}
 
-        @SuppressWarnings("TryFailThrowable")
 	public void testEncodeCharBufferException() throws CharacterCodingException {
 		ByteBuffer out;
 		CharBuffer in;
@@ -678,12 +679,12 @@ public class CharsetEncoderTest extends TestCase {
 			assertByteArray(out, unibytesWithRep);
 		}
 
-		// RuntimeException
-		try {
-			encoder.encode(getExceptionCharBuffer());
-			fail("should throw");
-		} catch (RuntimeException | CoderMalfunctionError e) {
-		}
+		// CoderMalfunctionError
+		CharBuffer inBuffer = getExceptionCharBuffer();
+		Class<? extends Throwable> throwableClass = inBuffer == null
+				? NullPointerException.class
+				: CoderMalfunctionError.class;
+		Assert.assertThrows(throwableClass, () -> encoder.encode(inBuffer));
 	}
 
 	/*
@@ -827,7 +828,6 @@ public class CharsetEncoderTest extends TestCase {
 		return result;
 	}
 
-        @SuppressWarnings("TryFailThrowable")
 	protected void implTestEncodeCharBufferByteBufferbooleanException(
 			boolean endOfInput) throws CharacterCodingException {
 		ByteBuffer out = ByteBuffer.allocate(100);
@@ -890,12 +890,12 @@ public class CharsetEncoderTest extends TestCase {
 					+ cs.name());
 		}
 
-		// RuntimeException
-		try {
-			encoder.encode(getExceptionCharBuffer());
-			fail("should throw");
-		} catch (RuntimeException | CoderMalfunctionError e) {
-		}
+		// CoderMalfunctionError
+		CharBuffer inBuffer = getExceptionCharBuffer();
+		Class<? extends Throwable> throwableClass = inBuffer == null
+				? NullPointerException.class
+				: CoderMalfunctionError.class;
+		Assert.assertThrows(throwableClass, () -> encoder.encode(inBuffer));
 	}
 
 	private void assertCodingErrorAction(boolean endOfInput, ByteBuffer out,
