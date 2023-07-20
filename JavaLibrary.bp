@@ -465,6 +465,28 @@ java_library {
     name: "core-lambda-stubs",
     visibility: ["//visibility:public"],
     defaults: ["core_lambda_stubs_defaults"],
+    static_libs: [
+        "core-lambda-stubs.from-source",
+    ],
+    product_variables: {
+        build_from_text_stub: {
+            static_libs: [
+                "core-lambda-stubs.from-text",
+            ],
+            exclude_static_libs: [
+                "core-lambda-stubs.from-source",
+            ],
+        },
+    },
+}
+
+java_library {
+    name: "core-lambda-stubs.from-source",
+    visibility: [
+        "//visibility:override",
+        "//visibility:private",
+    ],
+    defaults: ["core_lambda_stubs_defaults"],
     srcs: [
         ":openjdk_lambda_stub_files",
         ":openjdk_lambda_duplicate_stub_files",
@@ -527,12 +549,14 @@ java_library_static {
     name: "core-test-rules",
     visibility: [
         "//art/build/sdk",
+        "//cts/tests/core/runner-axt",
         "//cts/tests/tests/util",
         "//external/conscrypt",
         "//external/conscrypt/apex/tests",
         "//frameworks/base/location/tests/locationtests",
         "//frameworks/base/core/tests/coretests",
         "//frameworks/base/wifi/tests",
+        "//libcore/ojluni/src/test",
         "//libcore/luni/src/test/java9compatibility",
         "//packages/modules/Wifi/framework/tests",
     ],
@@ -541,7 +565,10 @@ java_library_static {
         "dalvik/test-rules/src/main/**/*.java",
         "test-rules/src/main/**/*.java",
     ],
-    static_libs: ["junit"],
+    static_libs: [
+        "junit",
+        "platform-test-annotations",
+    ],
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
@@ -763,6 +790,7 @@ java_test {
     ],
 
     static_libs: [
+        "apache-xml-tests",
         "core-compat-test-rules",
         "core-java-9-compatibility-tests",
         "core-java-9-language-tests",
@@ -1103,6 +1131,9 @@ java_library {
     sdk_version: "core_current",
     // Make sure that this will be added to the sdk snapshot for S.
     min_sdk_version: "S",
+    // This jar is packaged as part of the ART module host exports, use -target 8 so that it works
+    // with old JDKs.
+    java_version: "1.8",
 }
 
 java_api_contribution {
