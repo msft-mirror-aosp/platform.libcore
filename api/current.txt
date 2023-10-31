@@ -4569,8 +4569,8 @@ package java.lang.invoke {
     method public java.lang.invoke.MethodHandle asType(java.lang.invoke.MethodType);
     method public java.lang.invoke.MethodHandle asVarargsCollector(Class<?>);
     method public java.lang.invoke.MethodHandle bindTo(Object);
-    method public final Object invoke(java.lang.Object...) throws java.lang.Throwable;
-    method public final Object invokeExact(java.lang.Object...) throws java.lang.Throwable;
+    method public final native Object invoke(java.lang.Object...) throws java.lang.Throwable;
+    method public final native Object invokeExact(java.lang.Object...) throws java.lang.Throwable;
     method public Object invokeWithArguments(java.lang.Object...) throws java.lang.Throwable;
     method public Object invokeWithArguments(java.util.List<?>) throws java.lang.Throwable;
     method public boolean isVarargsCollector();
@@ -4743,45 +4743,45 @@ package java.lang.invoke {
   public abstract class VarHandle {
     method public final java.lang.invoke.MethodType accessModeType(java.lang.invoke.VarHandle.AccessMode);
     method public static void acquireFence();
-    method public final Object compareAndExchange(java.lang.Object...);
-    method public final Object compareAndExchangeAcquire(java.lang.Object...);
-    method public final Object compareAndExchangeRelease(java.lang.Object...);
-    method public final boolean compareAndSet(java.lang.Object...);
+    method public final native Object compareAndExchange(java.lang.Object...);
+    method public final native Object compareAndExchangeAcquire(java.lang.Object...);
+    method public final native Object compareAndExchangeRelease(java.lang.Object...);
+    method public final native boolean compareAndSet(java.lang.Object...);
     method public final java.util.List<java.lang.Class<?>> coordinateTypes();
     method public static void fullFence();
-    method public final Object get(java.lang.Object...);
-    method public final Object getAcquire(java.lang.Object...);
-    method public final Object getAndAdd(java.lang.Object...);
-    method public final Object getAndAddAcquire(java.lang.Object...);
-    method public final Object getAndAddRelease(java.lang.Object...);
-    method public final Object getAndBitwiseAnd(java.lang.Object...);
-    method public final Object getAndBitwiseAndAcquire(java.lang.Object...);
-    method public final Object getAndBitwiseAndRelease(java.lang.Object...);
-    method public final Object getAndBitwiseOr(java.lang.Object...);
-    method public final Object getAndBitwiseOrAcquire(java.lang.Object...);
-    method public final Object getAndBitwiseOrRelease(java.lang.Object...);
-    method public final Object getAndBitwiseXor(java.lang.Object...);
-    method public final Object getAndBitwiseXorAcquire(java.lang.Object...);
-    method public final Object getAndBitwiseXorRelease(java.lang.Object...);
-    method public final Object getAndSet(java.lang.Object...);
-    method public final Object getAndSetAcquire(java.lang.Object...);
-    method public final Object getAndSetRelease(java.lang.Object...);
-    method public final Object getOpaque(java.lang.Object...);
-    method public final Object getVolatile(java.lang.Object...);
+    method public final native Object get(java.lang.Object...);
+    method public final native Object getAcquire(java.lang.Object...);
+    method public final native Object getAndAdd(java.lang.Object...);
+    method public final native Object getAndAddAcquire(java.lang.Object...);
+    method public final native Object getAndAddRelease(java.lang.Object...);
+    method public final native Object getAndBitwiseAnd(java.lang.Object...);
+    method public final native Object getAndBitwiseAndAcquire(java.lang.Object...);
+    method public final native Object getAndBitwiseAndRelease(java.lang.Object...);
+    method public final native Object getAndBitwiseOr(java.lang.Object...);
+    method public final native Object getAndBitwiseOrAcquire(java.lang.Object...);
+    method public final native Object getAndBitwiseOrRelease(java.lang.Object...);
+    method public final native Object getAndBitwiseXor(java.lang.Object...);
+    method public final native Object getAndBitwiseXorAcquire(java.lang.Object...);
+    method public final native Object getAndBitwiseXorRelease(java.lang.Object...);
+    method public final native Object getAndSet(java.lang.Object...);
+    method public final native Object getAndSetAcquire(java.lang.Object...);
+    method public final native Object getAndSetRelease(java.lang.Object...);
+    method public final native Object getOpaque(java.lang.Object...);
+    method public final native Object getVolatile(java.lang.Object...);
     method public final boolean isAccessModeSupported(java.lang.invoke.VarHandle.AccessMode);
     method public static void loadLoadFence();
     method public static void releaseFence();
-    method public final void set(java.lang.Object...);
-    method public final void setOpaque(java.lang.Object...);
-    method public final void setRelease(java.lang.Object...);
-    method public final void setVolatile(java.lang.Object...);
+    method public final native void set(java.lang.Object...);
+    method public final native void setOpaque(java.lang.Object...);
+    method public final native void setRelease(java.lang.Object...);
+    method public final native void setVolatile(java.lang.Object...);
     method public static void storeStoreFence();
     method public final java.lang.invoke.MethodHandle toMethodHandle(java.lang.invoke.VarHandle.AccessMode);
     method public final Class<?> varType();
-    method public final boolean weakCompareAndSet(java.lang.Object...);
-    method public final boolean weakCompareAndSetAcquire(java.lang.Object...);
-    method public final boolean weakCompareAndSetPlain(java.lang.Object...);
-    method public final boolean weakCompareAndSetRelease(java.lang.Object...);
+    method public final native boolean weakCompareAndSet(java.lang.Object...);
+    method public final native boolean weakCompareAndSetAcquire(java.lang.Object...);
+    method public final native boolean weakCompareAndSetPlain(java.lang.Object...);
+    method public final native boolean weakCompareAndSetRelease(java.lang.Object...);
   }
 
   public enum VarHandle.AccessMode {
@@ -6436,9 +6436,16 @@ package java.nio {
   }
 
   public abstract class MappedByteBuffer extends java.nio.ByteBuffer {
+    method public final java.nio.Buffer clear();
+    method public final java.nio.Buffer flip();
     method public final java.nio.MappedByteBuffer force();
     method public final boolean isLoaded();
+    method public final java.nio.Buffer limit(int);
     method public final java.nio.MappedByteBuffer load();
+    method public final java.nio.Buffer mark();
+    method public final java.nio.Buffer position(int);
+    method public final java.nio.Buffer reset();
+    method public final java.nio.Buffer rewind();
     method public abstract java.nio.MappedByteBuffer slice(int, int);
   }
 
@@ -8283,32 +8290,13 @@ package java.security {
 
   public abstract class Provider extends java.util.Properties {
     ctor protected Provider(String, double, String);
-    method public Object compute(Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
-    method public Object computeIfAbsent(Object, java.util.function.Function<? super java.lang.Object,?>);
-    method public Object computeIfPresent(Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
-    method public java.util.Enumeration<java.lang.Object> elements();
-    method public java.util.Set<java.util.Map.Entry<java.lang.Object,java.lang.Object>> entrySet();
-    method public void forEach(java.util.function.BiConsumer<? super java.lang.Object,? super java.lang.Object>);
-    method public Object get(Object);
     method public String getInfo();
     method public String getName();
-    method public Object getOrDefault(Object, Object);
     method public java.security.Provider.Service getService(String, String);
     method public java.util.Set<java.security.Provider.Service> getServices();
     method public double getVersion();
-    method public java.util.Set<java.lang.Object> keySet();
-    method public java.util.Enumeration<java.lang.Object> keys();
-    method public Object merge(Object, Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
-    method public Object put(Object, Object);
-    method public void putAll(java.util.Map<?,?>);
-    method public Object putIfAbsent(Object, Object);
     method protected void putService(java.security.Provider.Service);
-    method public Object remove(Object);
     method protected void removeService(java.security.Provider.Service);
-    method public boolean replace(Object, Object, Object);
-    method public Object replace(Object, Object);
-    method public void replaceAll(java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
-    method public java.util.Collection<java.lang.Object> values();
   }
 
   public static class Provider.Service {
@@ -14303,23 +14291,44 @@ package java.util {
 
   public class Properties extends java.util.Hashtable<java.lang.Object,java.lang.Object> {
     ctor public Properties();
+    ctor public Properties(int);
     ctor public Properties(java.util.Properties);
+    method public Object compute(Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
+    method public Object computeIfAbsent(Object, java.util.function.Function<? super java.lang.Object,?>);
+    method public Object computeIfPresent(Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
+    method public java.util.Enumeration<java.lang.Object> elements();
+    method public java.util.Set<java.util.Map.Entry<java.lang.Object,java.lang.Object>> entrySet();
+    method public void forEach(java.util.function.BiConsumer<? super java.lang.Object,? super java.lang.Object>);
+    method public Object get(Object);
+    method public Object getOrDefault(Object, Object);
     method public String getProperty(String);
     method public String getProperty(String, String);
+    method public java.util.Set<java.lang.Object> keySet();
+    method public java.util.Enumeration<java.lang.Object> keys();
     method public void list(java.io.PrintStream);
     method public void list(java.io.PrintWriter);
     method public void load(java.io.Reader) throws java.io.IOException;
     method public void load(java.io.InputStream) throws java.io.IOException;
     method public void loadFromXML(java.io.InputStream) throws java.io.IOException, java.util.InvalidPropertiesFormatException;
+    method public Object merge(Object, Object, java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
     method public java.util.Enumeration<?> propertyNames();
+    method public Object put(Object, Object);
+    method public void putAll(java.util.Map<?,?>);
+    method public Object putIfAbsent(Object, Object);
+    method public Object remove(Object);
+    method public boolean replace(Object, Object, Object);
+    method public Object replace(Object, Object);
+    method public void replaceAll(java.util.function.BiFunction<? super java.lang.Object,? super java.lang.Object,?>);
     method @Deprecated public void save(java.io.OutputStream, String);
     method public Object setProperty(String, String);
     method public void store(java.io.Writer, String) throws java.io.IOException;
     method public void store(java.io.OutputStream, String) throws java.io.IOException;
     method public void storeToXML(java.io.OutputStream, String) throws java.io.IOException;
     method public void storeToXML(java.io.OutputStream, String, String) throws java.io.IOException;
+    method public void storeToXML(java.io.OutputStream, String, java.nio.charset.Charset) throws java.io.IOException;
     method public java.util.Set<java.lang.String> stringPropertyNames();
-    field protected java.util.Properties defaults;
+    method public java.util.Collection<java.lang.Object> values();
+    field protected volatile java.util.Properties defaults;
   }
 
   public final class PropertyPermission extends java.security.BasicPermission {
