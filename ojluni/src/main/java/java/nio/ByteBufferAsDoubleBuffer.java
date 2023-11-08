@@ -42,7 +42,11 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
 
     // Android-added: Added offset as address can be zero on Android.
-    protected final int offset;
+    /**
+      * The offset from the Bytebuffer at the position 0 (in addition to bb.offset) in the
+      * number of bytes.
+      */
+    protected final int byteOffset;
     // Android-added: Merge with little- and big-endian classes.
     private final ByteOrder order;
 
@@ -72,7 +76,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
         }
         this.bb.order(order);
         this.order = order;
-        offset = off;
+        byteOffset = off;
 
 
 
@@ -85,6 +89,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
         return bb.base();
     }
 
+    @Override
     public DoubleBuffer slice() {
         int pos = this.position();
         int lim = this.limit();
@@ -92,8 +97,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
         // long addr = byteOffset(pos);
         // return new ByteBufferAsDoubleBuffer(bb, -1, 0, rem, rem, addr, order);
-        int off = (pos << 3) + offset;
-        return new ByteBufferAsDoubleBuffer(bb, -1, 0, rem, rem, off, order);
+        return new ByteBufferAsDoubleBuffer(bb, -1, 0, rem, rem, ix(pos), order);
     }
 
     @Override
@@ -105,9 +109,10 @@ class ByteBufferAsDoubleBuffer                  // package-private
                                                     length,
                                                     length,
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                    offset, order);
+                                                    ix(index), order);
     }
 
+    @Override
     public DoubleBuffer duplicate() {
         return new ByteBufferAsDoubleBuffer(bb,
                                                     this.markValue(),
@@ -115,9 +120,10 @@ class ByteBufferAsDoubleBuffer                  // package-private
                                                     this.limit(),
                                                     this.capacity(),
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                    offset, order);
+                                                    byteOffset, order);
     }
 
+    @Override
     public DoubleBuffer asReadOnlyBuffer() {
 
         return new ByteBufferAsDoubleBuffer(bb.asReadOnlyBuffer(),
@@ -126,7 +132,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
                                                  this.limit(),
                                                  this.capacity(),
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                 offset, order);
+                                                 byteOffset, order);
 
 
 
@@ -138,7 +144,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
         // Android-changed: address can be zero on Android.
         // int off = (int) (address - bb.address);
         // return (i << 3) + off;
-        return (i << 3) + offset;
+        return (i << 3) + byteOffset;
     }
 
     // Android-removed: Removed unused byteOffset(long).
@@ -148,6 +154,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
     }
     */
 
+    @Override
     public double get() {
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // long x = SCOPED_MEMORY_ACCESS.getLongUnaligned(scope(), bb.hb, byteOffset(nextGetIndex()),
@@ -156,6 +163,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
         return get(nextGetIndex());
     }
 
+    @Override
     public double get(int i) {
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // long x = SCOPED_MEMORY_ACCESS.getLongUnaligned(scope(), bb.hb, byteOffset(checkIndex(i)),
@@ -166,11 +174,11 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
     // BEGIN Android-added: Improve the efficiency of put(type$[], int, int).
     @Override
-    public DoubleBuffer get(double[] dst, int offset, int length) {
-        checkBounds(offset, length, dst.length);
+    public DoubleBuffer get(double[] dst, int off, int length) {
+        checkBounds(off, length, dst.length);
         if (length > remaining())
             throw new BufferUnderflowException();
-        bb.getUnchecked(ix(position), dst, offset, length);
+        bb.getUnchecked(ix(position), dst, off, length);
         position += length;
         return this;
     }
@@ -188,8 +196,12 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
 
 
+
+    @Override
     public DoubleBuffer put(double x) {
 
+        // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
+        throwIfReadOnly();
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // long y = Double.doubleToRawLongBits(x);
         // SCOPED_MEMORY_ACCESS.putLongUnaligned(scope(), bb.hb, byteOffset(nextPutIndex()), y,
@@ -201,6 +213,7 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
     }
 
+    @Override
     public DoubleBuffer put(int i, double x) {
 
         // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
@@ -218,16 +231,19 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
     // BEGIN Android-added: Improve the efficiency of put(type$[], int, int).
     @Override
-    public DoubleBuffer put(double[] src, int offset, int length) {
-        checkBounds(offset, length, src.length);
+    public DoubleBuffer put(double[] src, int off, int length) {
+        // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
+        throwIfReadOnly();
+        checkBounds(off, length, src.length);
         if (length > remaining())
             throw new BufferOverflowException();
-        bb.putUnchecked(ix(position), src, offset, length);
+        bb.putUnchecked(ix(position), src, off, length);
         position += length;
         return this;
     }
     // END Android-added: Improve the efficiency of put(type$[], int, int).
 
+    @Override
     public DoubleBuffer compact() {
 
         // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
@@ -247,7 +263,9 @@ class ByteBufferAsDoubleBuffer                  // package-private
         if (!(bb instanceof DirectByteBuffer)) {
             System.arraycopy(bb.array(), ix(pos), bb.array(), ix(0), rem << 3);
         } else {
-            Memory.memmove(this, ix(0), this, ix(pos), rem << 3);
+            // Use pos << 3 instead of ix(pos) to avoid double counting of the offset
+            // because this.address == bb.address + offset;
+            Memory.memmove(this, 0, this, pos << 3, rem << 3);
         }
         position(rem);
         limit(capacity());
@@ -258,10 +276,12 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
     }
 
+    @Override
     public boolean isDirect() {
         return bb.isDirect();
     }
 
+    @Override
     public boolean isReadOnly() {
         return isReadOnly;
     }
@@ -306,9 +326,13 @@ class ByteBufferAsDoubleBuffer                  // package-private
 
 
 
+
+
+    @Override
     public ByteOrder order() {
         return order;
     }
+
 
 
 
