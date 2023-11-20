@@ -44,6 +44,9 @@ import java.nio.*;
 
 
 
+import static org.testng.Assert.assertEquals;
+
+
 public class BasicChar
     extends Basic
 {
@@ -98,6 +101,18 @@ public class BasicChar
         }
     }
 
+    private static void absBulkGet(CharBuffer b) {
+        int n = b.capacity();
+        int len = n - 7*2;
+        char[] a = new char[n + 7];
+        b.position(42);
+        b.get(7, a, 7, len);
+        ck(b, b.position() == 42);
+        for (int i = 0; i < len; i++) {
+            ck(b, (long)a[i + 7], (long)((char)ic(i)));
+        }
+    }
+
     private static void relPut(CharBuffer b) {
         int n = b.capacity();
         b.clear();
@@ -145,6 +160,20 @@ public class BasicChar
                      + " put into same buffer");
             }
         }
+    }
+
+    private static void absBulkPutArray(CharBuffer b) {
+        int n = b.capacity();
+        b.clear();
+        int lim = n - 7;
+        int len = lim - 7;
+        b.limit(lim);
+        char[] a = new char[len + 7];
+        for (int i = 0; i < len; i++)
+            a[i + 7] = (char)ic(i);
+        b.position(42);
+        b.put(7, a, 7, len);
+        ck(b, b.position() == 42);
     }
 
     //6231529
@@ -465,6 +494,67 @@ public class BasicChar
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static void fail(String problem,
                              CharBuffer xb, CharBuffer yb,
                              char x, char y) {
@@ -514,7 +604,11 @@ public class BasicChar
         tryCatch(CharBuffer.wrap(t), ex, thunk);
     }
 
+    // Android-changed: Add @SuppressWarnings as the operation is tested to be reflexive.
+    @SuppressWarnings({"SelfComparison", "SelfEquals"})
     public static void test(int level, final CharBuffer b, boolean direct) {
+
+        show(level, b);
 
         if (direct != b.isDirect())
             fail("Wrong direction", b);
@@ -536,6 +630,9 @@ public class BasicChar
 
         bulkPutBuffer(b);
         relGet(b);
+
+        absBulkPutArray(b);
+        absBulkGet(b);
 
 
 
@@ -593,9 +690,10 @@ public class BasicChar
         catchIndexOutOfBounds(b, () -> b.get(b.limit()));
         catchIndexOutOfBounds(b, () -> b.get(-1));
         catchIndexOutOfBounds(b, () -> b.put(b.limit(), (char)42));
-        CharBuffer intermediate = (CharBuffer) b.position(0).mark();
         tryCatch(b, InvalidMarkException.class,
-                () -> intermediate.compact().reset());
+                // Android-changed: Explicit casting due to @CovariantReturnType methods.
+                // () -> b.position(0).mark().compact().reset());
+                () -> ((CharBuffer) b.position(0).mark()).compact().reset());
 
         try {
             b.position(b.limit() + 1);
@@ -638,6 +736,24 @@ public class BasicChar
         }
 
         // Exceptions in absolute bulk and slice operations
+
+        catchNullArgument(b, () -> b.get(7, null, 0, 42));
+        catchNullArgument(b, () -> b.put(7, (char[])null, 0, 42));
+
+        char[] tmpa = new char[42];
+        catchIndexOutOfBounds(b, () -> b.get(7, tmpa, -1, 42));
+        catchIndexOutOfBounds(b, () -> b.get(7, tmpa, 42, 1));
+        catchIndexOutOfBounds(b, () -> b.get(7, tmpa, 41, -1));
+        catchIndexOutOfBounds(b, () -> b.get(-1, tmpa, 0, 1));
+        catchIndexOutOfBounds(b, () -> b.get(b.limit(), tmpa, 0, 1));
+        catchIndexOutOfBounds(b, () -> b.get(b.limit() - 41, tmpa, 0, 42));
+
+        catchIndexOutOfBounds(b, () -> b.put(7, tmpa, -1, 42));
+        catchIndexOutOfBounds(b, () -> b.put(7, tmpa, 42, 1));
+        catchIndexOutOfBounds(b, () -> b.put(7, tmpa, 41, -1));
+        catchIndexOutOfBounds(b, () -> b.put(-1, tmpa, 0, 1));
+        catchIndexOutOfBounds(b, () -> b.put(b.limit(), tmpa, 0, 1));
+        catchIndexOutOfBounds(b, () -> b.put(b.limit() - 41, tmpa, 0, 42));
 
         catchIndexOutOfBounds(b, () -> b.slice(-1, 7));
         catchIndexOutOfBounds(b, () -> b.slice(b.limit() + 1, 7));
@@ -721,6 +837,7 @@ public class BasicChar
 
 
                     ) {
+                    out.println("[" + i + "] " + x + " != " + y);
                 }
             }
             fail("Identical buffers not equal", b, b2);
@@ -748,6 +865,12 @@ public class BasicChar
         // Check equals and compareTo with interesting values
         for (char x : VALUES) {
             CharBuffer xb = CharBuffer.wrap(new char[] { x });
+            if (xb.compareTo(xb) != 0) {
+                fail("compareTo not reflexive", xb, xb, x, x);
+            }
+            if (!xb.equals(xb)) {
+                fail("equals not reflexive", xb, xb, x, x);
+            }
             for (char y : VALUES) {
                 CharBuffer yb = CharBuffer.wrap(new char[] { y });
                 if (xb.compareTo(yb) != - yb.compareTo(xb)) {
@@ -850,6 +973,95 @@ public class BasicChar
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+        // Read-only views
+
+        b.rewind();
+        final CharBuffer rb = b.asReadOnlyBuffer();
+        if (!b.equals(rb))
+            fail("Buffer not equal to read-only view", b, rb);
+        show(level + 1, rb);
+
+        catchReadOnlyBuffer(b, () -> relPut(rb));
+        catchReadOnlyBuffer(b, () -> absPut(rb));
+        catchReadOnlyBuffer(b, () -> bulkPutArray(rb));
+        catchReadOnlyBuffer(b, () -> bulkPutBuffer(rb));
+        catchReadOnlyBuffer(b, () -> absBulkPutArray(rb));
+
+        // put(CharBuffer) should not change source position
+        final CharBuffer src = CharBuffer.allocate(1);
+        catchReadOnlyBuffer(b, () -> rb.put(src));
+        ck(src, src.position(), 0);
+
+        catchReadOnlyBuffer(b, () -> rb.compact());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // 7199551
+        catchReadOnlyBuffer(b, () -> rb.put(new String(new char[rb.remaining() + 1])));
+        catchReadOnlyBuffer(b, () -> rb.append(new String(new char[rb.remaining() + 1])));
+
+
+
+        if (rb.getClass().getName().startsWith("java.nio.Heap")) {
+            catchReadOnlyBuffer(b, () -> rb.array());
+            catchReadOnlyBuffer(b, () -> rb.arrayOffset());
+            if (rb.hasArray()) {
+                fail("Read-only heap buffer's backing array is accessible", rb);
+            }
+        }
+
+        // Bulk puts from read-only buffers
+
+        b.clear();
+        rb.rewind();
+        b.put(rb);
+
+
+
+
+
+
+
+
+
+
+
+        relPut(b);                       // Required by testViews
+
+
+
+
+
+
     }
 
 
@@ -859,6 +1071,7 @@ public class BasicChar
         int start = 3;
         int end = 9;
         final CharBuffer b = CharBuffer.wrap(s, start, end);
+        show(0, b);
         ck(b, b.toString().equals(s.substring(start, end)));
         ck(b, b.toString().equals("defghi"));
         ck(b, b.isReadOnly());
@@ -868,6 +1081,13 @@ public class BasicChar
         ck(b, s.length(), b.capacity());
         b.position(6);
         ck(b, b.subSequence(0,3).toString().equals("ghi"));
+
+        // absolute bulk get
+        char[] c = new char[end + 1 - (start - 1) + 1]; // [start - 1, end + 1]
+        b.limit(end + 2);
+        b.get(start - 1, c, 0, c.length);
+        for (int i = 0; i < c.length; i++)
+            ck(b, c[i], s.charAt(start - 1 + i));
 
         // The index, relative to the position, must be non-negative and
         // smaller than remaining().
@@ -898,6 +1118,7 @@ public class BasicChar
         int offset = 47;
         int length = 900;
         final CharBuffer b = CharBuffer.wrap(ba, offset, length);
+        show(0, b);
         ck(b, b.capacity(), ba.length);
         ck(b, b.position(), offset);
         ck(b, b.limit(), offset + length);
@@ -939,6 +1160,26 @@ public class BasicChar
 
     }
 
+    public static void testToString() {
+        final int cap = 10;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
     public static void test() {
         testAllocate();
         test(0, CharBuffer.allocate(7 * 1024), false);
@@ -960,6 +1201,27 @@ public class BasicChar
 
         putBuffer();
 
+
+        testToString();
+
+        // Android-added: Add API coverage for get, put(int, char[]).
+        testGetPutArrayWithIndex();
     }
 
+    // BEGIN Android-added: Add API coverage for get, put(int, char[]).
+    private static void testGetPutArrayWithIndex() {
+        CharBuffer buf = CharBuffer.allocate(16);
+        char firstElement = 11, secondElement = 12;
+        buf.put(firstElement);
+        buf.put(secondElement);
+        buf.position(0);
+        char[] arr = new char[] { 4, 3, 2, 1 };
+        buf.put(2, arr);
+        char[] actual = new char[4];
+        buf.get(2, actual);
+        assertEquals(actual, arr);
+        buf.get(0, actual);
+        assertEquals(actual, new char[] {firstElement, secondElement, 4, 3});
+    }
+    // END Android-added: Add API coverage for get, put(int, char[]).
 }

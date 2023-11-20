@@ -284,11 +284,8 @@ public abstract class ByteBuffer
     final int offset;
     boolean isReadOnly;
 
-    // Android-added: Added ELEMENT_SIZE_SHIFT for NIOAccess class and framework native code.
-    // This ELEMENT_SIZE_SHIFT line is generated. The value is expected to be inlined by javac
-    // during the build-time. Simple implementation of log2 for the size = 1,2,4,8
-    // log2(1) = 0 = 1/2, log2(2) = 1 = 2 / 2, log2(4) = 2 = 4 / 2, log2(8) = 3
-    private static final int ELEMENT_SIZE_SHIFT = Byte.BYTES <= 4 ? (Byte.BYTES / 2) : 3;
+    // Android-added: Added ELEMENT_SIZE_SHIFT for NIOAccess class and @UnsupportedAppUsage.
+    private static final int ELEMENT_SIZE_SHIFT = 0;
 
     // Creates a new buffer with the given mark, position, limit, capacity,
     // backing array, and array offset
@@ -893,7 +890,6 @@ public abstract class ByteBuffer
      *          {@code length} parameters do not hold
      *
      * @since 13
-     * @hide
      */
     public ByteBuffer get(int index, byte[] dst, int offset, int length) {
         Objects.checkFromIndexSize(index, length, limit());
@@ -930,7 +926,6 @@ public abstract class ByteBuffer
      *          or {@code limit() - index < dst.length}
      *
      * @since 13
-     * @hide
      */
     public ByteBuffer get(int index, byte[] dst) {
         return get(index, dst, 0, dst.length);
@@ -1096,7 +1091,6 @@ public abstract class ByteBuffer
      *         If this buffer is read-only
      *
      * @since 16
-     * @hide
      */
     public ByteBuffer put(int index, ByteBuffer src, int offset, int length) {
         Objects.checkFromIndexSize(index, length, limit());
@@ -1180,6 +1174,46 @@ public abstract class ByteBuffer
             }
             Memory.memmove(dstObject, dstOffset, srcObject, srcOffset, n);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1326,7 +1360,6 @@ public abstract class ByteBuffer
      *          If this buffer is read-only
      *
      * @since 13
-     * @hide
      */
     public ByteBuffer put(int index, byte[] src, int offset, int length) {
         if (isReadOnly())
@@ -1367,7 +1400,6 @@ public abstract class ByteBuffer
      *          If this buffer is read-only
      *
      * @since 13
-     * @hide
      */
     public ByteBuffer put(int index, byte[] src) {
         return put(index, src, 0, src.length);
