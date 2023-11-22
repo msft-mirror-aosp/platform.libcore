@@ -890,7 +890,6 @@ public abstract class LongBuffer
      *          {@code length} parameters do not hold
      *
      * @since 13
-     * @hide
      */
     public LongBuffer get(int index, long[] dst, int offset, int length) {
         Objects.checkFromIndexSize(index, length, limit());
@@ -927,7 +926,6 @@ public abstract class LongBuffer
      *          or {@code limit() - index < dst.length}
      *
      * @since 13
-     * @hide
      */
     public LongBuffer get(int index, long[] dst) {
         return get(index, dst, 0, dst.length);
@@ -1093,7 +1091,6 @@ public abstract class LongBuffer
      *         If this buffer is read-only
      *
      * @since 16
-     * @hide
      */
     public LongBuffer put(int index, LongBuffer src, int offset, int length) {
         Objects.checkFromIndexSize(index, length, limit());
@@ -1178,9 +1175,62 @@ public abstract class LongBuffer
 
 
 
+        if (this.hb != null) {
+            if (src.hb != null) {
+                System.arraycopy(src.hb, srcPos + src.offset, hb, pos + offset, n);
+            } else {
+                // this and src don't share the same backed long[].
+                src.get(srcPos, this.hb, pos + offset, n);
+            }
+            return;
+        } else if (src.hb != null) {
+            // this and src don't share the same backed long[].
+            this.put(pos, src.hb, srcPos + src.offset, n);
+            return;
+        }
+
+        // Slow path using get(int).
         int posMax = pos + n;
-        for (int i = pos, j = srcPos; i < posMax; i++, j++) {
-            put(i, src.get(j));
+        Object thisBase = base();
+        // If this buffer and the source buffer share the same backing array or memory, then the
+        // result will be as if the source elements were first copied to an intermediate location
+        // before being written into this buffer.
+        // Instead of copying to an intermediate location, we change the writing order.
+        boolean ascendingOrder;
+        if (isDirect() && src.isDirect()) {
+            // Both src and dst should be ByteBufferAsLongBuffer classes.
+            // this.offset and src.offset should be zero, and can be ignored.
+            long dstStart = this.address + ((long) pos << 3);
+            long srcStart = src.address + ((long) srcPos << 3);
+            // The second condition is optional, but the ascending order is the preferred behavior.
+            ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 3) < dstStart);
+            // We may just do memmove here if both buffer uses the same byte order.
+        } else if (thisBase != null && thisBase == src.base()) { // Share the same long[] or byte[]
+            if (thisBase == this.hb) { // Both this and src should be HeapLongBuffer
+                int dstStart = this.offset + pos;
+                int srcStart = src.offset + srcPos;
+                ascendingOrder = (dstStart <= srcStart) || (srcStart + n < dstStart);
+            } else if (this instanceof ByteBufferAsLongBuffer asDst &&
+                src instanceof ByteBufferAsLongBuffer asSrc && thisBase instanceof byte[]) {
+                // this.offset and src.offset should be zero, and can be ignored.
+                long dstStart = asDst.byteOffset + asDst.bb.offset + ((long) pos << 3);
+                long srcStart = asSrc.byteOffset + asSrc.bb.offset + ((long) srcPos << 3);
+                ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 3) < dstStart);
+            } else {
+                // There isn't a known case following into this condition. We should add a DCHECK here.
+                ascendingOrder = true;
+            }
+        } else {
+            ascendingOrder = true;
+        }
+        if (ascendingOrder) {
+            for (int i = pos, j = srcPos; i < posMax; i++, j++) {
+                put(i, src.get(j));
+            }
+        } else {
+            for (int i = posMax - 1, j = srcPos + n - 1; i >= pos; i--, j--) {
+                put(i, src.get(j));
+            }
         }
 
 
@@ -1323,7 +1373,6 @@ public abstract class LongBuffer
      *          If this buffer is read-only
      *
      * @since 13
-     * @hide
      */
     public LongBuffer put(int index, long[] src, int offset, int length) {
         if (isReadOnly())
@@ -1364,7 +1413,6 @@ public abstract class LongBuffer
      *          If this buffer is read-only
      *
      * @since 13
-     * @hide
      */
     public LongBuffer put(int index, long[] src) {
         return put(index, src, 0, src.length);

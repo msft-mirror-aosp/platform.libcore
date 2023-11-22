@@ -42,7 +42,11 @@ class ByteBufferAsShortBuffer                  // package-private
 
 
     // Android-added: Added offset as address can be zero on Android.
-    protected final int offset;
+    /**
+      * The offset from the Bytebuffer at the position 0 (in addition to bb.offset) in the
+      * number of bytes.
+      */
+    protected final int byteOffset;
     // Android-added: Merge with little- and big-endian classes.
     private final ByteOrder order;
 
@@ -72,7 +76,7 @@ class ByteBufferAsShortBuffer                  // package-private
         }
         this.bb.order(order);
         this.order = order;
-        offset = off;
+        byteOffset = off;
 
 
 
@@ -85,6 +89,7 @@ class ByteBufferAsShortBuffer                  // package-private
         return bb.base();
     }
 
+    @Override
     public ShortBuffer slice() {
         int pos = this.position();
         int lim = this.limit();
@@ -92,8 +97,7 @@ class ByteBufferAsShortBuffer                  // package-private
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
         // long addr = byteOffset(pos);
         // return new ByteBufferAsShortBuffer(bb, -1, 0, rem, rem, addr, order);
-        int off = (pos << 1) + offset;
-        return new ByteBufferAsShortBuffer(bb, -1, 0, rem, rem, off, order);
+        return new ByteBufferAsShortBuffer(bb, -1, 0, rem, rem, ix(pos), order);
     }
 
     @Override
@@ -105,9 +109,10 @@ class ByteBufferAsShortBuffer                  // package-private
                                                     length,
                                                     length,
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                    offset, order);
+                                                    ix(index), order);
     }
 
+    @Override
     public ShortBuffer duplicate() {
         return new ByteBufferAsShortBuffer(bb,
                                                     this.markValue(),
@@ -115,9 +120,10 @@ class ByteBufferAsShortBuffer                  // package-private
                                                     this.limit(),
                                                     this.capacity(),
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                    offset, order);
+                                                    byteOffset, order);
     }
 
+    @Override
     public ShortBuffer asReadOnlyBuffer() {
 
         return new ByteBufferAsShortBuffer(bb.asReadOnlyBuffer(),
@@ -126,7 +132,7 @@ class ByteBufferAsShortBuffer                  // package-private
                                                  this.limit(),
                                                  this.capacity(),
         // Android-changed: Added ByteOrder and removed MemorySegmentProxy to be supported yet.
-                                                 offset, order);
+                                                 byteOffset, order);
 
 
 
@@ -138,7 +144,7 @@ class ByteBufferAsShortBuffer                  // package-private
         // Android-changed: address can be zero on Android.
         // int off = (int) (address - bb.address);
         // return (i << 1) + off;
-        return (i << 1) + offset;
+        return (i << 1) + byteOffset;
     }
 
     // Android-removed: Removed unused byteOffset(long).
@@ -148,6 +154,7 @@ class ByteBufferAsShortBuffer                  // package-private
     }
     */
 
+    @Override
     public short get() {
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // short x = SCOPED_MEMORY_ACCESS.getShortUnaligned(scope(), bb.hb, byteOffset(nextGetIndex()),
@@ -156,6 +163,7 @@ class ByteBufferAsShortBuffer                  // package-private
         return get(nextGetIndex());
     }
 
+    @Override
     public short get(int i) {
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // short x = SCOPED_MEMORY_ACCESS.getShortUnaligned(scope(), bb.hb, byteOffset(checkIndex(i)),
@@ -164,17 +172,25 @@ class ByteBufferAsShortBuffer                  // package-private
         return bb.getShortUnchecked(ix(checkIndex(i)));
     }
 
-    // BEGIN Android-added: Improve the efficiency of put(type$[], int, int).
+    // BEGIN Android-added: Improve the efficiency of get().
     @Override
-    public ShortBuffer get(short[] dst, int offset, int length) {
-        checkBounds(offset, length, dst.length);
+    public ShortBuffer get(short[] dst, int off, int length) {
+        Objects.checkFromIndexSize(off, length, dst.length);
         if (length > remaining())
             throw new BufferUnderflowException();
-        bb.getUnchecked(ix(position), dst, offset, length);
+        bb.getUnchecked(ix(position), dst, off, length);
         position += length;
         return this;
     }
-    // END Android-added: Improve the efficiency of put(type$[], int, int).
+
+    @Override
+    public ShortBuffer get(int index, short[] dst, int off, int length) {
+        Objects.checkFromIndexSize(index, length, limit());
+        Objects.checkFromIndexSize(off, length, dst.length);
+        bb.getUnchecked(ix(index), dst, off, length);
+        return this;
+    }
+    // END Android-added: Improve the efficiency of get().
 
 
 
@@ -188,8 +204,12 @@ class ByteBufferAsShortBuffer                  // package-private
 
 
 
+
+    @Override
     public ShortBuffer put(short x) {
 
+        // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
+        throwIfReadOnly();
         // Android-changed: Removed MemorySegmentProxy to be supported yet.
         // short y = (x);
         // SCOPED_MEMORY_ACCESS.putShortUnaligned(scope(), bb.hb, byteOffset(nextPutIndex()), y,
@@ -201,6 +221,7 @@ class ByteBufferAsShortBuffer                  // package-private
 
     }
 
+    @Override
     public ShortBuffer put(int i, short x) {
 
         // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
@@ -216,18 +237,50 @@ class ByteBufferAsShortBuffer                  // package-private
 
     }
 
-    // BEGIN Android-added: Improve the efficiency of put(type$[], int, int).
+    // BEGIN Android-added: Improve the efficiency of put(type$[]).
     @Override
-    public ShortBuffer put(short[] src, int offset, int length) {
-        checkBounds(offset, length, src.length);
+    public ShortBuffer put(short[] src, int off, int length) {
+        throwIfReadOnly();
+        Objects.checkFromIndexSize(off, length, src.length);
         if (length > remaining())
             throw new BufferOverflowException();
-        bb.putUnchecked(ix(position), src, offset, length);
+        bb.putUnchecked(ix(position), src, off, length);
         position += length;
         return this;
     }
-    // END Android-added: Improve the efficiency of put(type$[], int, int).
 
+    @Override
+    public ShortBuffer put(int index, short[] src, int off, int length) {
+        throwIfReadOnly();
+        Objects.checkFromIndexSize(index, length, limit());
+        Objects.checkFromIndexSize(off, length, src.length);
+        putUnchecked(index, src, off, length);
+        return this;
+    }
+
+    private void putUnchecked(int index, short[] src, int off, int length) {
+        bb.putUnchecked(ix(index), src, off, length);
+    }
+
+    @Override
+    void putBuffer(int pos, ShortBuffer src, int srcPos, int n) {
+        if (src.hb != null) {
+            // this and src don't share the same backed char[].
+            putUnchecked(pos, src.hb, srcPos + src.offset, n);
+            return;
+        }
+        if (order() == src.order() &&
+              src instanceof ByteBufferAsShortBuffer asSrc) { // always true if src.hb == null
+            this.bb.putBuffer(ix(pos), asSrc.bb, asSrc.ix(srcPos), n << 1);
+            return;
+        }
+
+        // Fallback to the slow path until memmove with bswap is implemented
+        super.putBuffer(pos, src, srcPos, n);
+    }
+    // END Android-added: Improve the efficiency of put(type$[]).
+
+    @Override
     public ShortBuffer compact() {
 
         // Android-added: Merge the Read-only buffer class with this Read-Write buffer class.
@@ -247,7 +300,9 @@ class ByteBufferAsShortBuffer                  // package-private
         if (!(bb instanceof DirectByteBuffer)) {
             System.arraycopy(bb.array(), ix(pos), bb.array(), ix(0), rem << 1);
         } else {
-            Memory.memmove(this, ix(0), this, ix(pos), rem << 1);
+            // Use pos << 1 instead of ix(pos) to avoid double counting of the offset
+            // because this.address == bb.address + offset;
+            Memory.memmove(this, 0, this, pos << 1, rem << 1);
         }
         position(rem);
         limit(capacity());
@@ -258,10 +313,12 @@ class ByteBufferAsShortBuffer                  // package-private
 
     }
 
+    @Override
     public boolean isDirect() {
         return bb.isDirect();
     }
 
+    @Override
     public boolean isReadOnly() {
         return isReadOnly;
     }
@@ -306,9 +363,13 @@ class ByteBufferAsShortBuffer                  // package-private
 
 
 
+
+
+    @Override
     public ByteOrder order() {
         return order;
     }
+
 
 
 
