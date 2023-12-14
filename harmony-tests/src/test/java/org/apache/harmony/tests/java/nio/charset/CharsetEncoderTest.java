@@ -21,6 +21,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderMalfunctionError;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
@@ -623,6 +624,7 @@ public class CharsetEncoderTest extends TestCase {
 		return CharBuffer.wrap("runtime buffer");
 	}
 
+        @SuppressWarnings("TryFailThrowable")
 	public void testEncodeCharBufferException() throws CharacterCodingException {
 		ByteBuffer out;
 		CharBuffer in;
@@ -679,8 +681,8 @@ public class CharsetEncoderTest extends TestCase {
 		// RuntimeException
 		try {
 			encoder.encode(getExceptionCharBuffer());
-			fail("should throw runtime exception");
-		} catch (RuntimeException e) {
+			fail("should throw");
+		} catch (RuntimeException | CoderMalfunctionError e) {
 		}
 	}
 
@@ -825,6 +827,7 @@ public class CharsetEncoderTest extends TestCase {
 		return result;
 	}
 
+        @SuppressWarnings("TryFailThrowable")
 	protected void implTestEncodeCharBufferByteBufferbooleanException(
 			boolean endOfInput) throws CharacterCodingException {
 		ByteBuffer out = ByteBuffer.allocate(100);
@@ -890,8 +893,8 @@ public class CharsetEncoderTest extends TestCase {
 		// RuntimeException
 		try {
 			encoder.encode(getExceptionCharBuffer());
-			fail("should throw runtime exception");
-		} catch (RuntimeException e) {
+			fail("should throw");
+		} catch (RuntimeException | CoderMalfunctionError e) {
 		}
 	}
 
