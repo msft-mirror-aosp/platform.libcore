@@ -401,6 +401,7 @@ java_library {
         "//art/build/sdk",
         "//external/robolectric",
         "//external/robolectric-shadows",
+        "//frameworks/base",
         "//frameworks/layoutlib",
     ],
     static_libs: [
@@ -942,6 +943,26 @@ droidstubs {
     args: "--stub-packages java.*:javax.*:org.w3c.dom.*:org.xml.sax.*",
 }
 
+// Generates stub files for the classes exposed in the public API, without
+// javadoc. This can be used as a starting point for adding a new file to
+// libcore/luni/annotations/flagged_api.
+droidstubs {
+    name: "libart-sdk-stubs-no-javadoc",
+    srcs: [":core_libart_api_files"],
+    installable: false,
+    sdk_version: "none",
+    system_modules: "none",
+    args: "--exclude-documentation-from-stubs",
+}
+
+// Separate @FlaggedApi annotations for luni/ to avoid a circular dependency between
+// libcore_aconfig_flags_lib and core-all
+droiddoc_exported_dir {
+    name: "luni-annotated-flagged-stubs",
+    path: "luni/annotations/flagged_api",
+    visibility: ["//visibility:private"],
+}
+
 java_library {
     name: "java.current.stubs",
     srcs: [":java-current-stubs-source"],
@@ -1058,6 +1079,7 @@ java_sdk_library {
     ],
 
     merge_inclusion_annotations_dirs: [
+        "luni-annotated-flagged-stubs",
         "ojluni-annotated-flagged-stubs",
         "ojluni-annotated-mmodule-stubs",
     ],
@@ -1088,6 +1110,9 @@ java_sdk_library {
     // version of the API.
     dist_stem: "art",
     dist_group: "android",
+    aconfig_declarations: [
+        "libcore_aconfig_flags",
+    ],
 }
 
 // Target for validating nullability annotations for correctness and
