@@ -692,9 +692,9 @@ filegroup {
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
-    cmd: "$(location smali) ass --api 28 -o $(out) $(in)",
+    cmd: "$(location android-smali) ass --api 28 -o $(out) $(in)",
     out: ["core-tests-smali.dex"],
-    tools: ["smali"],
+    tools: ["android-smali"],
 }
 
 filegroup {
@@ -827,6 +827,7 @@ java_test {
     ],
     exclude_srcs: [
         "luni/src/test/java/libcore/javax/crypto/CipherTest.java",
+        "luni/src/test/java/libcore/javax/crypto/spec/ChaCha20ParameterSpecTest.java",
     ],
     srcs: [
         "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
@@ -865,18 +866,14 @@ java_genrule {
     name: "libcore-non-cts-tests-txt",
     host_supported: true,
     srcs: [
-        ":apache-harmony-tests",
-        ":conscrypt-tests",
-        ":core-tests",
-        ":core-ojtests",
+        ":apache-harmony-tests{.jar}",
+        ":conscrypt-tests{.jar}",
+        ":core-tests{.jar}",
+        ":core-ojtests{.jar}",
     ],
     tools: ["non-cts-json-generator"],
     out: ["libcore-non-cts-tests.txt"],
-    // note: it's a hack to read the .class files in combined directory, but $(in) only returns
-    // the path to the .dexjar files, not jar files containing the .class file.
-    cmd: "LIST=; " +
-        "for src in $(in); do LIST=\"$${LIST} $$(dirname $${src})/../combined/$$(basename $${src})\"; done; " +
-        "$(location non-cts-json-generator) $${LIST} > $(out)",
+    cmd: "$(location non-cts-json-generator) $(in) > $(out)",
 }
 
 // Exports annotated stubs source files in ojluni/annotations/sdk to make them
@@ -903,6 +900,12 @@ droiddoc_exported_dir {
         "//libcore/mmodules/intracoreapi",
     ],
     path: "ojluni/annotations/mmodule",
+}
+
+droiddoc_exported_dir {
+    name: "ojluni-annotated-flagged-stubs",
+    path: "ojluni/annotations/flagged_api",
+    visibility: ["//visibility:private"],
 }
 
 // A file containing the list of tags that are "known" to us from the OpenJdk
@@ -939,6 +942,26 @@ droidstubs {
     args: "--stub-packages java.*:javax.*:org.w3c.dom.*:org.xml.sax.*",
 }
 
+// Generates stub files for the classes exposed in the public API, without
+// javadoc. This can be used as a starting point for adding a new file to
+// libcore/luni/annotations/flagged_api.
+droidstubs {
+    name: "libart-sdk-stubs-no-javadoc",
+    srcs: [":core_libart_api_files"],
+    installable: false,
+    sdk_version: "none",
+    system_modules: "none",
+    args: "--exclude-documentation-from-stubs",
+}
+
+// Separate @FlaggedApi annotations for luni/ to avoid a circular dependency between
+// libcore_aconfig_flags_lib and core-all
+droiddoc_exported_dir {
+    name: "luni-annotated-flagged-stubs",
+    path: "luni/annotations/flagged_api",
+    visibility: ["//visibility:private"],
+}
+
 java_library {
     name: "java.current.stubs",
     srcs: [":java-current-stubs-source"],
@@ -968,6 +991,28 @@ java_library {
     patch_module: "java.base",
     system_modules: "core-all-system-modules",
     installable: false,
+    visibility: [
+        "//visibility:private",
+    ],
+}
+
+aconfig_declarations {
+    name: "libcore_aconfig_flags",
+    package: "com.android.libcore",
+    srcs: ["libcore.aconfig"],
+}
+
+java_aconfig_library {
+    name: "libcore_aconfig_flags_lib",
+    aconfig_declarations: "libcore_aconfig_flags",
+    sdk_version: "none",
+    patch_module: "java.base",
+    system_modules: "core-all-system-modules",
+    apex_available: [
+        "com.android.art",
+        // Remove :platform until we allow platform codes to use libcore's @FlaggedApi APIs
+        // "//apex_available:platform",
+    ],
     visibility: [
         "//visibility:private",
     ],
@@ -1009,6 +1054,7 @@ java_sdk_library {
         // java.text.CollectionElementIterator.NULLORDER to be initialized from
         // android.icu.text.CollationElementIterator.NULLORDER.
         "i18n.module.intra.core.api.stubs",
+        "libcore_aconfig_flags_lib",
     ],
     stub_only_static_libs: ["notices-for-stubs-jar"],
 
@@ -1031,7 +1077,11 @@ java_sdk_library {
         "--hide-annotation libcore.api.Hide",
     ],
 
-    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
+    merge_inclusion_annotations_dirs: [
+        "luni-annotated-flagged-stubs",
+        "ojluni-annotated-flagged-stubs",
+        "ojluni-annotated-mmodule-stubs",
+    ],
     // Emit nullability annotations from the source to the stub files.
     annotations_enabled: true,
 
