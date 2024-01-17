@@ -401,6 +401,7 @@ java_library {
         "//art/build/sdk",
         "//external/robolectric",
         "//external/robolectric-shadows",
+        "//frameworks/base",
         "//frameworks/layoutlib",
     ],
     static_libs: [
@@ -1109,6 +1110,9 @@ java_sdk_library {
     // version of the API.
     dist_stem: "art",
     dist_group: "android",
+    aconfig_declarations: [
+        "libcore_aconfig_flags",
+    ],
 }
 
 // Target for validating nullability annotations for correctness and
