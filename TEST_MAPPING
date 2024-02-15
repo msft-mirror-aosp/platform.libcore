@@ -4,10 +4,21 @@
       "name": "luni-host-tests"
     }
   ],
+  "postsubmit": [
+    {
+      "name": "libcore-sdk34-test"
+    },
+    {
+      "name": "libcore-sdk-current-test"
+    }
+  ],
   "presubmit-large": [
     {
       "name": "CtsLibcoreTestCases",
       "options": [
+        {
+          "instrumentation-arg": "core-test-mode:=presubmit"
+        },
         {
           "exclude-filter": "com.android.org.conscrypt.java.security.AlgorithmParameterGeneratorTestDH"
         },
@@ -85,9 +96,14 @@
         },
         {
           "exclude-filter": "org.apache.harmony.tests.javax.net.ssl.SSLSessionTest"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CtsLibcoreOjTestCases",
+      "options": [
         {
-          "exclude-filter": "tests.java.sql.StressTest"
+          "instrumentation-arg": "core-test-mode:=presubmit"
         }
       ]
     }
@@ -97,7 +113,7 @@
       "name": "CtsLibcoreTestCases",
       "options": [
         {
-          // TODO(b/194105624)
+          // TODO(b/194105624):
           "exclude-filter": "libcore.java.net.InetAddressTest#test_isReachable_by_ICMP"
         }
       ]

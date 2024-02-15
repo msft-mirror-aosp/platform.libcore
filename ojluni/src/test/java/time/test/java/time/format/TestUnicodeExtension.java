@@ -34,6 +34,9 @@ import static org.testng.Assert.assertEquals;
 
 import android.icu.util.VersionInfo;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -405,7 +408,6 @@ public class TestUnicodeExtension {
             {"audrw", "Australia/Darwin"},
             {"aueuc", "Australia/Eucla"},
             {"auhba", "Australia/Hobart"},
-            {"aukns", "Australia/Currie"},
             {"auldc", "Australia/Lindeman"},
             {"auldh", "Australia/Lord_Howe"},
             {"aumel", "Australia/Melbourne"},
@@ -450,19 +452,15 @@ public class TestUnicodeExtension {
             {"bzbze", "America/Belize"},
             {"cacfq", "America/Creston"},
             {"caedm", "America/Edmonton"},
-            {"caffs", "America/Rainy_River"},
             {"cafne", "America/Fort_Nelson"},
             {"caglb", "America/Glace_Bay"},
             {"cagoo", "America/Goose_Bay"},
             {"cahal", "America/Halifax"},
             {"caiql", "America/Iqaluit"},
             {"camon", "America/Moncton"},
-            {"capnt", "America/Pangnirtung"},
             {"careb", "America/Resolute"},
             {"careg", "America/Regina"},
             {"casjf", "America/St_Johns"},
-            {"canpg", "America/Nipigon"},
-            {"cathu", "America/Thunder_Bay"},
             {"cator", "America/Toronto"},
             {"cavan", "America/Vancouver"},
             {"cawnp", "America/Winnipeg"},
@@ -474,7 +472,6 @@ public class TestUnicodeExtension {
             {"cayev", "America/Inuvik"},
             {"cayxy", "America/Whitehorse"},
             {"cayyn", "America/Swift_Current"},
-            {"cayzf", "America/Yellowknife"},
             {"cayzs", "America/Coral_Harbour"},
             {"cccck", "Indian/Cocos"},
             {"cdfbm", "Africa/Lubumbashi"},
@@ -633,7 +630,6 @@ public class TestUnicodeExtension {
             {"mxmzt", "America/Mazatlan"},
             {"mxoji", "America/Ojinaga"},
             {"mxpvr", "America/Bahia_Banderas"},
-            {"mxstis", "America/Santa_Isabel"},
             {"mxtij", "America/Tijuana"},
             {"mykch", "Asia/Kuching"},
             {"mykul", "Asia/Kuala_Lumpur"},
@@ -734,12 +730,9 @@ public class TestUnicodeExtension {
             {"twtpe", "Asia/Taipei"},
             {"tzdar", "Africa/Dar_es_Salaam"},
             {"uaiev", "Europe/Kiev"},
-            {"uaozh", "Europe/Zaporozhye"},
             {"uasip", "Europe/Simferopol"},
-            {"uauzh", "Europe/Uzhgorod"},
             {"ugkla", "Africa/Kampala"},
             {"umawk", "Pacific/Wake"},
-            {"umjon", "Pacific/Johnston"},
             {"ummdy", "Pacific/Midway"},
 //            {"unk", "Etc/Unknown"},
             {"usadk", "America/Adak"},
@@ -845,6 +838,7 @@ public class TestUnicodeExtension {
         };
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.CLDR_DATA_DEPENDENCY)
     @Test(dataProvider="localizedBy")
     public void test_localizedBy(Locale locale, Chronology chrono, ZoneId zone,
                                 Chronology chronoExpected, ZoneId zoneExpected,

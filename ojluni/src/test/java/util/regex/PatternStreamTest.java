@@ -32,11 +32,14 @@
 
 package test.java.util.regex;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
+import android.compat.Compatibility;
+import dalvik.annotation.compat.VersionCodes;
+import dalvik.system.VMRuntime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,8 +52,8 @@ import java.util.stream.Stream;
 import org.openjdk.testlib.java.util.stream.LambdaTestHelpers;
 import org.openjdk.testlib.java.util.stream.OpTestCase;
 import org.openjdk.testlib.java.util.stream.TestData;
-
-import static org.testng.Assert.*;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @Test
 public class PatternStreamTest extends OpTestCase {
@@ -138,6 +141,14 @@ public class PatternStreamTest extends OpTestCase {
     public void testPatternSplitAsStream(String description, String input, Pattern pattern) {
         // Derive expected result from pattern.split
         List<String> expected = Arrays.asList(pattern.split(input));
+
+    // Android-added: Keep old behavior on Android 13 or below. http://b/286499139
+    if (input.isEmpty()
+        && !(VMRuntime.getSdkVersion() > VersionCodes.TIRAMISU
+            && Compatibility.isChangeEnabled(
+                Pattern.SPLIT_AS_STREAM_RETURNS_SINGLE_EMPTY_STRING))) {
+            expected = Collections.emptyList();
+        }
 
         Supplier<Stream<String>> ss =  () -> pattern.splitAsStream(input);
         withData(TestData.Factory.ofSupplier(description, ss))

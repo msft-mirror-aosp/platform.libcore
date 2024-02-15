@@ -91,6 +91,7 @@ java_sdk_library {
 java_system_modules {
     name: "art-module-intra-core-api-stubs-bootstrap-system-modules",
     visibility: [
+        "//libcore/toolchainapi",
         "//build/soong/java/core-libraries",
     ],
     libs: [
@@ -118,13 +119,4 @@ java_library {
     // This jar is packaged as part of the SDK, use -target 8 so that it works
     // with old JDKs.
     java_version: "1.8",
-}
-
-java_api_contribution {
-    name: "art-module-intra-core-api-intra-core-stubs",
-    api_surface: "intra-core",
-    api_file: "api/intra/current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
 }
