@@ -265,10 +265,14 @@ java_system_modules {
     // the core library team control.
     visibility: [
         "//art/test:__subpackages__",
+        "//build/make/tools/aconfig/fake_device_config",
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
+        "//external/icu",
         "//external/okhttp",
+        "//frameworks/libs/modules-utils/java",
         "//libcore:__subpackages__",
+        "//tools/platform-compat/java/android/compat/annotation",
     ],
 
     libs: ["core-all"],
@@ -828,7 +832,6 @@ java_test {
     ],
     exclude_srcs: [
         "luni/src/test/java/libcore/javax/crypto/CipherTest.java",
-        "luni/src/test/java/libcore/javax/crypto/spec/ChaCha20ParameterSpecTest.java",
     ],
     srcs: [
         "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
@@ -1000,6 +1003,7 @@ java_library {
 aconfig_declarations {
     name: "libcore_aconfig_flags",
     package: "com.android.libcore",
+    container: "system",
     srcs: ["libcore.aconfig"],
 }
 
@@ -1195,31 +1199,4 @@ java_library {
     // This jar is packaged as part of the ART module host exports, use -target 8 so that it works
     // with old JDKs.
     java_version: "1.8",
-}
-
-java_api_contribution {
-    name: "art-module-public-api-public-stubs",
-    api_surface: "public",
-    api_file: "api/current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
-}
-
-java_api_contribution {
-    name: "art-module-public-api-module-lib-stubs",
-    api_surface: "module-lib",
-    api_file: "api/module-lib-current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
-}
-
-java_api_contribution {
-    name: "art-module-public-api-system-stubs",
-    api_surface: "system",
-    api_file: "api/system-current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
 }
