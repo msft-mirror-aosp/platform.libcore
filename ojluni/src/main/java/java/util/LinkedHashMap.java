@@ -406,7 +406,6 @@ public class LinkedHashMap<K,V>
      * so that it is first in encounter order.
      *
      * @since 21
-     * @hide
      */
     public V putFirst(K k, V v) {
         try {
@@ -424,7 +423,6 @@ public class LinkedHashMap<K,V>
      * so that it is last in encounter order.
      *
      * @since 21
-     * @hide
      */
     public V putLast(K k, V v) {
         try {
@@ -668,7 +666,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedSet<K> sequencedKeySet() {
         Set<K> ks = keySet;
@@ -820,7 +817,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedCollection<V> sequencedValues() {
         Collection<V> vs = values;
@@ -928,7 +924,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedSet<Map.Entry<K, V>> sequencedEntrySet() {
         Set<Map.Entry<K, V>> es = entrySet;
@@ -1113,7 +1108,6 @@ public class LinkedHashMap<K,V>
      * @return the newly created map
      * @throws IllegalArgumentException if numMappings is negative
      * @since 19
-     * @hide
      */
     public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int numMappings) {
         if (numMappings < 0) {
@@ -1133,7 +1127,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedMap<K, V> reversed() {
         return new ReversedLinkedHashMapView<>(this);

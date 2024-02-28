@@ -265,10 +265,14 @@ java_system_modules {
     // the core library team control.
     visibility: [
         "//art/test:__subpackages__",
+        "//build/make/tools/aconfig/fake_device_config",
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
+        "//external/icu",
         "//external/okhttp",
+        "//frameworks/libs/modules-utils/java",
         "//libcore:__subpackages__",
+        "//tools/platform-compat/java/android/compat/annotation",
     ],
 
     libs: ["core-all"],
@@ -828,7 +832,6 @@ java_test {
     ],
     exclude_srcs: [
         "luni/src/test/java/libcore/javax/crypto/CipherTest.java",
-        "luni/src/test/java/libcore/javax/crypto/spec/ChaCha20ParameterSpecTest.java",
     ],
     srcs: [
         "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
