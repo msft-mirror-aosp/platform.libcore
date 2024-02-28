@@ -522,7 +522,6 @@ public class Collections {
      * @throws UnsupportedOperationException if the specified list or its
      *         list-iterator does not support the {@code set} operation.
      * @since 21
-     * @hide
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void shuffle(List<?> list, RandomGenerator rnd) {
@@ -1204,7 +1203,6 @@ public class Collections {
      *         returned.
      * @return an unmodifiable view of the specified collection.
      * @since 21
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static <T> SequencedCollection<T> unmodifiableSequencedCollection(SequencedCollection<? extends T> c) {
@@ -1315,7 +1313,6 @@ public class Collections {
      * @param  s the set for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified sequenced set.
      * @since 21
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static <T> SequencedSet<T> unmodifiableSequencedSet(SequencedSet<? extends T> s) {
@@ -2048,7 +2045,6 @@ public class Collections {
      * @param  m the map for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified map.
      * @since 21
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static <K,V> SequencedMap<K,V> unmodifiableSequencedMap(SequencedMap<? extends K, ? extends V> m) {
@@ -6097,7 +6093,6 @@ public class Collections {
      * @return the set backed by the map
      * @throws IllegalArgumentException if {@code map} is not empty
      * @since 21
-     * @hide
      */
     public static <E> SequencedSet<E> newSequencedSetFromMap(SequencedMap<E, Boolean> map) {
         if (! map.isEmpty()) // implicit null check

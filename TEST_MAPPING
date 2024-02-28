@@ -2,6 +2,12 @@
   "presubmit": [
     {
       "name": "luni-host-tests"
+    },
+    {
+      "name": "libcore-sdk34-test"
+    },
+    {
+      "name": "libcore-sdk-current-test"
     }
   ],
   "presubmit-large": [
