@@ -38,7 +38,7 @@ public class SecureRandomSpiTest {
 
     public static class MySecureRandomSpi extends SecureRandomSpi {
 
-        public final SecureRandomParameters myParams;
+        public SecureRandomParameters myParams;
 
         public MySecureRandomSpi() {
             myParams = null;
@@ -60,9 +60,13 @@ public class SecureRandomSpiTest {
             return new byte[0];
         }
 
+        @Override
         public void engineReseed(SecureRandomParameters params) {
+            myParams = params;
             super.engineReseed(params);
         }
+
+        @Override
         public SecureRandomParameters engineGetParameters() {
             return super.engineGetParameters();
         }
@@ -111,8 +115,31 @@ public class SecureRandomSpiTest {
     }
 
     @Test
+    public void testReseed() throws NoSuchAlgorithmException {
+        SecureRandom secureRandom = SecureRandom.getInstance(MySecureRandomProvider.ALGORITHM,
+                MY_PARAMS);
+        assertEquals(MY_PARAMS.toString(), secureRandom.toString());
+        Assert.assertThrows(UnsupportedOperationException.class, () -> secureRandom.reseed());
+
+        assertEquals("null!", secureRandom.toString());
+        Assert.assertThrows(UnsupportedOperationException.class, ()
+                -> secureRandom.reseed(MY_PARAMS));
+        assertEquals(MY_PARAMS.toString(), secureRandom.toString());
+
+    }
+
+    @Test
     public void testEngineGetParameters() {
         Assert.assertNull(mSpi.engineGetParameters());
+    }
+
+    @Test
+    public void testGetParameters() throws NoSuchAlgorithmException {
+        SecureRandom secureRandom = SecureRandom.getInstance(MySecureRandomProvider.ALGORITHM,
+                MY_PARAMS);
+        // It's testing the default implementation of engineGetParameters()
+        // in java.security.SecureRandom, and MY_PARAMS is not used.
+        Assert.assertNull(secureRandom.getParameters());
     }
 
     @Test
