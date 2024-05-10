@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
+// Android-changed: Use the shared SystemCleaner instance on Android.
+// Android-changed: Exceptions are only ignored by Cleaner.create() threads.
 /**
  * {@code Cleaner} manages a set of object references and corresponding cleaning actions.
  * <p>
@@ -55,9 +57,6 @@ import java.util.function.Function;
  * <p>
  * The execution of the cleaning action is performed
  * by a thread associated with the cleaner.
- * All exceptions thrown by the cleaning action are ignored.
- * The cleaner and other cleaning actions are not affected by
- * exceptions in a cleaning action.
  * The thread runs until all registered cleaning actions have
  * completed and the cleaner itself is reclaimed by the garbage collector.
  * <p>
@@ -86,8 +85,8 @@ import java.util.function.Function;
  * by the Cleaner when the CleaningExample instance has become phantom reachable.
  * <pre>{@code
  * public class CleaningExample implements AutoCloseable {
- *        // A cleaner, preferably one shared within a library
- *        private static final Cleaner cleaner = <cleaner>;
+ *        // Use the shared android.system.SystemCleaner instance on Android.
+ *        private static final Cleaner cleaner = SystemCleaner.cleaner();
  *
  *        static class State implements Runnable {
  *
@@ -151,6 +150,10 @@ public final class Cleaner {
         impl = new CleanerImpl();
     }
 
+    private Cleaner(ReferenceQueue queue) {
+        impl = new CleanerImpl(queue);
+    }
+
     /**
      * Returns a new {@code Cleaner}.
      * <p>
@@ -161,6 +164,8 @@ public final class Cleaner {
      * {@link ClassLoader#getSystemClassLoader() system class loader}.
      * The thread has no permissions, enforced only if a
      * {@link java.lang.System#setSecurityManager(SecurityManager) SecurityManager is set}.
+     * <p>
+     * All exceptions thrown by the cleaning actions in this thread are ignored.
      * <p>
      * The cleaner terminates when it is phantom reachable and all of the
      * registered cleaning actions are complete.
@@ -201,6 +206,18 @@ public final class Cleaner {
         Objects.requireNonNull(threadFactory, "threadFactory");
         Cleaner cleaner = new Cleaner();
         cleaner.impl.start(cleaner, threadFactory);
+        return cleaner;
+    }
+
+    // Android-added: objects registered in the system cleaner are cleaned
+    // by the finalizer daemon thread, not in a InnocuousThread.
+    /**
+     * Returns a new {@code Cleaner} associated with the finalizer thread.
+     * @hide
+     */
+    public static Cleaner createSystemCleaner() {
+        Cleaner cleaner = new Cleaner(FinalizerReference.queue);
+        cleaner.impl.start(cleaner);
         return cleaner;
     }
 

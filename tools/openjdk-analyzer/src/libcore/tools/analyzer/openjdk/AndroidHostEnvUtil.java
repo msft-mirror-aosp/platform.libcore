@@ -48,7 +48,7 @@ public class AndroidHostEnvUtil {
         switch (classpath) {
             case "oj":
                 return getAndroidBuildTop().resolve(
-                        "out/soong/.intermediates/libcore/core-oj/android_common/"
+                        "out/soong/.intermediates/libcore/core-oj/android_common_apex31/"
                                 + "javac/core-oj.jar");
             case "8":
                 return getAndroidBuildTop().resolve(
@@ -56,6 +56,7 @@ public class AndroidHostEnvUtil {
             case "9":
             case "11":
             case "17":
+            case "21":
                 return getAndroidBuildTop().resolve(
                         "prebuilts/jdk/jdk" + classpath + "/linux-x86/jmods/java.base.jmod");
             default:

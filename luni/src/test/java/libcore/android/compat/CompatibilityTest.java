@@ -16,21 +16,33 @@
 
 package libcore.android.compat;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+
 import android.compat.Compatibility;
+import android.compat.Compatibility.ChangeConfig;
 import android.compat.Compatibility.BehaviorChangeDelegate;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class CompatibilityTest {
+
+    @After
+    public void reset() {
+        Compatibility.clearBehaviorChangeDelegate();
+    }
 
     @Test
     public void testBehaviorChangeDelegate() {
@@ -61,5 +73,27 @@ public class CompatibilityTest {
         Compatibility.clearBehaviorChangeDelegate();
         Compatibility.reportUnconditionalChange(changeId);
         verify(delegate, never()).onChangeReported(anyLong());
+    }
+
+    @Test
+    public void testGetDisabledChangesArray() {
+        ChangeConfig config = new ChangeConfig(Collections.emptySet(), Collections.emptySet());
+        assertArrayEquals(new long[]{}, config.getDisabledChangesArray());
+        config = new ChangeConfig(Collections.emptySet(), Collections.singleton(5L));
+        assertArrayEquals(new long[]{5L}, config.getDisabledChangesArray());
+        config = new ChangeConfig(Collections.emptySet(),
+            new HashSet<Long>(Arrays.asList(2L, 3L, 5L)));
+        assertArrayEquals(new long[]{2L, 3L, 5L}, config.getDisabledChangesArray());
+    }
+
+    @Test
+    public void testGetEnabledChangesArray() {
+        ChangeConfig config = new ChangeConfig(Collections.emptySet(), Collections.emptySet());
+        assertArrayEquals(new long[]{}, config.getEnabledChangesArray());
+        config = new ChangeConfig(Collections.singleton(5L), Collections.emptySet());
+        assertArrayEquals(new long[]{5L}, config.getEnabledChangesArray());
+        config = new ChangeConfig(new HashSet<Long>(Arrays.asList(2L, 3L, 5L)),
+            Collections.emptySet());
+        assertArrayEquals(new long[]{2L, 3L, 5L}, config.getEnabledChangesArray());
     }
 }

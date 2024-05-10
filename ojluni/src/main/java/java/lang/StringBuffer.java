@@ -25,6 +25,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.NeverInline;
 import java.util.Arrays;
 import jdk.internal.HotSpotIntrinsicCandidate;
 
@@ -200,6 +201,9 @@ import jdk.internal.HotSpotIntrinsicCandidate;
     }
 
     @Override
+    // We don't want to inline this method to be able to perform String-related
+    // optimizations with intrinsics.
+    @NeverInline
     public synchronized int length() {
         return count;
     }
@@ -307,6 +311,9 @@ import jdk.internal.HotSpotIntrinsicCandidate;
 
     @Override
     @HotSpotIntrinsicCandidate
+    // We don't want to inline this method to be able to perform String-related
+    // optimizations with intrinsics.
+    @NeverInline
     public synchronized StringBuffer append(String str) {
         toStringCache = null;
         super.append(str);
@@ -709,6 +716,7 @@ import jdk.internal.HotSpotIntrinsicCandidate;
 
     @Override
     @HotSpotIntrinsicCandidate
+    @NeverInline
     public synchronized String toString() {
         if (toStringCache == null) {
             return toStringCache =

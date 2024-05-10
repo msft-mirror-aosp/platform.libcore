@@ -22,23 +22,25 @@
     <property name="multiLines" value="1,2,3,9,10" />
   </module>
 
-  <!-- Google contributed OpenJDK tests -->
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern"
-      value="ojluni/src/test/java/lang/StringBuffer/Capacity.java" />
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern"
-      value="ojluni/src/test/java/util/ArrayList/ArrayManagement.java" />
-  </module>
-  <module name="BeforeExecutionExclusionFileFilter">
-    <property name="fileNamePattern"
-      value="ojluni/src/test/java/util/Vector/ArrayManagement.java"/>
-  </module>
   <!-- One-off Android test that is present for MTS reasons (see https://r.android.com/1987987). -->
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern"
       value="ojluni/src/test/java/security/Provider/ProvidersTest.java" />
+  </module>
+  <!--
+  puppycrawl fails to parse the Record type implementing Serializable, and the code valid in Java 17.
+    libcore/ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java:55:39: unexpected token: implements
+    libcore/ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java:63:12: unexpected token: void
+  -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="ojluni/src/test/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java" />
+    <property name="fileNamePattern"
+      value="ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+              value="ojluni/src/test/java/io/Serializable/records/" />
   </module>
 
   <module name="TreeWalker">

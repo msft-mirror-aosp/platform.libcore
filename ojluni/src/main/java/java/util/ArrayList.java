@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,7 +29,8 @@ package java.util;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
+import jdk.internal.util.ArraysSupport;
 
 /**
  * Resizable-array implementation of the {@code List} interface.  Implements
@@ -114,6 +115,7 @@ import jdk.internal.misc.SharedSecrets;
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
+    @java.io.Serial
     private static final long serialVersionUID = 8683452581122892189L;
 
     /**
@@ -227,14 +229,6 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
-     * The maximum size of array to allocate (unless necessary).
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-
-    /**
      * Increases the capacity to ensure that it can hold at least the
      * number of elements specified by the minimum capacity argument.
      *
@@ -242,45 +236,19 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws OutOfMemoryError if minCapacity is less than zero
      */
     private Object[] grow(int minCapacity) {
-        return elementData = Arrays.copyOf(elementData,
-                                           newCapacity(minCapacity));
+        int oldCapacity = elementData.length;
+        if (oldCapacity > 0 || elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            int newCapacity = ArraysSupport.newLength(oldCapacity,
+                    minCapacity - oldCapacity, /* minimum growth */
+                    oldCapacity >> 1           /* preferred growth */);
+            return elementData = Arrays.copyOf(elementData, newCapacity);
+        } else {
+            return elementData = new Object[Math.max(DEFAULT_CAPACITY, minCapacity)];
+        }
     }
 
     private Object[] grow() {
         return grow(size + 1);
-    }
-
-    /**
-     * Returns a capacity at least as large as the given minimum capacity.
-     * Returns the current capacity increased by 50% if that suffices.
-     * Will not return a capacity greater than MAX_ARRAY_SIZE unless
-     * the given minimum capacity is greater than MAX_ARRAY_SIZE.
-     *
-     * @param minCapacity the desired minimum capacity
-     * @throws OutOfMemoryError if minCapacity is less than zero
-     */
-    private int newCapacity(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = elementData.length;
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity <= 0) {
-            if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
-                return Math.max(DEFAULT_CAPACITY, minCapacity);
-            if (minCapacity < 0) // overflow
-                throw new OutOfMemoryError();
-            return minCapacity;
-        }
-        return (newCapacity - MAX_ARRAY_SIZE <= 0)
-            ? newCapacity
-            : hugeCapacity(minCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
-            throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE)
-            ? Integer.MAX_VALUE
-            : MAX_ARRAY_SIZE;
     }
 
     /**
@@ -468,6 +436,35 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @throws NoSuchElementException {@inheritDoc}
+     * @since 21
+     */
+    public E getFirst() {
+        if (size == 0) {
+            throw new NoSuchElementException();
+        } else {
+            return elementData(0);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NoSuchElementException {@inheritDoc}
+     * @since 21
+     */
+    public E getLast() {
+        int last = size - 1;
+        if (last < 0) {
+            throw new NoSuchElementException();
+        } else {
+            return elementData(last);
+        }
+    }
+
+    /**
      * Replaces the element at the specified position in this list with
      * the specified element.
      *
@@ -531,6 +528,24 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @since 21
+     */
+    public void addFirst(E element) {
+        add(0, element);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 21
+     */
+    public void addLast(E element) {
+        add(element);
+    }
+
+    /**
      * Removes the element at the specified position in this list.
      * Shifts any subsequent elements to the left (subtracts one from their
      * indices).
@@ -547,6 +562,41 @@ public class ArrayList<E> extends AbstractList<E>
         fastRemove(es, index);
 
         return oldValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NoSuchElementException {@inheritDoc}
+     * @since 21
+     */
+    public E removeFirst() {
+        if (size == 0) {
+            throw new NoSuchElementException();
+        } else {
+            Object[] es = elementData;
+            @SuppressWarnings("unchecked") E oldValue = (E) es[0];
+            fastRemove(es, 0);
+            return oldValue;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws NoSuchElementException {@inheritDoc}
+     * @since 21
+     */
+    public E removeLast() {
+        int last = size - 1;
+        if (last < 0) {
+            throw new NoSuchElementException();
+        } else {
+            Object[] es = elementData;
+            @SuppressWarnings("unchecked") E oldValue = (E) es[last];
+            fastRemove(es, last);
+            return oldValue;
+        }
     }
 
     /**
@@ -890,6 +940,7 @@ public class ArrayList<E> extends AbstractList<E>
      *             instance is emitted (int), followed by all of its elements
      *             (each an {@code Object}) in the proper order.
      */
+    @java.io.Serial
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
         // Write out element count, and any hidden stuff
@@ -917,6 +968,7 @@ public class ArrayList<E> extends AbstractList<E>
      *         could not be found
      * @throws java.io.IOException if an I/O error occurs
      */
+    @java.io.Serial
     private void readObject(java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
 
@@ -1474,7 +1526,10 @@ public class ArrayList<E> extends AbstractList<E>
         public Spliterator<E> spliterator() {
             checkForComodification();
 
-            // ArrayListSpliterator not used here due to late-binding
+            // This Spliterator needs to late-bind to the subList, not the outer
+            // ArrayList. Note that it is legal for structural changes to be made
+            // to a subList after spliterator() is called but before any spliterator
+            // operations that would causing binding are performed.
             return new Spliterator<E>() {
                 private int index = offset; // current index, modified on advance/split
                 private int fence = -1; // -1 until used; then one past last index
@@ -1593,9 +1648,7 @@ public class ArrayList<E> extends AbstractList<E>
          * be worthwhile in practice. To carry this out, we (1) lazily
          * initialize fence and expectedModCount until the latest
          * point that we need to commit to the state we are checking
-         * against; thus improving precision.  (This doesn't apply to
-         * SubLists, that create spliterators with current non-lazy
-         * values).  (2) We perform only a single
+         * against; thus improving precision. (2) We perform only a single
          * ConcurrentModificationException check at the end of forEach
          * (the most performance-sensitive method). When using forEach
          * (as opposed to iterators), we can normally only detect
@@ -1747,6 +1800,7 @@ public class ArrayList<E> extends AbstractList<E>
     @Override
     public void replaceAll(UnaryOperator<E> operator) {
         replaceAllRange(operator, 0, size);
+        // TODO(8203662): remove increment of modCount from ...
         modCount++;
     }
 

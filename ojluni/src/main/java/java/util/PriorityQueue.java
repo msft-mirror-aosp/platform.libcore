@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,9 +25,17 @@
 
 package java.util;
 
+import android.compat.Compatibility;
+import android.compat.annotation.ChangeId;
+import android.compat.annotation.EnabledSince;
+
+import dalvik.annotation.compat.VersionCodes;
+import dalvik.system.VMRuntime;
+
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
+import jdk.internal.util.ArraysSupport;
 
 /**
  * An unbounded priority {@linkplain Queue queue} based on a priority heap.
@@ -86,6 +94,7 @@ import jdk.internal.misc.SharedSecrets;
 public class PriorityQueue<E> extends AbstractQueue<E>
     implements java.io.Serializable {
 
+    @java.io.Serial
     private static final long serialVersionUID = -7720805057305804111L;
 
     private static final int DEFAULT_INITIAL_CAPACITY = 11;
@@ -109,6 +118,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * The comparator, or null if priority queue uses elements'
      * natural ordering.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     private final Comparator<? super E> comparator;
 
     /**
@@ -281,14 +291,6 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     }
 
     /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-
-    /**
      * Increases the capacity of the array.
      *
      * @param minCapacity the desired minimum capacity
@@ -296,21 +298,11 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     private void grow(int minCapacity) {
         int oldCapacity = queue.length;
         // Double size if small; else grow by 50%
-        int newCapacity = oldCapacity + ((oldCapacity < 64) ?
-                                         (oldCapacity + 2) :
-                                         (oldCapacity >> 1));
-        // overflow-conscious code
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
-            newCapacity = hugeCapacity(minCapacity);
+        int newCapacity = ArraysSupport.newLength(oldCapacity,
+                minCapacity - oldCapacity, /* minimum growth */
+                oldCapacity < 64 ? oldCapacity + 2 : oldCapacity >> 1
+                                           /* preferred growth */);
         queue = Arrays.copyOf(queue, newCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
-            throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE) ?
-            Integer.MAX_VALUE :
-            MAX_ARRAY_SIZE;
     }
 
     /**
@@ -342,7 +334,18 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         int i = size;
         if (i >= queue.length)
             grow(i + 1);
-        siftUp(i, e);
+        if (i == 0) {
+            // Android-changed: Keep old behavior on Android 13 or below. http://b/289878283
+            boolean usePreAndroidUBehavior = VMRuntime.getSdkVersion() < VersionCodes.UPSIDE_DOWN_CAKE
+                || !Compatibility.isChangeEnabled(PRIORITY_QUEUE_OFFER_NON_COMPARABLE_ONE_ELEMENT);
+            if (usePreAndroidUBehavior) {
+                queue[0] = e;
+            } else {
+                siftUp(i, e);
+            }
+        } else {
+            siftUp(i, e);
+        }
         size = i + 1;
         return true;
     }
@@ -771,6 +774,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      *             emitted (int), followed by all of its elements
      *             (each an {@code Object}) in the proper order.
      */
+    @java.io.Serial
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
         // Write out element count, and any hidden stuff
@@ -794,6 +798,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      *         could not be found
      * @throws java.io.IOException if an I/O error occurs
      */
+    @java.io.Serial
     private void readObject(java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
         // Read in size, and any hidden stuff
@@ -983,4 +988,18 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         if (expectedModCount != modCount)
             throw new ConcurrentModificationException();
     }
+
+    //  Android-added: Backward-compatible flag for offer() API.
+    /**
+     * Since Android 14, {@link PriorityQueue#offer(E)} requires all elements to be comparable if
+     * there was no comparator. Previously, the first element being added did not need to be
+     * comparable.
+     *
+     * This flag is enabled for apps targeting Android 14+.
+     *
+     * @hide
+     */
+    @ChangeId
+    @EnabledSince(targetSdkVersion = VersionCodes.UPSIDE_DOWN_CAKE)
+    public static final long PRIORITY_QUEUE_OFFER_NON_COMPARABLE_ONE_ELEMENT = 289878283L;
 }

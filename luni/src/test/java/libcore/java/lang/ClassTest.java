@@ -21,14 +21,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import dalvik.annotation.compat.VersionCodes;
 import dalvik.system.InMemoryDexClassLoader;
 import dalvik.system.PathClassLoader;
+import dalvik.system.VMRuntime;
 
 import libcore.io.Streams;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -42,9 +48,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -112,6 +120,19 @@ public class ClassTest {
         assertEquals("libcore.java.lang.TestBadInnerClass_Outer$ClassTestBadInnerClass_InnerClass",
             cl.getName());
         assertEquals("TestBadInnerClass_InnerXXXXX", cl.getSimpleName());
+    }
+
+    @Test
+    public void testGetSimpleName() {
+        assertEquals("ClassTest", this.getClass().getSimpleName());
+        assertEquals("int[]", int[].class.getSimpleName());
+        assertEquals("int[][]", int[][].class.getSimpleName());
+        assertEquals("ClassTest[]", ClassTest[].class.getSimpleName());
+        assertEquals("", new A() {}.getClass().getSimpleName()); // Anonymous class
+        assertEquals("A", A.class.getSimpleName()); // member interface
+        assertEquals("X", X.class.getSimpleName()); // member class
+        class LocalClass implements A {}
+        assertEquals("LocalClass", LocalClass.class.getSimpleName());
     }
 
     interface A {
@@ -360,6 +381,15 @@ public class ClassTest {
         assertEquals(expected, clazz.getTypeName());
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @Ignore
+    public void test_toGenericString() {
+        // This test method has been renamed to toGenericString().
+        // Keep this empty method in order to generate the method name into skippedCtsTest.txt
+        // and skip the test in aosp/android12-tests-dev.
+    }
+
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test
     public void toGenericString() throws Exception {
         final String outerClassName = getClass().getName();
@@ -389,8 +419,16 @@ public class ClassTest {
         assertToGenericString("public final enum java.lang.annotation.RetentionPolicy",
                 RetentionPolicy.class);
         assertToGenericString("public class java.util.TreeMap<K,V>", TreeMap.class);
+        String wildcardInterfaceName;
+        if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM) {
+            wildcardInterfaceName = "$WildcardInterface<T extends java.lang.Number,"
+                    + "U extends java.util.function.Function"
+                    + "<? extends java.lang.Number, ? super java.lang.Number>>";
+        } else {
+            wildcardInterfaceName = "$WildcardInterface<T,U>";
+        }
         assertToGenericString(
-                "abstract static interface " + outerClassName + "$WildcardInterface<T,U>",
+                "abstract static interface " + outerClassName + wildcardInterfaceName,
                 WildcardInterface.class);
     }
 
@@ -498,143 +536,155 @@ public class ClassTest {
     }
 
     @Test
+    public void isSealed() {
+        assertTrue(SealedInterface.class.isSealed());
+        assertFalse(SealedFinalClass.class.isSealed());
+        assertTrue(SealedAbstractClass.class.isSealed());
+        assertFalse(NonSealedDerivedClass.class.isSealed());
+        assertFalse(DerivedClass.class.isSealed());
+    }
+
+    @Test
+    public void getPermittedSubclasses() {
+        assertNull(SealedFinalClass.class.getPermittedSubclasses());
+        assertNull(NonSealedDerivedClass.class.getPermittedSubclasses());
+        assertNull(DerivedClass.class.getPermittedSubclasses());
+
+        var sealedInterfaceSubclasses = SealedInterface.class.getPermittedSubclasses();
+        assertNotNull(sealedInterfaceSubclasses);
+        assertEquals(2, sealedInterfaceSubclasses.length);
+        assertTrue(Set.of(sealedInterfaceSubclasses).contains(SealedAbstractClass.class));
+        assertTrue(Set.of(sealedInterfaceSubclasses).contains(SealedFinalClass.class));
+
+        var sealedAbstractClass = SealedAbstractClass.class.getPermittedSubclasses();
+        assertNotNull(sealedAbstractClass);
+        assertEquals(1, sealedAbstractClass.length);
+        assertEquals(NonSealedDerivedClass.class, sealedAbstractClass[0]);
+    }
+
+    public static sealed interface SealedInterface permits SealedAbstractClass, SealedFinalClass {
+        int getNumber();
+    }
+
+    public static final class SealedFinalClass implements SealedInterface {
+        @Override
+        public int getNumber() {
+            return 1;
+        }
+    }
+
+    public static abstract sealed class SealedAbstractClass implements SealedInterface
+                                                                permits NonSealedDerivedClass {
+    }
+
+    public static non-sealed class NonSealedDerivedClass extends SealedAbstractClass {
+        @Override
+        public int getNumber() {
+            return 2;
+        }
+    }
+
+    public static class DerivedClass extends NonSealedDerivedClass {
+        @Override
+        public int getNumber() {
+            return 3;
+        }
+    }
+
+    @Test
     public void recordClass() {
         try {
             ClassLoader classLoader = createClassLoaderForResource("core-tests-smali.dex");
 
             Class recordClassA = classLoader.loadClass(
                     "libcore.java.lang.recordclasses.RecordClassA");
+            Class recordClassB = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.RecordClassB");
             Class nonFinalRecordClass = classLoader.loadClass(
                     "libcore.java.lang.recordclasses.NonFinalRecordClass");
             Class emptyRecordClass = classLoader.loadClass(
                     "libcore.java.lang.recordclasses.EmptyRecordClass");
-            Class unequalComponentArraysRecordClass = classLoader.loadClass(
+            Class validAbstractEmptyClass = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.ValidAbstractEmptyRecord");
+            Class validNonFinalEmptyClass = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.ValidNonFinalEmptyRecord");
+            Class validRecordWithExtraElement = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.ValidRecordWithExtraElement");
+            Class validEmptyRecordWithoutRecordAnnotation = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.ValidEmptyRecordWithoutRecordAnnotation");
+
+            assertTrue(recordClassA.isRecord());
+            RecordComponent[] components = recordClassA.getRecordComponents();
+            assertNotNull(components);
+            assertEquals(2, components.length);
+            assertEquals("x", components[0].getName());
+            assertEquals(int.class, components[0].getType());
+            assertEquals("y", components[1].getName());
+            assertEquals(Integer.class, components[1].getType());
+
+            assertTrue(recordClassB.isRecord());
+            assertEquals(2, recordClassB.getRecordComponents().length);
+
+            assertFalse(nonFinalRecordClass.isRecord());
+            assertNull(nonFinalRecordClass.getRecordComponents());
+
+            assertTrue(emptyRecordClass.isRecord());
+            assertEquals(new RecordComponent[0], emptyRecordClass.getRecordComponents());
+            assertFalse(validAbstractEmptyClass.isRecord());
+            assertFalse(validNonFinalEmptyClass.isRecord());
+            assertTrue(validRecordWithExtraElement.isRecord());
+            assertFalse(validEmptyRecordWithoutRecordAnnotation.isRecord());
+
+            assertClassFormatError(classLoader,
                     "libcore.java.lang.recordclasses.UnequalComponentArraysRecordClass");
-
-            assertTrue(getIsRecord(recordClassA));
-            checkRecordComponents(recordClassA,
-                    new RecordComponent[] {
-                        new RecordComponent("x", int.class),
-                        new RecordComponent("y", Integer.class)
-                    });
-
-            assertFalse(getIsRecord(nonFinalRecordClass));
-            checkRecordComponents(nonFinalRecordClass, (RecordComponent[]) null);
-
-            assertTrue(getIsRecord(emptyRecordClass));
-            checkRecordComponents(emptyRecordClass,
-                    new RecordComponent[] {  });
-
-            assertFalse(getIsRecord(unequalComponentArraysRecordClass));
-            checkRecordComponents(unequalComponentArraysRecordClass, (RecordComponent[]) null);
-
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord1");
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord2");
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord3");
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord4");
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord5");
+            assertClassFormatError(classLoader,
+                    "libcore.java.lang.recordclasses.InvalidEmptyRecord6");
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    static boolean getIsRecord(Class<?> clazz) {
-        if (!canClassBeRecord(clazz)) {
-            return false;
-        }
-        RecordComponent[] components = doGetRecordComponents(clazz);
-        return (components != null);
+    private static void assertClassFormatError(ClassLoader cl, String className) {
+        assertThrows(ClassFormatError.class, () -> cl.loadClass(className));
     }
 
-    static boolean canClassBeRecord(Class<?> clazz) {
-        if (clazz.isPrimitive() || clazz.isArray() || Void.TYPE.equals(clazz)) {
-            return false;
-        }
-        if (!Modifier.isFinal( clazz.getModifiers() )) {
-            return false;
-        }
-        // TODO: Check it extends java.lang.Record
-        return true;
+    @Test
+    public void testComponentType() {
+        assertNull(int.class.componentType());
+        assertNull(String.class.componentType());
+        assertNull(Object.class.componentType());
+
+        assertEquals(int.class, int[].class.componentType());
+        assertEquals(int[].class, int[][].class.componentType());
+        assertEquals(String.class, String[].class.componentType());
+        assertEquals(Foo.class, Foo[].class.componentType());
     }
 
-    static void checkRecordComponents(Class<?> clazz, RecordComponent[] expected) {
-        if (!canClassBeRecord(clazz)) {
-            if (expected != null) {
-                fail("Expected record with components " + Arrays.toString(expected)
-                        + ", got class that is not a record");
-            }
-            return;
-        }
-        RecordComponent[] components = doGetRecordComponents(clazz);
-        assertArrayEquals(expected, components);
+    @Test
+    public void testArrayType() {
+        assertEquals(int[].class, int.class.arrayType());
+        assertEquals(int[][].class, int[].class.arrayType());
+        assertEquals(String[].class, String.class.arrayType());
+        assertEquals(Foo[].class, Foo.class.arrayType());
     }
 
-    static private class RecordComponent {
-        final String name;
-        final Class<?> type;
-
-        RecordComponent(String name, Class<?> type) {
-            this.name = name;
-            this.type = type;
-        }
-
-        String getName() {
-            return name;
-        }
-
-        Class<?> getType() {
-            return type;
-        }
-
-        @Override
-        public String toString() {
-            return ("(" + name + ", " + type.getName() + ")");
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (!other.getClass().equals(RecordComponent.class)) {
-                return false;
-            }
-            RecordComponent otherComponent = (RecordComponent)other;
-            if (!name.equals(otherComponent.name)) {
-                return false;
-            }
-            if (!type.equals(otherComponent.type)) {
-                return false;
-            }
-            return true;
-        }
+    @Test
+    public void testDescriptorString() {
+        assertEquals("I", int.class.descriptorString());
+        assertEquals("V", void.class.descriptorString());
+        assertEquals("[I", int[].class.descriptorString());
+        assertEquals("[[I", int[][].class.descriptorString());
+        assertEquals("Ljava/lang/String;", String.class.descriptorString());
+        assertEquals("[Ljava/lang/String;", String[].class.descriptorString());
     }
-
-    private static RecordComponent[] doGetRecordComponents(Class<?> clazz) {
-        try {
-            Class annotationClass = Class.forName("dalvik.annotation.Record");
-            Object recordAnnotation = clazz.getAnnotation(annotationClass);
-            if (recordAnnotation == null) {
-                return null;
-            }
-            Method componentNamesMethod = annotationClass.getMethod("componentNames", (Class[]) null);
-            String[] names = (String[]) componentNamesMethod.invoke(recordAnnotation);
-            Method componentTypesMethod = annotationClass.getMethod("componentTypes", (Class[]) null);
-            Class<?>[] types = (Class<?>[]) componentTypesMethod.invoke(recordAnnotation);
-
-            if (names == null || types == null) {
-                return null;
-            }
-
-            if (names.length != types.length) {
-                return null;
-            }
-
-            RecordComponent[] components = new RecordComponent[names.length];
-
-            for (int i = 0; i < names.length; ++i) {
-                if (names[i] == null || types[i] == null) {
-                    return null;
-                }
-                components[i] = new RecordComponent(names[i], types[i]);
-            }
-            return components;
-
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
 }

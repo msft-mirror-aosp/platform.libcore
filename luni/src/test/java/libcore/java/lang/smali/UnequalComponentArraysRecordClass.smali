@@ -1,10 +1,10 @@
 .class final Llibcore/java/lang/recordclasses/UnequalComponentArraysRecordClass;
-.super Ljava/lang/Object;
+.super Ljava/lang/Record;
 .source "UnequalComponentArraysRecordClass.java"
 
 
 # annotations
-.annotation runtime Ldalvik/annotation/Record;
+.annotation system Ldalvik/annotation/Record;
     componentNames = {
         "x",
         "y"
@@ -13,7 +13,6 @@
         I
     }
 .end annotation
-
 
 # direct methods
 .method constructor <init>()V
