@@ -25,17 +25,21 @@ import java.text.DateFormat;
 import java.util.Locale;
 import libcore.icu.LocaleData;
 import libcore.icu.SimpleDateFormatData;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@NonCts(reason = NonCtsReasons.INTERNAL_APIS)
 @RunWith(JUnit4.class)
 public class SimpleDateFormatDataTest {
 
     // http://b/7924970
     @Test
     public void testTimeFormat12And24() {
-        char sep = VersionInfo.ICU_VERSION.getMajor() >= 72 ? '\u202f' : ' ';
+        char sep = ' ';
 
         Boolean originalSetting = DateFormat.is24Hour;
         try {

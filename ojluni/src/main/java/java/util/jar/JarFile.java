@@ -149,6 +149,7 @@ class JarFile extends ZipFile {
     }
 
 
+    // Android-changed: Use of the hidden constructor with a new argument for zip path validation.
     /**
      * Creates a new <code>JarFile</code> to read from the specified
      * <code>File</code> object in the specified mode.  The mode argument
@@ -166,7 +167,20 @@ class JarFile extends ZipFile {
      * @since 1.3
      */
     public JarFile(File file, boolean verify, int mode) throws IOException {
-        super(file, mode);
+        this(file, /* enableZipPathValidator */ true, verify, mode);
+    }
+
+    // Android-added: New hidden constructor with an argument for zip path validation and verify.
+    /** @hide */
+    public JarFile(String name, boolean enableZipPathValidator, boolean verify) throws IOException {
+        this(new File(name), enableZipPathValidator, verify, ZipFile.OPEN_READ);
+    }
+
+    // Android-added: New hidden constructor with all available arguments.
+    /** @hide */
+    public JarFile(File file, boolean enableZipPathValidator, boolean verify, int mode) throws
+            IOException {
+        super(file, mode, enableZipPathValidator);
         this.verify = verify;
     }
 
@@ -292,10 +306,26 @@ class JarFile extends ZipFile {
                         Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
     }
 
+    // Android-added: this method is from OpenJDK 17. Made public hidden to access it
+    // in ZipFile w/o SharedSecrets.
+    /**
+     * Creates a ZipEntry suitable for the given ZipFile.
+     * @hide
+     */
+    public JarEntry entryFor(String name) {
+        return new JarFileEntry(name);
+    }
+
     private class JarFileEntry extends JarEntry {
         JarFileEntry(ZipEntry ze) {
             super(ze);
         }
+
+        // Android-added: imported from OpenJDK 17 for entryFor(String) support.
+        JarFileEntry(String name) {
+            super(name);
+        }
+
         public Attributes getAttributes() throws IOException {
             Manifest man = JarFile.this.getManifest();
             if (man != null) {
@@ -340,6 +370,8 @@ class JarFile extends ZipFile {
         }
 
         if (verify) {
+            // BEGIN Android-changed: use OpenJDK 17 implementation.
+            /*
             String[] names = getMetaInfEntryNames();
             if (names != null) {
                 for (int i = 0; i < names.length; i++) {
@@ -359,6 +391,21 @@ class JarFile extends ZipFile {
             // No signature-related files; don't instantiate a
             // verifier
             verify = false;
+            */
+            // Gets the manifest name, but only if there are
+            // signature-related files. If so we can assume
+            // that the jar is signed and that we therefore
+            // need a JarVerifier and Manifest
+            // String name = JUZFA.getManifestName(this, true);
+            String name = getManifestName(true);
+            if (name != null) {
+                getManifest();
+                return;
+            }
+            // No signature-related files; don't instantiate a
+            // verifier
+            verify = false;
+            // END Android-changed: use OpenJDK 17 implementation.
         }
     }
 
@@ -371,6 +418,8 @@ class JarFile extends ZipFile {
         ManifestEntryVerifier mev = null;
 
         // Verify "META-INF/" entries...
+        // BEGIN Android-changed: use OpenJDK17 implementation.
+        /*
         try {
             String[] names = getMetaInfEntryNames();
             if (names != null) {
@@ -405,6 +454,46 @@ class JarFile extends ZipFile {
                 ex.printStackTrace();
             }
         }
+        */
+        try {
+            List<String> names = getManifestAndSignatureRelatedFiles();
+            for (String name : names) {
+                JarEntry e = getJarEntry(name);
+                byte[] b;
+                if (e == null) {
+                    throw new JarException("corrupted jar file");
+                }
+                if (mev == null) {
+                    // BEGIN Android-changed: ManifestEntryVerifier(Manifest, String) is not imported yet.
+                    /*
+                    mev = new ManifestEntryVerifier
+                            (getManifestFromReference()), jv.manifestName);
+                    */
+                    mev = new ManifestEntryVerifier(getManifestFromReference());
+                    // END Android-changed: ManifestEntryVerifier(Manifest, String) is not imported yet.
+                }
+                if (name.equalsIgnoreCase(MANIFEST_NAME)) {
+                    b = jv.manifestRawBytes;
+                } else {
+                    b = getBytes(e);
+                }
+                if (b != null && b.length > 0) {
+                    jv.beginEntry(e, mev);
+                    jv.update(b.length, b, 0, b.length, mev);
+                    jv.update(-1, null, 0, 0, mev);
+                }
+            }
+        } catch (IOException | IllegalArgumentException ex) {
+            // if we had an error parsing any blocks, just
+            // treat the jar file as being unsigned
+            jv = null;
+            verify = false;
+            if (JarVerifier.debug != null) {
+                JarVerifier.debug.println("jarfile parsing error!");
+                ex.printStackTrace();
+            }
+        }
+        // END Android-changed: use OpenJDK17 implementation.
 
         // if after initializing the verifier we have nothing
         // signed, we null it out.
@@ -470,7 +559,7 @@ class JarFile extends ZipFile {
         return new JarVerifier.VerifierStream(
             getManifestFromReference(),
             ze instanceof JarFileEntry ?
-            (JarEntry) ze : getJarEntry(ze.getName()),
+                    (JarEntry) ze : getJarEntry(ze.getName()),
             super.getInputStream(ze),
             jv);
     }
@@ -503,6 +592,8 @@ class JarFile extends ZipFile {
     // private JarEntry getManEntry() {
     private synchronized JarEntry getManEntry() {
     // END Android-changed: Fix JarFile to be thread safe. http://b/27826114
+        // BEGIN Android-changed: use OpenJDK 17 implementation.
+        /*
         if (manEntry == null) {
             // First look up manifest entry using standard name
             manEntry = getJarEntry(MANIFEST_NAME);
@@ -521,14 +612,24 @@ class JarFile extends ZipFile {
                 }
             }
         }
+        */
+        if (manEntry == null) {
+            // The manifest entry position is resolved during
+            // initialization
+            String name = getManifestName(false);
+            if (name != null) {
+                this.manEntry = (JarEntry)super.getEntry(name);
+            }
+        }
+        // END Android-changed: use OpenJDK 17 implementation.
         return manEntry;
     }
 
-   /**
-    * Returns {@code true} iff this JAR file has a manifest with the
-    * Class-Path attribute
-    * @hide
-    */
+    /**
+     * Returns {@code true} iff this JAR file has a manifest with the
+     * Class-Path attribute
+     * @hide
+     */
     // Android-changed: Make hasClassPathAttribute() @hide public, for internal use.
     // Used by URLClassPath.JarLoader.
     // boolean hasClassPathAttribute() throws IOException {
@@ -554,7 +655,7 @@ class JarFile extends ZipFile {
                 if (c != src[j]) {
                     i += Math.max(j + 1 - lastOcc[c&0x7F], optoSft[j]);
                     continue next;
-                 }
+                }
             }
             return true;
         }

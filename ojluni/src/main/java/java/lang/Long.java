@@ -27,14 +27,10 @@ package java.lang;
 
 import java.lang.annotation.Native;
 
-// BEGIN Android-removed: dynamic constants not supported on Android.
-/*
 import java.lang.invoke.MethodHandles;
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;
 import java.util.Optional;
-*/
-// END Android-removed: dynamic constants not supported on Android.
 
 import java.math.*;
 import java.util.Objects;
@@ -75,13 +71,9 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
  * @author  Joseph D. Darcy
  * @since   1.0
  */
-// Android-removed: ValueBased
-// @jdk.internal.ValueBased
+@jdk.internal.ValueBased
 public final class Long extends Number
-        implements Comparable<Long>
-// Android-removed: no Constable support.
-// , Constable, ConstantDesc
-{
+        implements Comparable<Long>, Constable, ConstantDesc {
     /**
      * A constant holding the minimum value a {@code long} can
      * have, -2<sup>63</sup>.
@@ -235,12 +227,11 @@ public final class Long extends Number
         if (i >= 0)
             return toString(i, radix);
         else {
-            // Android-changed: use `switch (radix)` `switch return (radix)` until javac 17 lands.
-            switch (radix) {
-                case 2: return toBinaryString(i);
-                case 4: return toUnsignedString0(i, 2);
-                case 8:  return toOctalString(i);
-                case 10: {
+            return switch (radix) {
+                case 2  -> toBinaryString(i);
+                case 4  -> toUnsignedString0(i, 2);
+                case 8  -> toOctalString(i);
+                case 10 -> {
                     /*
                      * We can get the effect of an unsigned division by 10
                      * on a long value by first shifting right, yielding a
@@ -251,12 +242,12 @@ public final class Long extends Number
                      */
                     long quot = (i >>> 1) / 5;
                     long rem = i - quot * 10;
-                    return toString(quot) + rem;
+                    yield toString(quot) + rem;
                 }
-                case 16: return toHexString(i);
-                case 32: return toUnsignedString0(i, 5);
-                default: return toUnsignedBigInteger(i).toString(radix);
-            }
+                case 16 -> toHexString(i);
+                case 32 -> toUnsignedString0(i, 5);
+                default -> toUnsignedBigInteger(i).toString(radix);
+            };
         }
     }
 
@@ -2029,14 +2020,14 @@ public final class Long extends Number
         return Math.min(a, b);
     }
 
-    // BEGIN Android-removed: dynamic constants not supported on Android.
     /**
      * Returns an {@link Optional} containing the nominal descriptor for this
      * instance, which is the instance itself.
      *
      * @return an {@link Optional} describing the {@linkplain Long} instance
      * @since 12
-     *
+     * @hide
+     */
     @Override
     public Optional<Long> describeConstable() {
         return Optional.of(this);
@@ -2049,13 +2040,12 @@ public final class Long extends Number
      * @param lookup ignored
      * @return the {@linkplain Long} instance
      * @since 12
-     *
+     * @hide
+     */
     @Override
     public Long resolveConstantDesc(MethodHandles.Lookup lookup) {
         return this;
     }
-    */
-    // END Android-removed: dynamic constants not supported on Android.
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     @java.io.Serial

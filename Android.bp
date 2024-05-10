@@ -15,6 +15,7 @@
 package {
     default_visibility: [":__subpackages__"],
     default_applicable_licenses: ["libcore_license"],
+    default_team: "trendy_team_java_core_libraries",
 }
 
 // Added automatically by a large-scale-change that took the approach of
@@ -80,4 +81,5 @@ java_genrule {
         "cp -f $(in) $(genDir)/NOTICES && " +
         "$(location soong_zip) -o $(out) -C $(genDir) -D $(genDir)/NOTICES",
     out: ["notices-for-stubs.jar"],
+    write_if_changed: true,
 }

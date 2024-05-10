@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.attribute.FileTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -33,6 +34,9 @@ import java.util.zip.ZipOutputStream;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector.DisableResourceLeakageDetection;
 import libcore.junit.util.ResourceLeakageDetector;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
@@ -333,6 +337,7 @@ public class ZipOutputStreamTest extends TestCaseWithRules {
     /**
      * Test info-zip extended timestamp support
      */
+    @NonCts(bug = 310050493, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_exttSupport() throws Exception {
         List<ZipEntry> entries = new ArrayList<>();
 
@@ -378,10 +383,11 @@ public class ZipOutputStreamTest extends TestCaseWithRules {
 
         // Set last access time and test that calling setTime with value >
         // ZipEntry.UPPER_DOSTIME_BOUND will set the info-zip last-modified extended
-        // timestamp
+        // timestamp. ZipEntry.UPPER_DOSTIME_BOUND is lower than actual DOS time upper
+        // bound, so adding 3 years to make sure that it is really out of upper bound.
         entries.add(zipEntry = new ZipEntry("test_setLastAccessTime"));
         zipEntry.setLastAccessTime(FileTime.fromMillis(3000));
-        zipEntry.setTime(timestampBeyondDostimeBound);
+        zipEntry.setTime(timestampBeyondDostimeBound + Duration.ofDays(3 * 365).toMillis());
         assertNotNull(mtimeField.get(zipEntry));
 
         for (ZipEntry entry : entries) {
