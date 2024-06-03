@@ -435,7 +435,7 @@ public final class ICU {
    * See {@link #transformIcuDateTimePattern(String)} for documentation about the implementation.
    */
   public static String transformIcuDateTimePattern_forJavaTime(String pattern) {
-    return transformIcuDateTimePattern(pattern);
+    return transformIcuDateTimePattern(pattern, /* isJavaTime= */ true);
   }
 
   /**
@@ -446,7 +446,7 @@ public final class ICU {
    * See {@link #transformIcuDateTimePattern(String)} for documentation about the implementation.
    */
   public static String transformIcuDateTimePattern_forJavaText(String pattern) {
-    return transformIcuDateTimePattern(pattern);
+    return transformIcuDateTimePattern(pattern,  /* isJavaTime= */ false);
   }
 
   /**
@@ -460,11 +460,52 @@ public final class ICU {
    * in one place, but now separate because java.text and java.time handles different sets of
    * symbols.
    */
-  private static String transformIcuDateTimePattern(String pattern) {
+  private static String transformIcuDateTimePattern(String pattern, boolean isJavaTime) {
     if (pattern == null) {
       return null;
     }
 
+    pattern = transformSymbolB(pattern);
+
+    if (isJavaTime) {
+      // '#' is reserved for the future use in java.time, but it's treated as literal in CLDR.
+      // It needs to be quoted for the usage in java.time.
+      pattern = transformHashSign(pattern);
+    }
+
+    return pattern;
+  }
+
+  private static String transformHashSign(String pattern) {
+    if (pattern.indexOf('#') == -1) {
+      return pattern;
+    }
+
+    StringBuilder sb = new StringBuilder(pattern.length());
+    boolean isInQuote = false;
+    for (int i = 0; i < pattern.length(); i++) {
+      char curr = pattern.charAt(i);
+      if (isInQuote) {
+        if (curr == '\'') {
+          // e.g. '' represents a single quote literal or 'xyz' represents literal text.
+          // This applies to both java.time and java.text date / time patterns.
+          isInQuote = false;
+        }
+        sb.append(curr);
+      } else if (curr == '#') {
+        sb.append("'#'");
+      } else {
+         if (curr == '\'') {
+           isInQuote = true;
+        }
+        sb.append(curr);
+      }
+    }
+    return sb.toString();
+
+  }
+
+  private static String transformSymbolB(String pattern) {
     // For details about the different symbols, see
     // http://cldr.unicode.org/translation/date-time-1/date-time-patterns#TOC-Day-period-patterns
     // The symbols B means "Day periods with locale-specific ranges".
@@ -473,14 +514,16 @@ public final class ICU {
     // AM, PM, noon and midnight. English example: 10:00 AM, 12:00 noon, 7:00 PM
     boolean contains_b = pattern.indexOf('b') != -1;
 
+    if (!contains_B && !contains_b) {
+      return pattern;
+    }
+
     // Simply remove the symbol 'B' and 'b' if 24-hour 'H' exists because the 24-hour format
     // provides enough information and the day periods are optional. See http://b/174804526.
     // Don't handle symbol 'B'/'b' with 12-hour 'h' because it's much more complicated because
     // we likely need to replace 'B'/'b' with 'a' inserted into a new right position or use other
     // ways.
-    boolean remove_B_and_b = (contains_B || contains_b) && (pattern.indexOf('H') != -1);
-
-    if (remove_B_and_b) {
+    if (pattern.indexOf('H') != -1) {
       return removeBFromDateTimePattern(pattern);
     }
 
@@ -488,12 +531,12 @@ public final class ICU {
     // This workaround may create a pattern that isn't usual / common for the language users.
     if (pattern.indexOf('h') != -1) {
       if (contains_b) {
-        pattern = pattern.replace('b', 'a');
+        pattern = replaceSymbolInDatePattern(pattern, 'b', 'a');
       }
       if (contains_B) {
-        pattern = pattern.replace('B', 'a');
+        pattern = replaceSymbolInDatePattern(pattern, 'B', 'a');
       }
-    }
+    } // else {  } // not sure what to do as we assume that B is only useful when the hour is given.
 
     return pattern;
   }
@@ -507,8 +550,18 @@ public final class ICU {
     // memory-intensive, and the below implementation is likely cheaper, but it's not yet measured.
     StringBuilder sb = new StringBuilder(pattern.length());
     char prev = ' '; // the initial value is not used.
+    boolean isInQuote = false;
     for (int i = 0; i < pattern.length(); i++) {
       char curr = pattern.charAt(i);
+      if (isInQuote) {
+        if (curr == '\'') {
+          // e.g. '' represents a single quote literal or 'xyz' represents literal text.
+          // This applies to both java.time and java.text date / time patterns.
+          isInQuote = false;
+        }
+        sb.append(curr);
+        continue;
+      }
       switch(curr) {
         case 'B':
         case 'b':
@@ -524,6 +577,10 @@ public final class ICU {
             sb.append(curr);
           }
           break;
+        case '\'':
+          isInQuote = true;
+          sb.append(curr);
+          break;
         default:
           sb.append(curr);
           break;
@@ -536,6 +593,39 @@ public final class ICU {
     int lastIndex = sb.length() - 1;
     if (lastIndex >= 0 && sb.charAt(lastIndex) == ' ') {
       sb.deleteCharAt(lastIndex);
+    }
+    return sb.toString();
+  }
+
+
+  private static String replaceSymbolInDatePattern(String pattern, char existingSymbol,
+      char newSymbol) {
+    if (pattern.indexOf('\'') == -1) {
+      // Fast path if the pattern contains no quoted literals.
+      return pattern.replace(existingSymbol, newSymbol);
+    }
+
+    StringBuilder sb = new StringBuilder(pattern.length());
+    boolean isInQuote = false;
+    for (int i = 0; i < pattern.length(); i++) {
+      char curr = pattern.charAt(i);
+      char modified;
+      if (isInQuote) {
+        if (curr == '\'') {
+          // e.g. '' represents a single quote literal or 'xyz' represents literal text.
+          // This applies to both java.time and java.text date / time patterns.
+          isInQuote = false;
+        }
+        modified = curr;
+      } else if (curr == '\'') {
+        isInQuote = true;
+        modified = curr;
+      } else if (curr == existingSymbol) {
+        modified = newSymbol;
+      } else {
+        modified = curr;
+      }
+      sb.append(modified);
     }
     return sb.toString();
   }
