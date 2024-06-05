@@ -25,11 +25,16 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import dalvik.annotation.compat.VersionCodes;
 import dalvik.system.InMemoryDexClassLoader;
 import dalvik.system.PathClassLoader;
+import dalvik.system.VMRuntime;
 
 import libcore.io.Streams;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -115,6 +120,19 @@ public class ClassTest {
         assertEquals("libcore.java.lang.TestBadInnerClass_Outer$ClassTestBadInnerClass_InnerClass",
             cl.getName());
         assertEquals("TestBadInnerClass_InnerXXXXX", cl.getSimpleName());
+    }
+
+    @Test
+    public void testGetSimpleName() {
+        assertEquals("ClassTest", this.getClass().getSimpleName());
+        assertEquals("int[]", int[].class.getSimpleName());
+        assertEquals("int[][]", int[][].class.getSimpleName());
+        assertEquals("ClassTest[]", ClassTest[].class.getSimpleName());
+        assertEquals("", new A() {}.getClass().getSimpleName()); // Anonymous class
+        assertEquals("A", A.class.getSimpleName()); // member interface
+        assertEquals("X", X.class.getSimpleName()); // member class
+        class LocalClass implements A {}
+        assertEquals("LocalClass", LocalClass.class.getSimpleName());
     }
 
     interface A {
@@ -363,6 +381,15 @@ public class ClassTest {
         assertEquals(expected, clazz.getTypeName());
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @Ignore
+    public void test_toGenericString() {
+        // This test method has been renamed to toGenericString().
+        // Keep this empty method in order to generate the method name into skippedCtsTest.txt
+        // and skip the test in aosp/android12-tests-dev.
+    }
+
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test
     public void toGenericString() throws Exception {
         final String outerClassName = getClass().getName();
@@ -392,8 +419,16 @@ public class ClassTest {
         assertToGenericString("public final enum java.lang.annotation.RetentionPolicy",
                 RetentionPolicy.class);
         assertToGenericString("public class java.util.TreeMap<K,V>", TreeMap.class);
+        String wildcardInterfaceName;
+        if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM) {
+            wildcardInterfaceName = "$WildcardInterface<T extends java.lang.Number,"
+                    + "U extends java.util.function.Function"
+                    + "<? extends java.lang.Number, ? super java.lang.Number>>";
+        } else {
+            wildcardInterfaceName = "$WildcardInterface<T,U>";
+        }
         assertToGenericString(
-                "abstract static interface " + outerClassName + "$WildcardInterface<T,U>",
+                "abstract static interface " + outerClassName + wildcardInterfaceName,
                 WildcardInterface.class);
     }
 

@@ -57,12 +57,16 @@ import java.net.UnknownHostException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 
@@ -81,14 +85,8 @@ public class SocketTest {
     // This hostname is required to resolve to 127.0.0.1 and ::1 for all tests to pass.
     private static final String ALL_LOOPBACK_HOSTNAME = "loopback46.unittest.grpc.io";
 
-    private static final InetAddress[] ALL_LOOPBACK_ADDRESSES = {
-        Inet4Address.LOOPBACK,
-        Inet6Address.LOOPBACK
-    };
-
-    {
-        sortAddresses(ALL_LOOPBACK_ADDRESSES);
-    }
+    private static final Set<InetAddress> ALL_LOOPBACK_ADDRESSES =
+            Set.of(Inet4Address.LOOPBACK, Inet6Address.LOOPBACK);
 
     // From net/inet_ecn.h
     private static final int INET_ECN_MASK = 0x3;
@@ -340,45 +338,45 @@ public class SocketTest {
 
     @Test
     public void testReadAfterClose() throws Exception {
-        MockServer server = new MockServer();
-        server.enqueue(new byte[]{5, 3}, 0);
-        Socket socket = new Socket("localhost", server.port);
-        InputStream in = socket.getInputStream();
-        assertEquals(5, in.read());
-        assertEquals(3, in.read());
-        assertEquals(-1, in.read());
-        assertEquals(-1, in.read());
-        socket.close();
-        in.close();
+        try (MockServer server = new MockServer()) {
+            server.enqueue(new byte[]{5, 3}, 0);
+            InputStream checkAfterCloseStream;
+            try (Socket socket = new Socket("localhost", server.port);
+                InputStream in = socket.getInputStream()) {
+                assertEquals(5, in.read());
+                assertEquals(3, in.read());
+                assertEquals(-1, in.read());
+                assertEquals(-1, in.read());
+                checkAfterCloseStream = in;
+            }
 
-        /*
-         * Rather astonishingly, read() doesn't throw even though the stream is
-         * closed. This is consistent with the RI's behavior.
-         */
-        assertEquals(-1, in.read());
-        assertEquals(-1, in.read());
-
-        server.shutdown();
+            /*
+             * Rather astonishingly, read() doesn't throw even though the stream is
+             * closed. This is consistent with the RI's behavior.
+             */
+            assertEquals(-1, checkAfterCloseStream.read());
+            assertEquals(-1, checkAfterCloseStream.read());
+        }
     }
 
     @Test
     public void testWriteAfterClose() throws Exception {
-        MockServer server = new MockServer();
-        server.enqueue(new byte[0], 3);
-        Socket socket = new Socket("localhost", server.port);
-        OutputStream out = socket.getOutputStream();
-        out.write(5);
-        out.write(3);
-        socket.close();
-        out.close();
+        try (MockServer server = new MockServer()) {
+            server.enqueue(new byte[0], 3);
+            OutputStream checkAfterCloseStream;
+            try (Socket socket = new Socket("localhost", server.port);
+                    OutputStream out = socket.getOutputStream()) {
+                out.write(5);
+                out.write(3);
+                checkAfterCloseStream = out;
+            }
 
-        try {
-            out.write(9);
-            fail();
-        } catch (IOException expected) {
+            try {
+                checkAfterCloseStream.write(9);
+                fail();
+            } catch (IOException expected) {
+            }
         }
-
-        server.shutdown();
     }
 
     // http://b/5534202
@@ -392,38 +390,34 @@ public class SocketTest {
 
     private void assertAvailableReturnsZeroAfterSocketReadsAllData() throws Exception {
         final byte[] data = "foo".getBytes();
-        final ServerSocket serverSocket = new ServerSocket(0);
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
 
-        new Thread() {
-            @Override public void run() {
-                try {
-                    Socket socket = serverSocket.accept();
-                    socket.getOutputStream().write(data);
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            new Thread() {
+                @Override public void run() {
+                    try (Socket socket = serverSocket.accept()) {
+                        socket.getOutputStream().write(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }.start();
+
+            try (Socket socket = new Socket("localhost", serverSocket.getLocalPort())) {
+                byte[] readBuffer = new byte[128];
+                InputStream in = socket.getInputStream();
+                int total = 0;
+                // to prevent available() from cheating after EOF, stop reading before -1 is returned
+                while (total < data.length) {
+                    total += in.read(readBuffer);
+                }
+                assertEquals(0, in.available());
             }
-        }.start();
-
-        Socket socket = new Socket("localhost", serverSocket.getLocalPort());
-        byte[] readBuffer = new byte[128];
-        InputStream in = socket.getInputStream();
-        int total = 0;
-        // to prevent available() from cheating after EOF, stop reading before -1 is returned
-        while (total < data.length) {
-            total += in.read(readBuffer);
         }
-        assertEquals(0, in.available());
-
-        socket.close();
-        serverSocket.close();
     }
 
     @Test
     public void testInitialState() throws Exception {
-        Socket s = new Socket();
-        try {
+        try (Socket s = new Socket()) {
             assertFalse(s.isBound());
             assertFalse(s.isClosed());
             assertFalse(s.isConnected());
@@ -435,8 +429,6 @@ public class SocketTest {
             assertNull(s.getRemoteSocketAddress());
             assertFalse(s.getReuseAddress());
             assertNull(s.getChannel());
-        } finally {
-            s.close();
         }
     }
 
@@ -464,53 +456,54 @@ public class SocketTest {
         // is expected to produce block behavior when attempting to connect().
         final InetSocketAddress unreachableIp = new InetSocketAddress("192.0.2.0", 80);
 
-        final Socket s = new Socket();
 
-        // A Callable that executes a connect() that should block and ultimately throw an exception.
-        // Inverts usual behavior for code: expected to *return* a throwable for analysis if one is
-        // thrown, but throws an Error if no exception is thrown.
-        Callable<Throwable> connectWorker = () -> {
-            try {
-                // This method should not return naturally.
-                s.connect(unreachableIp, 0 /* infinite */);
+        try (Socket s = new Socket()) {
+
+            // A Callable that executes a connect() that should block and ultimately throw an exception.
+            // Inverts usual behavior for code: expected to *return* a throwable for analysis if one is
+            // thrown, but throws an Error if no exception is thrown.
+            Callable<Throwable> connectWorker = () -> {
+                try {
+                    // This method should not return naturally.
+                    s.connect(unreachableIp, 0 /* infinite */);
+                    throw new AssertionError(
+                            "connect() to address(" + unreachableIp + ") did not block as required");
+                } catch (Exception exception) {
+                    // Return the exception so that it can be inspected.
+                    return exception;
+                }
+            };
+            Future<Throwable> connectResult = Executors.newSingleThreadScheduledExecutor().submit(connectWorker);
+
+            // Wait sufficient time for the connectWorker thread to run and start connect().
+            Thread.sleep(2000);
+
+            // Check for unexpected early termination. We require an environment where connect() will
+            // block forever with the specified IP and we can fail early if we detect the block hasn't
+            // happened.
+            if (connectResult.isDone()) {
+                // We expect an ExecutionError here. If not something has gone wrong with the test
+                // logic.
+                Throwable error = connectResult.get();
+                throw new AssertionError("Unexpected result from connectWorker", error);
+            }
+
+            // Close the socket that connectWorker should currently be blocked in connect().
+            s.close();
+
+            // connectWorker should unblock so get() should obtain the exception that we expect to be
+            // thrown.
+            Throwable result = connectResult.get(2000, TimeUnit.MILLISECONDS);
+            if (result instanceof SocketException) {
+                if (result.getMessage().contains("Socket closed")) {
+                    // This is the only case we accept.
+                    return;
+                }
                 throw new AssertionError(
-                        "connect() to address(" + unreachableIp + ") did not block as required");
-            } catch (Exception exception) {
-                // Return the exception so that it can be inspected.
-                return exception;
+                        "Unexpected SocketException message: " + result.getMessage(), result);
+            } else {
+                throw new AssertionError("Unexpected exception encountered", result);
             }
-        };
-        Future<Throwable> connectResult =
-                Executors.newSingleThreadScheduledExecutor().submit(connectWorker);
-
-        // Wait sufficient time for the connectWorker thread to run and start connect().
-        Thread.sleep(2000);
-
-        // Check for unexpected early termination. We require an environment where connect() will
-        // block forever with the specified IP and we can fail early if we detect the block hasn't
-        // happened.
-        if (connectResult.isDone()) {
-            // We expect an ExecutionError here. If not something has gone wrong with the test
-            // logic.
-            Throwable error = connectResult.get();
-            throw new AssertionError("Unexpected result from connectWorker", error);
-        }
-
-        // Close the socket that connectWorker should currently be blocked in connect().
-        s.close();
-
-        // connectWorker should unblock so get() should obtain the exception that we expect to be
-        // thrown.
-        Throwable result = connectResult.get(2000, TimeUnit.MILLISECONDS);
-        if (result instanceof SocketException) {
-            if (result.getMessage().contains("Socket closed")) {
-                // This is the only case we accept.
-                return;
-            }
-            throw new AssertionError(
-                    "Unexpected SocketException message: " + result.getMessage(), result);
-        } else {
-            throw new AssertionError("Unexpected exception encountered", result);
         }
     }
 
@@ -532,10 +525,9 @@ public class SocketTest {
                 }
             });
 
-            ServerSocket server = new ServerSocket(0);
-            Socket client = new Socket(InetAddress.getLocalHost(), server.getLocalPort());
-            client.close();
-            server.close();
+            try (ServerSocket server = new ServerSocket(0);
+                    Socket client = new Socket(InetAddress.getLocalHost(), server.getLocalPort())) {
+            }
         } finally {
             ProxySelector.setDefault(ps);
         }
@@ -568,7 +560,7 @@ public class SocketTest {
         assertFalse(fd3.valid());
     }
 
-    static class MockServer {
+    static class MockServer implements AutoCloseable {
         private ExecutorService executor;
         private ServerSocket serverSocket;
         private int port = -1;
@@ -584,23 +576,24 @@ public class SocketTest {
                 throws IOException {
             return executor.submit(new Callable<byte[]>() {
                 @Override public byte[] call() throws Exception {
-                    Socket socket = serverSocket.accept();
-                    OutputStream out = socket.getOutputStream();
-                    out.write(sendBytes);
-
-                    InputStream in = socket.getInputStream();
                     byte[] result = new byte[receiveByteCount];
-                    int total = 0;
-                    while (total < receiveByteCount) {
-                        total += in.read(result, total, result.length - total);
+                    try (Socket socket = serverSocket.accept()) {
+                        OutputStream out = socket.getOutputStream();
+                        out.write(sendBytes);
+
+                        InputStream in = socket.getInputStream();
+                        int total = 0;
+                        while (total < receiveByteCount) {
+                            total += in.read(result, total, result.length - total);
+                        }
                     }
-                    socket.close();
                     return result;
                 }
             });
         }
 
-        public void shutdown() throws IOException {
+        @Override
+        public void close() throws Exception {
             serverSocket.close();
             executor.shutdown();
         }
@@ -686,8 +679,7 @@ public class SocketTest {
         for (InetAddress addr : ALL_LOOPBACK_ADDRESSES) {
             try (ServerSocket ss = new ServerSocket(port, 0, addr)) {
                 new Thread(() -> {
-                    try {
-                        ss.accept();
+                    try (Socket socket = ss.accept()) {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -715,29 +707,74 @@ public class SocketTest {
         return addresses.length <= 1 || (addresses.length == 2 && addresses[0] != addresses[1]);
     }
 
-    /** Confirm the supplied hostname maps to only loopback addresses, both IPv4 and IPv6. */
     private static void checkLoopbackHost() throws UnknownHostException {
-        // b/202426043 retry a few times since DNS maybe prone to being dropped or slow in
-        // responding and we have no control over the query or cache timeouts here.
-        final int WAIT_MILLIS = 2000;
-        for (int triesLeft = 2; triesLeft >= 0; --triesLeft) {
-            InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
-            sortAddresses(addresses);
-            if (Arrays.equals(ALL_LOOPBACK_ADDRESSES, addresses)) {
-                return;
-            }
-
-            if (triesLeft == 0 || addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
-                fail("Expected " + Arrays.toString(ALL_LOOPBACK_ADDRESSES) +
-                     ", got " + Arrays.toString(addresses));
-            }
-
-            try {
-                Thread.sleep(WAIT_MILLIS);
-            } catch (InterruptedException e) {
-                fail("Test interrupted");
-            }
+        try {
+            waitForDualStackConnectivity();
+        } catch (InterruptedException e) {
+            throw new AssertionError("Test interrupted", e);
         }
+
+        InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
+        if (ALL_LOOPBACK_ADDRESSES.equals(Set.of(addresses))) {
+            return;
+        }
+
+        if (addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
+            fail("Expected " + addressesToString(ALL_LOOPBACK_ADDRESSES) +
+                    " when resolving " + ALL_LOOPBACK_HOSTNAME +
+                    ", but got " + addressesToString(addresses));
+        }
+    }
+
+    private static void waitForDualStackConnectivity() throws InterruptedException {
+        try {
+            FileDescriptor v4sock = Os.socket(AF_INET, SOCK_DGRAM, 0);
+            FileDescriptor v6sock = Os.socket(AF_INET6, SOCK_DGRAM, 0);
+            final int SLEEP_TIME_MS = 50;
+            final int ATTEMPTS = 50;
+            try {
+                for (int i = 0; i < ATTEMPTS; i++) {
+                    if (udpConnectSucceeded(v4sock, Inet4Address.LOOPBACK) &&
+                            udpConnectSucceeded(v6sock, Inet6Address.LOOPBACK)) {
+                        return;
+                    }
+                    Thread.sleep(SLEEP_TIME_MS);
+                }
+                fail("IPv4+IPv6 connectivity not detected after "
+                        + ATTEMPTS * SLEEP_TIME_MS + " ms");
+            } finally {
+                Os.close(v4sock);
+                Os.close(v6sock);
+            }
+        } catch (ErrnoException e) {
+            fail("Unable to check connectivity: " + e.getMessage());
+        }
+    }
+
+    private static boolean udpConnectSucceeded(FileDescriptor socket, InetAddress dst) {
+        try {
+            Os.connect(socket, new InetSocketAddress(dst, 53));
+            return true;
+        } catch (SocketException | ErrnoException e) {
+            return false;
+        }
+    }
+
+    // Makes a human-readable String from the host addresses in an array of InetAddresses,
+    // i.e. removes the hostname part which is not actually used when comparing InetAddresses
+    // for equality.
+    private static String addressesToString(InetAddress[] addresses) {
+        return addressesToString(Arrays.stream(addresses));
+    }
+
+    private static String addressesToString(Collection<InetAddress> addresses) {
+        return addressesToString(addresses.stream());
+    }
+
+    private static String addressesToString(Stream<InetAddress> addresses) {
+        return addresses
+                .map(InetAddress::getHostAddress)
+                .collect(joining(", ", "[", "]"));
     }
 
     private static boolean canConnect(String host, int port) {

@@ -16,6 +16,9 @@
 
 package libcore.java.lang.reflect;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -137,6 +140,7 @@ public final class OldAndroidClassTest extends TestCase {
 
     // Regression for 1018067: Class.getMethods() returns the same method over
     // and over again from all base classes
+    @NonCts(bug = 338503591, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void testClassGetMethodsNoDupes() {
         Method[] methods = ArrayList.class.getMethods();
         Set<String> set = new HashSet<String>();
@@ -146,8 +150,9 @@ public final class OldAndroidClassTest extends TestCase {
 
             int par = signature.indexOf('(');
             int dot = signature.lastIndexOf('.', par);
-
-            signature = signature.substring(dot + 1);
+            // Remove the declaring class and modifiers.
+            // TODO: Thrown Exception types are kept in the signature. Consider removing it.
+            signature = method.getReturnType().getTypeName() + ' ' + signature.substring(dot + 1);
 
             assertFalse("Duplicate " + signature, set.contains(signature));
             set.add(signature);

@@ -324,10 +324,14 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "IPPROTO_RAW", IPPROTO_RAW);
     initConstant(env, c, "IPPROTO_TCP", IPPROTO_TCP);
     initConstant(env, c, "IPPROTO_UDP", IPPROTO_UDP);
+    initConstant(env, c, "IPPROTO_ESP", IPPROTO_ESP);
     initConstant(env, c, "IPV6_CHECKSUM", IPV6_CHECKSUM);
     initConstant(env, c, "IPV6_MULTICAST_HOPS", IPV6_MULTICAST_HOPS);
     initConstant(env, c, "IPV6_MULTICAST_IF", IPV6_MULTICAST_IF);
     initConstant(env, c, "IPV6_MULTICAST_LOOP", IPV6_MULTICAST_LOOP);
+#if defined(IPV6_PKTINFO)
+    initConstant(env, c, "IPV6_PKTINFO", IPV6_PKTINFO);
+#endif
 #if defined(IPV6_RECVDSTOPTS)
     initConstant(env, c, "IPV6_RECVDSTOPTS", IPV6_RECVDSTOPTS);
 #endif
@@ -402,6 +406,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "NETLINK_NETFILTER", NETLINK_NETFILTER);
     initConstant(env, c, "NETLINK_ROUTE", NETLINK_ROUTE);
     initConstant(env, c, "NETLINK_INET_DIAG", NETLINK_INET_DIAG);
+    initConstant(env, c, "NETLINK_XFRM", NETLINK_XFRM);
     initConstant(env, c, "NI_DGRAM", NI_DGRAM);
     initConstant(env, c, "NI_NAMEREQD", NI_NAMEREQD);
     initConstant(env, c, "NI_NOFQDN", NI_NOFQDN);
@@ -536,6 +541,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #if defined(SOL_UDP)
     initConstant(env, c, "SOL_UDP", SOL_UDP);
 #endif
+    initConstant(env, c, "SOL_PACKET", SOL_PACKET);
 #if defined(SO_BINDTODEVICE)
     initConstant(env, c, "SO_BINDTODEVICE", SO_BINDTODEVICE);
 #endif
@@ -566,6 +572,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "SO_SNDLOWAT", SO_SNDLOWAT);
     initConstant(env, c, "SO_SNDTIMEO", SO_SNDTIMEO);
     initConstant(env, c, "SO_TYPE", SO_TYPE);
+#if defined(PACKET_IGNORE_OUTGOING)
+    initConstant(env, c, "PACKET_IGNORE_OUTGOING", PACKET_IGNORE_OUTGOING);
+#endif
     initConstant(env, c, "SPLICE_F_MOVE", SPLICE_F_MOVE);
     initConstant(env, c, "SPLICE_F_NONBLOCK", SPLICE_F_NONBLOCK);
     initConstant(env, c, "SPLICE_F_MORE", SPLICE_F_MORE);
