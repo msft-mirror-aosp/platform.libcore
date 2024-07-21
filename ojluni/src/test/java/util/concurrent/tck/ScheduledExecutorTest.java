@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -226,7 +227,17 @@ public class ScheduledExecutorTest extends JSR166TestCase {
     @EnableCompatChanges({ScheduledThreadPoolExecutor.STPE_SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
     public void testFixedRateSequenceSkipMultipleMissedFixedRateTasksEnabled()
             throws InterruptedException {
+        if (!ScheduledThreadPoolExecutor.skipMultipleMissedPeriodicTasks()) {
+            // Failed to disable compat flag. Skip the test.
+            return;
+        }
+        // TODO(b/353186981): delete the above and uncomment the below.
+        //assertTrue(
+        //    ScheduledThreadPoolExecutor.skipMultipleMissedPeriodicTasks());
+
         final ScheduledThreadPoolExecutor p = new ScheduledThreadPoolExecutor(1);
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
         try (PoolCleaner cleaner = cleaner(p)) {
             for (int delay = 1; delay <= 1_000; delay *= 3) {
                 final long startTime = System.nanoTime();
@@ -243,6 +254,7 @@ public class ScheduledExecutorTest extends JSR166TestCase {
                             isFirstRun = false;
                             Thread.sleep(thisDelay * ((long) slept));
                         }
+                        executionTimes.add(System.nanoTime());
                         done.countDown();
                     }
                 };
@@ -258,7 +270,7 @@ public class ScheduledExecutorTest extends JSR166TestCase {
                 }
                 // else retry with longer delay
             }
-            fail("unexpected execution rate");
+            fail("unexpected execution rate; times: " + executionTimes);
         }
     }
 
@@ -273,7 +285,17 @@ public class ScheduledExecutorTest extends JSR166TestCase {
     @DisableCompatChanges({ScheduledThreadPoolExecutor.STPE_SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
     public void testFixedRateSequenceSkipMultipleMissedFixedRateTasksDisabled()
             throws InterruptedException {
+        if (ScheduledThreadPoolExecutor.skipMultipleMissedPeriodicTasks()) {
+            // Failed to disable compat flag. Skip the test.
+            return;
+        }
+        // TODO(b/353186981): delete the above and uncomment the below.
+        //assertFalse(
+        //    ScheduledThreadPoolExecutor.skipMultipleMissedPeriodicTasks());
+
         final ScheduledThreadPoolExecutor p = new ScheduledThreadPoolExecutor(1);
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
         try (PoolCleaner cleaner = cleaner(p)) {
             for (int delay = 1; delay <= 1_000; delay *= 3) {
                 final long startTime = System.nanoTime();
@@ -290,6 +312,7 @@ public class ScheduledExecutorTest extends JSR166TestCase {
                             isFirstRun = false;
                             Thread.sleep(thisDelay * ((long) slept));
                         }
+                        executionTimes.add(System.nanoTime());
                         done.countDown();
                     }
                 };
@@ -306,7 +329,7 @@ public class ScheduledExecutorTest extends JSR166TestCase {
                 }
                 // else retry with longer delay
             }
-            fail("unexpected execution rate");
+            fail("unexpected execution rate; times: " + executionTimes);
         }
     }
 
