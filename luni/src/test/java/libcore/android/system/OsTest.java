@@ -26,6 +26,7 @@ import android.system.StructCmsghdr;
 import android.system.StructMsghdr;
 import android.system.StructRlimit;
 import android.system.StructStat;
+import android.system.StructTimespec;
 import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.UnixSocketAddress;
@@ -52,6 +53,8 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,8 +67,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import libcore.io.IoUtils;
 import libcore.testing.io.TestIoUtils;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -77,10 +84,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNoException;
 import static org.junit.Assume.assumeTrue;
+
+import jdk.internal.misc.Unsafe;
 
 @RunWith(JUnit4.class)
 public class OsTest {
@@ -1775,6 +1785,19 @@ public class OsTest {
     }
 
     @Test
+    public void test_build_sruct_stat() {
+      StructStat structStat1 = new StructStat(/*st_dev*/ 0L, /*st_ino*/ 0L, /*st_mode*/ 0,
+          /*st_nlink*/ 1L, /*st_uid*/ 1000, /*st_gid*/ 1000, /*st_rdev*/ 0L, /*st_size*/ 0L,
+          /*st_atime*/ 0L, /*st_mtime*/ 0L, /*st_ctime*/ 0L, /*st_blksize*/ 4096L,
+          /*st_blocks*/ 1L);
+      StructStat structStat2 = new StructStat(/*st_dev*/ 0L, /*st_ino*/ 0L, /*st_mode*/ 0,
+          /*st_nlink*/ 1L, /*st_uid*/ 1000, /*st_gid*/ 1000, /*st_rdev*/ 0L, /*st_size*/ 0L,
+          /*st_atim*/ new StructTimespec(0L, 0L), /*st_mtim*/ new StructTimespec(0L, 0L),
+          /*st_ctim*/ new StructTimespec(0L, 0L), /*st_blksize*/ 4096L, /*st_blocks*/ 1L);
+      assertStructStatsEqual(structStat1, structStat2);
+    }
+
+    @Test
     public void test_getrlimit() throws Exception {
         StructRlimit rlimit = Os.getrlimit(OsConstants.RLIMIT_NOFILE);
         // We can't really make any assertions about these values since they might vary from
@@ -2237,6 +2260,52 @@ public class OsTest {
             "unsetenv(\"a=b\")");
     }
 
+    @Test
+    public void tcdrain_throwsWhenFdIsNotTty() throws Exception {
+        File temp = Files.createTempFile("regular-file", "txt").toFile();
+        FileDescriptor fd = Os.open(temp.getAbsolutePath(), O_RDWR, 0);
+
+        try {
+            assertThrows(ErrnoException.class, () -> Os.tcdrain(fd));
+        } finally {
+            if (fd != null) {
+                Os.close(fd);
+            }
+        }
+    }
+
+    @Test
+    public void testMsync() throws Exception {
+        File temp = Files.createTempFile("regular-file", "txt").toFile();
+
+        try (FileOutputStream fos = new FileOutputStream(temp)) {
+            fos.write("hello".getBytes(StandardCharsets.UTF_8));
+            fos.flush();
+        }
+
+        final long size = 5;
+        FileDescriptor fd = Os.open(temp.getAbsolutePath(), O_RDWR, 0);
+        final long address = Os.mmap(0, size, PROT_WRITE,
+                MAP_SHARED, fd, 0);
+        assertTrue(address > 0);
+
+        // The easiest way to write at address from Java I came up with.
+        var field = Unsafe.class.getDeclaredField("THE_ONE");
+        field.setAccessible(true);
+        Unsafe unsafe = (Unsafe) field.get(null);
+        unsafe.setMemory(address, size, (byte) 'a');
+
+        Os.msync(address, size, MS_SYNC);
+
+        try (Stream<String> stream = Files.lines(temp.toPath())) {
+            List<String> lines = stream.toList();
+            assertEquals(1, lines.size());
+            assertEquals("a".repeat((int) size), lines.get(0));
+        }
+
+        Os.munmap(address, size);
+    }
+
     /*
      * Checks that all ways of accessing the environment are consistent by collecting:
      * osEnvironment      - The environment returned by Os.environ()
@@ -2265,6 +2334,25 @@ public class OsTest {
         assertEquals(osEnvironment, systemEnvironment);
         assertEquals(osEnvironment, processEnvironment);
         assertEquals(osEnvironment, execedEnvironment);
+    }
+
+    private static void assertStructStatsEqual(StructStat expected, StructStat actual) {
+        assertEquals(expected.st_dev, actual.st_dev);
+        assertEquals(expected.st_ino, actual.st_ino);
+        assertEquals(expected.st_mode, actual.st_mode);
+        assertEquals(expected.st_nlink, actual.st_nlink);
+        assertEquals(expected.st_uid, actual.st_uid);
+        assertEquals(expected.st_gid, actual.st_gid);
+        assertEquals(expected.st_rdev, actual.st_rdev);
+        assertEquals(expected.st_size, actual.st_size);
+        assertEquals(expected.st_atime, actual.st_atime);
+        assertEquals(expected.st_atim, actual.st_atim);
+        assertEquals(expected.st_mtime, actual.st_mtime);
+        assertEquals(expected.st_mtim, actual.st_mtim);
+        assertEquals(expected.st_ctime, actual.st_ctime);
+        assertEquals(expected.st_ctim, actual.st_ctim);
+        assertEquals(expected.st_blksize, actual.st_blksize);
+        assertEquals(expected.st_blocks, actual.st_blocks);
     }
 
     private List<String> stringMapToList(Map<String, String> stringMap) {
