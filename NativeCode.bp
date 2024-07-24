@@ -20,7 +20,6 @@
 
 cc_defaults {
     name: "core_native_default_flags",
-    defaults: ["art_module_source_build_defaults"],
     host_supported: true,
     cflags: [
         "-Wall",
@@ -31,6 +30,9 @@ cc_defaults {
 
     target: {
         darwin: {
+            enabled: false,
+        },
+        windows: {
             enabled: false,
         },
     },
@@ -67,14 +69,15 @@ cc_library_shared {
     ],
     shared_libs: [
         "libandroidio",
-        "libcrypto",
         "libicu",
         "libexpat",
         "libz",
     ],
     static_libs: [
+        "libcrypto_for_art",
         "libziparchive",
     ],
+    version_script: "libjavacore.map",
 }
 
 cc_library_shared {
@@ -126,11 +129,11 @@ cc_defaults {
 
     shared_libs: [
         "libandroidio",
-        "libcrypto",
         "libicu",
         "libz",
     ],
     static_libs: [
+        "libcrypto_for_art",
         "libfdlibm",
     ],
 

@@ -16,11 +16,12 @@
 # com.android is chosen as the java_aconfig_library is normally exposed to the platform,
 # but not public apps.
 package: "com.android.libcore"
-container: "system"
+container: "com.android.art"
 
 flag {
     namespace: "core_libraries"
     name: "v_apis"
+    is_exported: true
     description: "This flag controls whether exposing Android V APIs"
     bug: "306360493"
     # APIs provided by a mainline module can only use a frozen flag.
@@ -30,8 +31,30 @@ flag {
 flag {
     namespace: "core_libraries"
     name: "hpke_v_apis"
+    is_exported: true
     description: "This flag controls whether exposing HPKE APIs on Android V"
     bug: "323357598"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
+
+flag {
+    namespace: "core_libraries"
+    name: "openjdk_21_v1_apis"
+    is_exported: true
+    description: "This flag includes OpenJDK 21 APIs released in 2025."
+    bug: "340486785"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
+
+
+flag {
+    namespace: "devtools"
+    name: "appinfo"
+    is_exported: true
+    description: "This flag controls whether Frameworks sends app info to adb so debuggers can attach"
+    bug: "333161320"
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }

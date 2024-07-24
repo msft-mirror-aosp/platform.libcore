@@ -59,6 +59,7 @@ java_test {
     static_libs: [
         "core-test-rules",
         "junit",
+        "core-compat-test-rules",
         "mockwebserver",
         "testng",
     ],
@@ -102,6 +103,7 @@ java_test {
             "-Xep:ModifyingCollectionWithItself:WARN",
             "-Xep:InvalidZoneId:WARN",
             "-Xep:HashtableContains:WARN",
+            "-Xep:EqualsNull:WARN",
         ],
     },
 }
@@ -151,7 +153,10 @@ java_test {
         "testng",
     ],
 
-    static_libs: ["mockwebserver"],
+    static_libs: [
+        "core-compat-test-rules",
+        "mockwebserver",
+    ],
 
     errorprone: {
         javacflags: [
@@ -176,6 +181,7 @@ java_test {
             "-Xep:ModifyingCollectionWithItself:WARN",
             "-Xep:InvalidZoneId:WARN",
             "-Xep:HashtableContains:WARN",
+            "-Xep:EqualsNull:WARN",
         ],
     },
 }
