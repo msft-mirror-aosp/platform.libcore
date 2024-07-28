@@ -243,6 +243,8 @@ java_library {
     libs: [
         "conscrypt.module.intra.core.api",
     ],
+
+    java_version: "21",
 }
 
 platform_compat_config {
@@ -270,6 +272,8 @@ java_system_modules {
     visibility: [
         "//art/build/flags",
         "//art/test:__subpackages__",
+        "//build/make/tools/aconfig/aconfig_storage_file",
+        "//build/make/tools/aconfig/aconfig_storage_read_api",
         "//build/make/tools/aconfig/fake_device_config",
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
@@ -289,6 +293,7 @@ java_library {
     visibility: [
         "//art/build/apex",
         "//art/build/sdk",
+        "//art/tools/fuzzer",
         "//external/wycheproof",
         "//libcore/benchmarks",
         "//packages/modules/ArtPrebuilt",
@@ -351,6 +356,7 @@ java_library {
     visibility: [
         "//art/build/apex",
         "//art/build/sdk",
+        "//art/tools/fuzzer",
         "//external/wycheproof",
         "//libcore/benchmarks",
         "//packages/modules/ArtPrebuilt",
@@ -405,6 +411,8 @@ java_library {
             "-Xep:NullableOnContainingClass:WARN",
         ],
     },
+
+    java_version: "21",
 }
 
 // Java library for use on host, e.g. by robolectric or layoutlib.
@@ -488,6 +496,7 @@ java_library {
     // This jar is packaged as part of the SDK, use -target 8 so that it works
     // with old JDKs.
     java_version: "1.8",
+    is_stubs_module: true,
 }
 
 // An alternative to core-lambda-stubs that omits openjdk_lambda_duplicate_stub_files
@@ -705,6 +714,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java17language"],
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 21 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-21-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java21LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java21language"],
+}
+
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
@@ -793,6 +810,7 @@ java_test {
         "core-java-9-language-tests",
         "core-java-11-language-tests",
         "core-java-17-language-tests",
+        "core-java-21-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
@@ -923,6 +941,12 @@ droiddoc_exported_dir {
     visibility: ["//visibility:private"],
 }
 
+droiddoc_exported_dir {
+    name: "toolchainapi-annotated-flagged-stubs",
+    path: "ojluni/annotations/flagged_toolchainapi",
+    visibility: ["//libcore/toolchainapi"],
+}
+
 // A file containing the list of tags that are "known" to us from the OpenJdk
 // source code and so should not cause an error or warning.
 filegroup {
@@ -1017,6 +1041,7 @@ java_library {
     installable: false,
     visibility: [
         "//art/build/flags",
+        "//libcore:__subpackages__",
     ],
 }
 
@@ -1027,6 +1052,7 @@ aconfig_declarations {
     exportable: true,
     srcs: ["libcore.aconfig"],
     visibility: [
+        "//libcore:__subpackages__",
         "//frameworks/base",
     ],
 }
@@ -1106,7 +1132,7 @@ java_aconfig_library {
         "com.android.art.debug",
     ],
     visibility: [
-        "//visibility:private",
+        "//libcore:__subpackages__",
     ],
 }
 
