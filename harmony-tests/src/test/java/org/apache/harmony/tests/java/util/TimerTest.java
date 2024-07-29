@@ -26,6 +26,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,14 +46,14 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-// Android-changed: b/288912692 upgraded to JUnit4.
+// Android-changed: b/351566728 upgraded to JUnit4.
 // Added @RunWith class annotation, @Before and @After annotations, and @Test
 // annotations.
 // Changed assert* imports.
 @RunWith(JUnit4.class)
 public class TimerTest {
 
-    // Android-changed: b/288912692 need this to support added test cases.
+    // Android-changed: b/351566728 need this to support added test cases.
     @Rule
     public final TestRule compatChangeRule = new CoreCompatChangeRule();
 
@@ -867,11 +868,14 @@ public class TimerTest {
         }
     }
 
-    // Android-changed: b/288912692 added this test case to test new behavior.
+    // Android-changed: b/351566728 added this test case to test new behavior.
     @DisableCompatChanges({Timer.SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
     @Test
-    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_disabled() throws Exception {
+    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_oldBehavior() throws Exception {
+        assertFalse(Timer.skipMultipleMissedPeriodicTasks());
         Timer t = null;
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
         try {
             final CountDownLatch latch = new CountDownLatch(10);
 
@@ -888,6 +892,7 @@ public class TimerTest {
                             throw new RuntimeException(e);
                         }
                     }
+                    executionTimes.add(System.currentTimeMillis());
                     latch.countDown();
                 }
             }
@@ -896,7 +901,8 @@ public class TimerTest {
             SlowThenFastTask slowThenFastTask = new SlowThenFastTask();
 
             t.scheduleAtFixedRate(slowThenFastTask, 100, 100);
-            assertTrue("Fixed rate tasks didn't run 10 times within 10 periods",
+            assertTrue("Fixed rate tasks didn't run 10 times within 10 periods;"
+                + " times: " + executionTimes,
                 latch.await(1_100, TimeUnit.MILLISECONDS));
             t.cancel();
         } finally {
@@ -906,11 +912,14 @@ public class TimerTest {
         }
     }
 
-    // Android-changed: b/288912692 added this test case to test new behavior.
+    // Android-changed: b/351566728 added this test case to test new behavior.
     @EnableCompatChanges({Timer.SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
     @Test
-    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_enabled() throws Exception {
+    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_newBehavior() throws Exception {
+        assertTrue(Timer.skipMultipleMissedPeriodicTasks());
         Timer t = null;
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
         try {
             final CountDownLatch latch = new CountDownLatch(6);
 
@@ -927,6 +936,7 @@ public class TimerTest {
                             throw new RuntimeException(e);
                         }
                     }
+                    executionTimes.add(System.currentTimeMillis());
                     latch.countDown();
                 }
             }
@@ -939,7 +949,8 @@ public class TimerTest {
             latch.await(1_000, TimeUnit.MILLISECONDS);
             long finishedAt = System.currentTimeMillis();
             assertTrue("Fixed rate schedule ran too fast, took only: "
-                    + (finishedAt - startedAt) + " ms",
+                    + (finishedAt - startedAt) + " ms;"
+                    + " times: " + executionTimes,
                     finishedAt - startedAt > 700);
             t.cancel();
         } finally {
