@@ -264,6 +264,7 @@ package dalvik.system {
   }
 
   public final class VMDebug {
+    method @FlaggedApi("com.android.libcore.appinfo") public static void addApplication(@NonNull String);
     method public static void attachAgent(String, ClassLoader) throws java.io.IOException;
     method public static long countInstancesOfClass(Class, boolean);
     method public static long[] countInstancesOfClasses(Class[], boolean);
@@ -281,8 +282,12 @@ package dalvik.system {
     method public static boolean isDebuggingEnabled();
     method public static long lastDebuggerActivity();
     method public static void printLoadedClasses(int);
+    method @FlaggedApi("com.android.libcore.appinfo") public static void removeApplication(@NonNull String);
     method public static void resetAllocCount(int);
     method public static void setAllocTrackerStackDepth(int);
+    method @FlaggedApi("com.android.libcore.appinfo") public static void setCurrentProcessName(@NonNull String);
+    method @FlaggedApi("com.android.libcore.appinfo") public static void setUserId(int);
+    method @FlaggedApi("com.android.libcore.appinfo") public static void setWaitingForDebugger(boolean);
     method public static void startAllocCounting();
     method public static void startMethodTracing(String, int, int, boolean, int);
     method public static void startMethodTracing(String, java.io.FileDescriptor, int, int, boolean, int, boolean);
@@ -306,6 +311,7 @@ package dalvik.system {
   }
 
   public final class VMRuntime {
+    method @FlaggedApi("com.android.libcore.post_cleanup_apis") public static void addPostCleanupCallback(@NonNull Runnable);
     method public long addressOf(Object);
     method public static void bootCompleted();
     method public void clampGrowthLimit();
@@ -330,6 +336,7 @@ package dalvik.system {
     method public void registerNativeFree(long);
     method @Deprecated public void registerNativeFree(int);
     method public static void registerSensitiveThread();
+    method @FlaggedApi("com.android.libcore.post_cleanup_apis") public static void removePostCleanupCallback(@NonNull Runnable);
     method public void requestConcurrentGC();
     method public static void resetJitCounters();
     method public static void setDedupeHiddenApiWarnings(boolean);
