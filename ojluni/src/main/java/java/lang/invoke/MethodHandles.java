@@ -39,6 +39,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import jdk.internal.vm.annotation.Stable;
 
 import static java.lang.invoke.MethodHandleStatics.*;
 import static java.lang.invoke.MethodHandleStatics.newIllegalArgumentException;
@@ -739,7 +740,10 @@ public class MethodHandles {
                             && !name.equals("java.lang.Daemons$FinalizerWatchdogDaemon")
                             && !name.equals("java.lang.runtime.ObjectMethods")
                             && !name.equals("java.lang.Thread")
-                            && !name.equals("java.util.HashMap")) ||
+                            && !name.equals("java.util.HashMap")
+                            && !name.equals("java.util.HashSet")
+                            && !name.equals("java.util.WeakHashMap")
+                            && !name.startsWith("java.util.stream.")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
                                 && !name.equals("sun.reflect.ReflectionFactory"))) {
