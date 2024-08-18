@@ -34,6 +34,7 @@ import dalvik.annotation.compat.VersionCodes;
 import dalvik.system.VMRuntime;
 
 import jdk.internal.util.ArraysSupport;
+import jdk.internal.vm.annotation.ForceInline;
 import jdk.internal.vm.annotation.IntrinsicCandidate;
 
 import java.io.Serializable;
@@ -3582,9 +3583,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static byte[] copyOf(byte[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         byte[] copy = new byte[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3609,9 +3613,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static short[] copyOf(short[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         short[] copy = new short[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3636,9 +3643,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static int[] copyOf(int[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         int[] copy = new int[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3664,9 +3674,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static long[] copyOf(long[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         long[] copy = new long[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3691,9 +3704,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static char[] copyOf(char[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         char[] copy = new char[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3718,9 +3734,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static float[] copyOf(float[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         float[] copy = new float[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3745,9 +3764,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static double[] copyOf(double[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         double[] copy = new double[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3772,9 +3794,12 @@ public final class Arrays {
      * @since 1.6
      */
     public static boolean[] copyOf(boolean[] original, int newLength) {
+        // Android-removed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (newLength == original.length) {
             return original.clone();
         }
+        */
         boolean[] copy = new boolean[newLength];
         System.arraycopy(original, 0, copy, 0,
                          Math.min(original.length, newLength));
@@ -3862,8 +3887,7 @@ public final class Arrays {
         return copy;
     }
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static void checkLength(int from, int to) {
         if (to < from) {
             throw new IllegalArgumentException(from + " > " + to);
@@ -3898,14 +3922,17 @@ public final class Arrays {
      */
     public static byte[] copyOfRange(byte[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeByte(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeByte(original, from, to);
     }
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static byte[] copyOfRangeByte(byte[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -3943,14 +3970,17 @@ public final class Arrays {
      */
     public static short[] copyOfRange(short[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeShort(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeShort(original, from, to);
     }
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static short[] copyOfRangeShort(short[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -3988,14 +4018,17 @@ public final class Arrays {
      */
     public static int[] copyOfRange(int[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeInt(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeInt(original, from, to);
     }
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static int[] copyOfRangeInt(int[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -4033,14 +4066,17 @@ public final class Arrays {
      */
     public static long[] copyOfRange(long[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeLong(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeLong(original, from, to);
     }
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static long[] copyOfRangeLong(long[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -4078,15 +4114,18 @@ public final class Arrays {
      */
     public static char[] copyOfRange(char[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeChar(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeChar(original, from, to);
     }
 
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static char[] copyOfRangeChar(char[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -4124,15 +4163,18 @@ public final class Arrays {
      */
     public static float[] copyOfRange(float[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeFloat(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeFloat(original, from, to);
     }
 
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static float[] copyOfRangeFloat(float[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -4170,15 +4212,18 @@ public final class Arrays {
      */
     public static double[] copyOfRange(double[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeDouble(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeDouble(original, from, to);
     }
 
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static double[] copyOfRangeDouble(double[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
@@ -4216,15 +4261,18 @@ public final class Arrays {
      */
     public static boolean[] copyOfRange(boolean[] original, int from, int to) {
         // Tickle the JIT to fold special cases optimally
+        // Android-changed: TODO(b/359517996) .clone() is slower than System.arraycopy.
+        /*
         if (from != 0 || to != original.length)
             return copyOfRangeBoolean(original, from, to);
         else // from == 0 && to == original.length
             return original.clone();
+        */
+        return copyOfRangeBoolean(original, from, to);
     }
 
 
-    // Android-removed: and yet imported and not supported.
-    // @ForceInline
+    @ForceInline
     private static boolean[] copyOfRangeBoolean(boolean[] original, int from, int to) {
         checkLength(from, to);
         int newLength = to - from;
