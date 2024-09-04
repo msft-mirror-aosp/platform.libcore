@@ -241,7 +241,7 @@ java_library {
         "unsupportedappusage-annotation-processor",
     ],
     libs: [
-        "conscrypt.module.intra.core.api",
+        "conscrypt.module.intra.core.api.stubs",
     ],
 
     java_version: "21",
@@ -1229,6 +1229,7 @@ java_sdk_library {
     dist_stem: "art",
     dist_group: "android",
     aconfig_declarations: [
+        "art-aconfig-flags",
         "libcore-aconfig-flags",
     ],
 }
