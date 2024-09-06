@@ -300,10 +300,8 @@ public class NativeAllocationRegistry {
         this.freeFunction = freeFunction;
         this.size = mallocAllocation ? (size | IS_MALLOCED) : (size & ~IS_MALLOCED);
 
-        if (KEEP_METRICS) {
-            synchronized(NativeAllocationRegistry.class) {
-                registries.put(this, null);
-            }
+        synchronized(NativeAllocationRegistry.class) {
+            registries.put(this, null);
         }
     }
 
@@ -338,7 +336,6 @@ public class NativeAllocationRegistry {
         this(classLoader, NativeAllocationRegistry.class, freeFunction, size, size == 0);
     }
 
-    private static final boolean KEEP_METRICS = false;
     private volatile int counter = 0;
 
     private static final VarHandle COUNTER;
@@ -349,12 +346,6 @@ public class NativeAllocationRegistry {
                 "counter", int.class);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    private void updateMetrics(long size) {
-        if (KEEP_METRICS) {
-            COUNTER.getAndAdd(this, size > 0 ? 1 : -1);
         }
     }
 
@@ -516,7 +507,7 @@ public class NativeAllocationRegistry {
         thunk.setNativePtr(nativePtr);
         // Ensure that cleaner doesn't get invoked before we enable it.
         Reference.reachabilityFence(referent);
-        updateMetrics(this.size);
+        COUNTER.getAndAdd(this, 1);
         return result;
     }
 
@@ -531,7 +522,7 @@ public class NativeAllocationRegistry {
             if (nativePtr != 0) {
                 applyFreeFunction(freeFunction, nativePtr);
                 registerNativeFree(size);
-                updateMetrics(-size);
+                COUNTER.getAndAdd(NativeAllocationRegistry.this, -1);
             }
         }
 
