@@ -300,10 +300,8 @@ public class NativeAllocationRegistry {
         this.freeFunction = freeFunction;
         this.size = mallocAllocation ? (size | IS_MALLOCED) : (size & ~IS_MALLOCED);
 
-        if (KEEP_METRICS) {
-            synchronized(NativeAllocationRegistry.class) {
-                registries.put(this, null);
-            }
+        synchronized(NativeAllocationRegistry.class) {
+            registries.put(this, null);
         }
     }
 
@@ -338,7 +336,7 @@ public class NativeAllocationRegistry {
         this(classLoader, NativeAllocationRegistry.class, freeFunction, size, size == 0);
     }
 
-    private static final boolean KEEP_METRICS = false;
+    private static final boolean KEEP_METRICS = true;
     private volatile int counter = 0;
 
     private static final VarHandle COUNTER;
