@@ -17,10 +17,16 @@
 
 package org.apache.harmony.tests.java.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,7 +34,29 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
 
-public class TimerTest extends TestCase {
+import libcore.junit.util.compat.CoreCompatChangeRule;
+import libcore.junit.util.compat.CoreCompatChangeRule.DisableCompatChanges;
+import libcore.junit.util.compat.CoreCompatChangeRule.EnableCompatChanges;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+// Android-changed: b/351566728 upgraded to JUnit4.
+// Added @RunWith class annotation, @Before and @After annotations, and @Test
+// annotations.
+// Changed assert* imports.
+@RunWith(JUnit4.class)
+public class TimerTest {
+
+    // Android-changed: b/351566728 need this to support added test cases.
+    @Rule
+    public final TestRule compatChangeRule = new CoreCompatChangeRule();
 
     int timerCounter = 0;
 
@@ -108,6 +136,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#Timer(boolean)
      */
+    @Test
     public void test_ConstructorZ() throws Exception {
         Timer t = null;
         try {
@@ -127,6 +156,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#Timer()
      */
+    @Test
     public void test_Constructor() throws Exception {
         Timer t = null;
         try {
@@ -146,6 +176,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#Timer(String, boolean)
      */
+    @Test
     public void test_ConstructorSZ() throws Exception {
         Timer t = null;
         try {
@@ -176,6 +207,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#Timer(String)
      */
+    @Test
     public void test_ConstructorS() throws Exception {
         Timer t = null;
         try {
@@ -200,6 +232,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#cancel()
      */
+    @Test
     public void test_cancel() throws Exception {
         Timer t = null;
         try {
@@ -272,6 +305,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#purge()
      */
+    @Test
     public void test_purge() throws Exception {
         Timer t = null;
         try {
@@ -306,6 +340,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#schedule(java.util.TimerTask, java.util.Date)
      */
+    @Test
     public void test_scheduleLjava_util_TimerTaskLjava_util_Date() throws Exception {
         Timer t = null;
         try {
@@ -414,6 +449,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#schedule(java.util.TimerTask, long)
      */
+    @Test
     public void test_scheduleLjava_util_TimerTaskJ() throws Exception {
         Timer t = null;
         try {
@@ -502,6 +538,7 @@ public class TimerTest extends TestCase {
     /**
      * java.util.Timer#schedule(java.util.TimerTask, long, long)
      */
+    @Test
     public void test_scheduleLjava_util_TimerTaskJJ() throws Exception {
         Timer t = null;
         try {
@@ -615,6 +652,7 @@ public class TimerTest extends TestCase {
      * java.util.Timer#schedule(java.util.TimerTask, java.util.Date,
      *        long)
      */
+    @Test
     public void test_scheduleLjava_util_TimerTaskLjava_util_DateJ() throws Exception {
         Timer t = null;
         try {
@@ -738,6 +776,7 @@ public class TimerTest extends TestCase {
      * java.util.Timer#scheduleAtFixedRate(java.util.TimerTask, long,
      *        long)
      */
+    @Test
     public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ() throws Exception {
         Timer t = null;
         try {
@@ -830,10 +869,105 @@ public class TimerTest extends TestCase {
         }
     }
 
+    // Android-changed: b/351566728 added this test case to test new behavior.
+    @DisableCompatChanges({Timer.SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
+    @Test
+    @Ignore("Disable this test on CTS 15 due to the NoSuchMethodError of skipMultipleMissedPeriodicTasks() b/362419059")
+    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_oldBehavior() throws Exception {
+        assertFalse(Timer.skipMultipleMissedPeriodicTasks());
+        Timer t = null;
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
+        try {
+            final CountDownLatch latch = new CountDownLatch(10);
+
+            class SlowThenFastTask extends TimerTask {
+                boolean firstRun = true;
+
+                public void run() {
+                    if (firstRun) {
+                        firstRun = false;
+                        try {
+                            // Sleep through four periods
+                            Thread.sleep(400);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    executionTimes.add(System.currentTimeMillis());
+                    latch.countDown();
+                }
+            }
+
+            t = new Timer();
+            SlowThenFastTask slowThenFastTask = new SlowThenFastTask();
+
+            t.scheduleAtFixedRate(slowThenFastTask, 100, 100);
+            assertTrue("Fixed rate tasks didn't run 10 times within 10 periods;"
+                + " times: " + executionTimes,
+                latch.await(1_100, TimeUnit.MILLISECONDS));
+            t.cancel();
+        } finally {
+            if (t != null) {
+                t.cancel();
+            }
+        }
+    }
+
+    // Android-changed: b/351566728 added this test case to test new behavior.
+    @EnableCompatChanges({Timer.SKIP_MULTIPLE_MISSED_PERIODIC_TASKS})
+    @Test
+    @Ignore("Disable this test on CTS 15 due to the NoSuchMethodError of skipMultipleMissedPeriodicTasks() b/362419059")
+    public void test_scheduleAtFixedRateLjava_util_TimerTaskJJ_SkipMultipleMissedFixedRateTasks_newBehavior() throws Exception {
+        assertTrue(Timer.skipMultipleMissedPeriodicTasks());
+        Timer t = null;
+        final ConcurrentLinkedQueue<Long> executionTimes =
+                new ConcurrentLinkedQueue<>();
+        try {
+            final CountDownLatch latch = new CountDownLatch(6);
+
+            class SlowThenFastTask extends TimerTask {
+                boolean firstRun = true;
+
+                public void run() {
+                    if (firstRun) {
+                        firstRun = false;
+                        try {
+                            // Sleep through four periods
+                            Thread.sleep(400);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    executionTimes.add(System.currentTimeMillis());
+                    latch.countDown();
+                }
+            }
+
+            t = new Timer();
+            SlowThenFastTask slowThenFastTask = new SlowThenFastTask();
+
+            long startedAt = System.currentTimeMillis();
+            t.scheduleAtFixedRate(slowThenFastTask, 100, 100);
+            latch.await(1_000, TimeUnit.MILLISECONDS);
+            long finishedAt = System.currentTimeMillis();
+            assertTrue("Fixed rate schedule ran too fast, took only: "
+                    + (finishedAt - startedAt) + " ms;"
+                    + " times: " + executionTimes,
+                    finishedAt - startedAt > 700);
+            t.cancel();
+        } finally {
+            if (t != null) {
+                t.cancel();
+            }
+        }
+    }
+
     /**
      * java.util.Timer#scheduleAtFixedRate(java.util.TimerTask,
      *        java.util.Date, long)
      */
+    @Test
     public void test_scheduleAtFixedRateLjava_util_TimerTaskLjava_util_DateJ() throws Exception {
         Timer t = null;
         try {
@@ -964,6 +1098,7 @@ public class TimerTest extends TestCase {
      * let those exceptions bubble up, where they will both notify the thread's
      * uncaught exception handler and terminate the timer's thread.
      */
+    @Test
     public void testThrowingTaskKillsTimerThread() throws Exception {
         final AtomicReference<Thread> threadRef = new AtomicReference<Thread>();
         new Timer().schedule(new TimerTask() {
@@ -1019,6 +1154,7 @@ public class TimerTest extends TestCase {
         }
     };
 
+    @Test
     public void testOverdueTaskExecutesImmediately() throws Exception {
         Timer t = new Timer();
         Date date = new Date(System.currentTimeMillis());
@@ -1033,6 +1169,7 @@ public class TimerTest extends TestCase {
         assertTrue(actuallyExecutedOnTime.get());
     }
 
+    @Test
     public void testCanBeCancelledEvenIfTaskKeepsItPermanentlyBusy() throws Exception {
         final int timeSleeping = 200;
         Timer t = new Timer();
@@ -1071,6 +1208,7 @@ public class TimerTest extends TestCase {
         }
     }
 
+    @Test
     public void testTaskNotCancelledWhenTimerCancelled() throws Exception {
         final int timeSleeping = 200;
         Timer t = new Timer();
@@ -1093,6 +1231,7 @@ public class TimerTest extends TestCase {
         assertTrue(task.cancel());
     }
 
+    @Test
     public void testTaskNotCancelledWhenTimerCancelledAndPurged() throws Exception {
         final int timeSleeping = 200;
         Timer t = new Timer();
@@ -1153,6 +1292,7 @@ public class TimerTest extends TestCase {
         }
     }
 
+    @Test
     public void testTimerCancelledAfterException() throws Exception {
         UncaughtExceptionHandler excHandler = Thread.getDefaultUncaughtExceptionHandler();
         // Install an uncaught exception handler because we are
@@ -1210,6 +1350,7 @@ public class TimerTest extends TestCase {
         }
     }
 
+    @Test
     public void testTimerCancelledAfterExceptionAndTasksNotCancelledAfterPurge() throws Exception {
         UncaughtExceptionHandler excHandler = Thread.getDefaultUncaughtExceptionHandler();
         // Install an uncaught exception handler because we are
@@ -1267,6 +1408,7 @@ public class TimerTest extends TestCase {
         }
     }
 
+    @Test
     public void testTimerCancelledTasksRemovedFromQueue() throws Exception {
         Timer t = new Timer();
         TimerTask task1 = new TimerTask() {
@@ -1282,10 +1424,12 @@ public class TimerTest extends TestCase {
         assertEquals(0, t.purge());
     }
 
-    protected void setUp() {
+    @Before
+    public void setUp() {
         timerCounter = 0;
     }
 
-    protected void tearDown() {
+    @After
+    public void tearDown() {
     }
 }
