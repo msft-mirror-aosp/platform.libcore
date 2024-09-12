@@ -16,15 +16,23 @@
 
 package libcore.dalvik.system;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Array;
-import junit.framework.TestCase;
 
 import dalvik.system.VMRuntime;
+
+import org.junit.Assume;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Test VMRuntime behavior.
  */
-public final class VMRuntimeTest extends TestCase {
+@RunWith(JUnit4.class)
+public final class VMRuntimeTest {
 
     private void doTestNewNonMovableArray(Class<?> componentType, int step, int maxLength) {
         // Can't create negative sized arrays.
@@ -49,6 +57,7 @@ public final class VMRuntimeTest extends TestCase {
         }
     }
 
+    @Test
     public void testNewNonMovableArray() {
         // Can't create arrays with no component type.
         try {
@@ -103,6 +112,7 @@ public final class VMRuntimeTest extends TestCase {
         }
     }
 
+    @Test
     public void testNewUnpaddedArray() {
         // Can't create arrays with no component type.
         try {
