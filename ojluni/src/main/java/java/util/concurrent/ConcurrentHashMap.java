@@ -4422,8 +4422,11 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * Base class for views.
      */
-    abstract static sealed class CollectionView<K,V,E>
-        implements Collection<E>, java.io.Serializable permits EntrySetView, KeySetView, ValuesView {
+    // Android-changed: Remove sealed keyword due to Metalava support. (b/355648520)
+    // abstract static sealed class CollectionView<K,V,E>
+    //     implements Collection<E>, java.io.Serializable permits EntrySetView, KeySetView, ValuesView {
+    abstract static class CollectionView<K,V,E>
+        implements Collection<E>, java.io.Serializable {
         private static final long serialVersionUID = 7249069246763182397L;
         final ConcurrentHashMap<K,V> map;
         CollectionView(ConcurrentHashMap<K,V> map)  { this.map = map; }

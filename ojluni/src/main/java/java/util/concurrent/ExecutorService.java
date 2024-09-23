@@ -395,6 +395,7 @@ public interface ExecutorService extends Executor, AutoCloseable {
      *         denies access.
      * @since 19
      */
+    // TODO(b/369520931): Add desugaring support for this method.
     @Override
     default void close() {
         boolean terminated = isTerminated();

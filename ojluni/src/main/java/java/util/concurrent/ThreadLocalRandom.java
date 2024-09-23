@@ -50,8 +50,6 @@ import java.util.random.RandomGenerator;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-import jdk.internal.access.JavaUtilConcurrentTLRAccess;
-import jdk.internal.access.SharedSecrets;
 import jdk.internal.util.random.RandomSupport;
 import jdk.internal.util.random.RandomSupport.*;
 import jdk.internal.misc.Unsafe;
@@ -401,6 +399,8 @@ public final class ThreadLocalRandom extends Random {
         = new AtomicLong(RandomSupport.mixMurmur64(System.currentTimeMillis()) ^
                          RandomSupport.mixMurmur64(System.nanoTime()));
 
+    // BEGIN Android-removed: ScopedValue not available, so this is not needed.
+    /*
     // used by ScopedValue
     private static class Access {
         static {
@@ -413,6 +413,8 @@ public final class ThreadLocalRandom extends Random {
             );
         }
     }
+    */
+    // END Android-removed: ScopedValue not available, so this is not needed.
 
     // at end of <clinit> to survive static initialization circularity
     static {
