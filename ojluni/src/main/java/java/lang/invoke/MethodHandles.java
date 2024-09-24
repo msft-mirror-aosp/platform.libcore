@@ -992,7 +992,9 @@ assertEquals("", (String) MH_newString.invokeExact());
 
             // Insert the leading reference parameter.
             MethodType handleType = type.insertParameterTypes(0, refc);
-            return createMethodHandle(method, MethodHandle.INVOKE_VIRTUAL, handleType);
+            int kind = refc.isInterface()
+                    ? MethodHandle.INVOKE_INTERFACE : MethodHandle.INVOKE_VIRTUAL;
+            return createMethodHandle(method, kind, handleType);
         }
 
         /**
