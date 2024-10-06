@@ -15409,6 +15409,7 @@ package java.util.concurrent {
     method public java.util.concurrent.Executor defaultExecutor();
     method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit, java.util.concurrent.Executor);
     method public static java.util.concurrent.Executor delayedExecutor(long, java.util.concurrent.TimeUnit);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Throwable exceptionNow();
     method public java.util.concurrent.CompletableFuture<T> exceptionally(java.util.function.Function<java.lang.Throwable,? extends T>);
     method public java.util.concurrent.CompletableFuture<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>);
     method public java.util.concurrent.CompletableFuture<T> exceptionallyAsync(java.util.function.Function<java.lang.Throwable,? extends T>, java.util.concurrent.Executor);
@@ -15433,6 +15434,7 @@ package java.util.concurrent {
     method public void obtrudeException(Throwable);
     method public void obtrudeValue(T);
     method public java.util.concurrent.CompletableFuture<T> orTimeout(long, java.util.concurrent.TimeUnit);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public T resultNow();
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBoth(java.util.concurrent.CompletionStage<?>, Runnable);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBothAsync(java.util.concurrent.CompletionStage<?>, Runnable);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterBothAsync(java.util.concurrent.CompletionStage<?>, Runnable, java.util.concurrent.Executor);
@@ -15441,6 +15443,7 @@ package java.util.concurrent {
     method public java.util.concurrent.CompletableFuture<java.lang.Void> runAfterEitherAsync(java.util.concurrent.CompletionStage<?>, Runnable, java.util.concurrent.Executor);
     method public static java.util.concurrent.CompletableFuture<java.lang.Void> runAsync(Runnable);
     method public static java.util.concurrent.CompletableFuture<java.lang.Void> runAsync(Runnable, java.util.concurrent.Executor);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public java.util.concurrent.Future.State state();
     method public static <U> java.util.concurrent.CompletableFuture<U> supplyAsync(java.util.function.Supplier<U>);
     method public static <U> java.util.concurrent.CompletableFuture<U> supplyAsync(java.util.function.Supplier<U>, java.util.concurrent.Executor);
     method public java.util.concurrent.CompletableFuture<java.lang.Void> thenAccept(java.util.function.Consumer<? super T>);
@@ -15589,7 +15592,7 @@ package java.util.concurrent {
     method @Nullable public <U> U searchValues(long, @NonNull java.util.function.Function<? super V,? extends U>);
   }
 
-  public static class ConcurrentHashMap.KeySetView<K, V> implements java.util.Collection<K> java.io.Serializable java.util.Set<K> {
+  public static final class ConcurrentHashMap.KeySetView<K, V> implements java.util.Collection<K> java.io.Serializable java.util.Set<K> {
     method public boolean add(@NonNull K);
     method public boolean addAll(@NonNull java.util.Collection<? extends K>);
     method public final void clear();
@@ -15609,7 +15612,6 @@ package java.util.concurrent {
     method @NonNull public java.util.Spliterator<K> spliterator();
     method @NonNull public final Object[] toArray();
     method @NonNull public final <T> T[] toArray(@NonNull T[]);
-    method @NonNull public final String toString();
   }
 
   public class ConcurrentLinkedDeque<E> extends java.util.AbstractCollection<E> implements java.util.Deque<E> java.io.Serializable {
@@ -15869,6 +15871,7 @@ package java.util.concurrent {
     method public E poll(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
     method public void put(E);
     method public int remainingCapacity();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public E remove();
     method public int size();
     method public E take() throws java.lang.InterruptedException;
   }
@@ -15904,8 +15907,9 @@ package java.util.concurrent {
     method public java.util.concurrent.Future<V> take() throws java.lang.InterruptedException;
   }
 
-  public interface ExecutorService extends java.util.concurrent.Executor {
+  public interface ExecutorService extends java.util.concurrent.Executor java.lang.AutoCloseable {
     method public boolean awaitTermination(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public default void close();
     method public <T> java.util.List<java.util.concurrent.Future<T>> invokeAll(java.util.Collection<? extends java.util.concurrent.Callable<T>>) throws java.lang.InterruptedException;
     method public <T> java.util.List<java.util.concurrent.Future<T>> invokeAll(java.util.Collection<? extends java.util.concurrent.Callable<T>>, long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
     method public <T> T invokeAny(java.util.Collection<? extends java.util.concurrent.Callable<T>>) throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
@@ -16068,10 +16072,20 @@ package java.util.concurrent {
 
   public interface Future<V> {
     method public boolean cancel(boolean);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public default Throwable exceptionNow();
     method public V get() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
     method public V get(long, java.util.concurrent.TimeUnit) throws java.util.concurrent.ExecutionException, java.lang.InterruptedException, java.util.concurrent.TimeoutException;
     method public boolean isCancelled();
     method public boolean isDone();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public default V resultNow();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public default java.util.concurrent.Future.State state();
+  }
+
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public enum Future.State {
+    enum_constant public static final java.util.concurrent.Future.State CANCELLED;
+    enum_constant public static final java.util.concurrent.Future.State FAILED;
+    enum_constant public static final java.util.concurrent.Future.State RUNNING;
+    enum_constant public static final java.util.concurrent.Future.State SUCCESS;
   }
 
   public class FutureTask<V> implements java.util.concurrent.RunnableFuture<V> {
@@ -16079,14 +16093,17 @@ package java.util.concurrent {
     ctor public FutureTask(Runnable, V);
     method public boolean cancel(boolean);
     method protected void done();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Throwable exceptionNow();
     method public V get() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
     method public V get(long, java.util.concurrent.TimeUnit) throws java.util.concurrent.ExecutionException, java.lang.InterruptedException, java.util.concurrent.TimeoutException;
     method public boolean isCancelled();
     method public boolean isDone();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public V resultNow();
     method public void run();
     method protected boolean runAndReset();
     method protected void set(V);
     method protected void setException(Throwable);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public java.util.concurrent.Future.State state();
   }
 
   public class LinkedBlockingDeque<E> extends java.util.AbstractQueue<E> implements java.util.concurrent.BlockingDeque<E> java.io.Serializable {
@@ -16358,7 +16375,7 @@ package java.util.concurrent {
     method public Thread newThread(Runnable);
   }
 
-  public class ThreadLocalRandom extends java.util.Random {
+  public final class ThreadLocalRandom extends java.util.Random {
     method public static java.util.concurrent.ThreadLocalRandom current();
     method public double nextDouble(double);
     method public double nextDouble(double, double);
