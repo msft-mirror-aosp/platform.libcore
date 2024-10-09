@@ -78,3 +78,13 @@ flag {
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
+
+flag {
+    namespace: "core_libraries"
+    name: "read_only_dynamic_code_load"
+    is_exported: true
+    description: "This flag controls if read only is enforced when loading native code"
+    bug: "354921003"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
