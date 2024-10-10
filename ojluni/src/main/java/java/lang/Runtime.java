@@ -951,7 +951,7 @@ public class Runtime {
         if (Flags.readOnlyDynamicCodeLoad()) {
             if (!file.toPath().getFileSystem().isReadOnly() && file.canWrite()) {
                 if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
-                    throw new UnsatisfiedLinkError("Attempt to load writeable file: " + filename);
+                    throw new UnsatisfiedLinkError("Attempt to load writable file: " + filename);
                 }
             }
         }
