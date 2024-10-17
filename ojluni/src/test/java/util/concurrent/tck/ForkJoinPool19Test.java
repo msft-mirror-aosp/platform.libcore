@@ -31,7 +31,14 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
+
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.concurrent.CancellationException;
@@ -43,24 +50,30 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.Callable;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests for ForkJoinPool and corresponding ForkJoinTask additions.
  */
+// Android-changed: Use JUnit4.
+@RunWith(JUnit4.class)
 public class ForkJoinPool19Test extends JSR166TestCase {
+    // Android-changed: Use JUnitCore.main.
     public static void main(String[] args) {
-        main(suite(), args);
+        // main(suite(), args);
+        org.junit.runner.JUnitCore.main("test.java.util.concurrent.tck.ForkJoinPool19Test");
     }
 
-    public static Test suite() {
-        return new TestSuite(ForkJoinPool19Test.class);
-    }
+    // public static Test suite() {
+    //     return new TestSuite(ForkJoinPool19Test.class);
+    // }
 
     /**
      * SetParallelism sets reported parallellism and returns previous value
      */
+    @Test
     public void testSetParallelism() {
         final ForkJoinPool p = new ForkJoinPool(2);
         assertEquals(2, p.getParallelism());
@@ -71,6 +84,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * SetParallelism throws exception if argument out of bounds
      */
+    @Test
     public void testSetParallelismBadArgs() {
         final ForkJoinPool p = new ForkJoinPool(2);
         try {
@@ -265,6 +279,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
      * workers are created or it is explicitly joined by a worker.
      */
     @SuppressWarnings("removal")
+    @Test
     public void testLazySubmit() {
         ForkJoinPool p;
         try {
@@ -294,6 +309,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
      * isCompletedAbnormally and isCancelled return false for normally
      * completed tasks
      */
+    @Test
     public void testQuietlyInvoke() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() {
@@ -308,6 +324,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * join of a forked task returns when task completes
      */
+    @Test
     public void testForkJoin() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() {
@@ -324,6 +341,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
      * timed quietlyJoinUninterruptibly of a forked task succeeds in
      * the presence of interrupts
      */
+    @Test
     public void testTimedQuietlyJoinUninterruptiblyInterrupts() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() {
@@ -363,6 +381,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * timed quietlyJoin throws IE in the presence of interrupts
      */
+    @Test
     public void testTimedQuietlyJoinInterrupts() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() {
@@ -398,6 +417,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * timed quietlyJoin of a forked task returns when task completes
      */
+    @Test
     public void testForkTimedQuietlyJoin() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() throws Exception {
@@ -413,6 +433,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * timed quietlyJoin with null time unit throws NPE
      */
+    @Test
     public void testForkTimedQuietlyJoinNPE() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() throws Exception {
@@ -429,6 +450,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * quietlyInvoke task returns when task completes abnormally
      */
+    @Test
     public void testAbnormalTimedQuietlyJoin() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() throws Exception {
@@ -444,6 +466,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * timed quietlyJoinUninterruptibly of a forked task returns when task completes
      */
+    @Test
     public void testForkTimedQuietlyJoinUninterruptibly() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() throws Exception {
@@ -459,6 +482,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * timed quietlyJoinUninterruptibly with null time unit throws NPE
      */
+    @Test
     public void testForkTimedQuietlyJoinUninterruptiblyNPE() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() throws Exception {
@@ -475,6 +499,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * quietlyInvoke task returns when task completes abnormally
      */
+    @Test
     public void testAbnormalTimedQuietlyJoinUninterruptibly() {
         RecursiveAction a = new CheckedRecursiveAction() {
             protected void realCompute() {
@@ -490,6 +515,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * adaptInterruptible(callable).toString() contains toString of wrapped task
      */
+    @Test
     public void testAdaptInterruptible_Callable_toString() {
         if (testImplementationDetails) {
             Callable<String> c = () -> "";
@@ -503,6 +529,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * Implicitly closing a new pool using try-with-resources terminates it
      */
+    @Test
     public void testClose() {
         ForkJoinTask f = new FibAction(8);
         ForkJoinPool pool = null;
@@ -517,6 +544,7 @@ public class ForkJoinPool19Test extends JSR166TestCase {
     /**
      * Implicitly closing common pool using try-with-resources has no effect.
      */
+    @Test
     public void testCloseCommonPool() {
         ForkJoinTask f = new FibAction(8);
         ForkJoinPool pool;

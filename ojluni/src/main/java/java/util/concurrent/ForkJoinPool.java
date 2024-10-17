@@ -52,10 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
-import jdk.internal.access.JavaUtilConcurrentFJPAccess;
-import jdk.internal.access.SharedSecrets;
 import jdk.internal.misc.Unsafe;
-import jdk.internal.vm.SharedThreadContainer;
 
 // Android-changed: Substituted @systemProperty tag with @code.
 /**
@@ -1528,7 +1525,9 @@ public class ForkJoinPool extends AbstractExecutorService {
     final ForkJoinWorkerThreadFactory factory;
     final UncaughtExceptionHandler ueh;  // per-worker UEH
     final Predicate<? super ForkJoinPool> saturate;
-    final SharedThreadContainer container;
+    // Android-removed: SharedThreadContainer not available.
+    // TODO(b/346542404): Use SharedThreadContainer once VirtualThread is available
+    // final SharedThreadContainer container;
 
     @jdk.internal.vm.annotation.Contended("fjpctl") // segregate
     volatile long ctl;                   // main pool control
@@ -1585,7 +1584,10 @@ public class ForkJoinPool extends AbstractExecutorService {
         try {
             if (runState >= 0 &&  // avoid construction if terminating
                 fac != null && (wt = fac.newThread(this)) != null) {
-                container.start(wt);
+                // Android-changed: SharedThreadContainer not available.
+                // TODO(b/346542404): Use SharedThreadContainer once VirtualThread is available
+                // container.start(wt);
+                wt.start();
                 return true;
             }
         } catch (Throwable rex) {
@@ -2545,7 +2547,9 @@ public class ForkJoinPool extends AbstractExecutorService {
             if ((cond = termination) != null)
                 cond.signalAll();
             lock.unlock();
-            container.close();
+            // Android-removed: SharedThreadContainer not available.
+            // TODO(b/346542404): Use SharedThreadContainer once VirtualThread is available
+            // container.close();
         }
         return true;
     }
@@ -2738,7 +2742,9 @@ public class ForkJoinPool extends AbstractExecutorService {
         String pid = Integer.toString(getAndAddPoolIds(1) + 1);
         String name = "ForkJoinPool-" + pid;
         this.workerNamePrefix = name + "-worker-";
-        this.container = SharedThreadContainer.create(name);
+        // Android-removed: SharedThreadContainer not available.
+        // TODO(b/346542404): Use SharedThreadContainer once VirtualThread is available
+        // this.container = SharedThreadContainer.create(name);
     }
 
     /**
@@ -2790,7 +2796,9 @@ public class ForkJoinPool extends AbstractExecutorService {
         this.workerNamePrefix = null;
         this.registrationLock = new ReentrantLock();
         this.queues = new WorkQueue[size];
-        this.container = SharedThreadContainer.create("ForkJoinPool.commonPool");
+        // Android-removed: SharedThreadContainer not available.
+        // TODO(b/346542404): Use SharedThreadContainer once VirtualThread is available
+        // this.container = SharedThreadContainer.create("ForkJoinPool.commonPool");
     }
 
     /**
@@ -3760,12 +3768,14 @@ public class ForkJoinPool extends AbstractExecutorService {
         }
     }
 
+    // BEGIN Android-removed: SharedSecrets usage
+    /*
     /**
      * Invokes tryCompensate to create or re-activate a spare thread to
      * compensate for a thread that performs a blocking operation. When the
      * blocking operation is done then endCompensatedBlock must be invoked
      * with the value returned by this method to re-adjust the parallelism.
-     */
+     * /
     private long beginCompensatedBlock() {
         for (;;) {
             int comp;
@@ -3779,12 +3789,14 @@ public class ForkJoinPool extends AbstractExecutorService {
 
     /**
      * Re-adjusts parallelism after a blocking operation completes.
-     */
+     * /
     void endCompensatedBlock(long post) {
         if (post > 0) {
             getAndAddCtl(post);
         }
     }
+     */
+    // END Android-removed: SharedSecrets usage
 
     /** ManagedBlock for external threads */
     private static void unmanagedBlock(ManagedBlocker blocker)
@@ -3831,6 +3843,8 @@ public class ForkJoinPool extends AbstractExecutorService {
                     public ForkJoinPool run() {
                         return new ForkJoinPool((byte)0); }});
         // allow access to non-public methods
+        // BEGIN Android-removed: SharedSecrets usage
+        /*
         SharedSecrets.setJavaUtilConcurrentFJPAccess(
             new JavaUtilConcurrentFJPAccess() {
                 @Override
@@ -3841,6 +3855,8 @@ public class ForkJoinPool extends AbstractExecutorService {
                     pool.endCompensatedBlock(post);
                 }
             });
+         */
+        // END Android-removed: SharedSecrets usage
         Class<?> dep = LockSupport.class; // ensure loaded
     }
 }

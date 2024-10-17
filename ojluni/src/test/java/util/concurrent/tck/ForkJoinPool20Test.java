@@ -31,6 +31,13 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -39,24 +46,30 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests for ForkJoinPool and ForkJoinWorkerThread additions in JDK 20.
  */
+// Android-changed: Use JUnit4.
+@RunWith(JUnit4.class)
 public class ForkJoinPool20Test extends JSR166TestCase {
+    // Android-changed: Use JUnitCore.main.
     public static void main(String[] args) {
-        main(suite(), args);
+        // main(suite(), args);
+        org.junit.runner.JUnitCore.main("test.java.util.concurrent.tck.ForkJoinPool20Test");
     }
 
-    public static Test suite() {
-        return new TestSuite(ForkJoinPool20Test.class);
-    }
+    // public static Test suite() {
+    //     return new TestSuite(ForkJoinPool20Test.class);
+    // }
 
     /**
      * Test that tasks submitted with externalSubmit execute.
      */
+    @Test
     public void testExternalSubmit1() throws Exception {
         try (var pool = new ForkJoinPool()) {
             // submit from external client
@@ -75,6 +88,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
     /**
      * Test that tasks submitted with externalSubmit are pushed to a submission queue.
      */
+    @Test
     public void testExternalSubmit2() throws Exception {
         try (var pool = new ForkJoinPool(1)) {
             pool.submit(() -> {
@@ -95,6 +109,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
     /**
      * Test externalSubmit return value.
      */
+    @Test
     public void testExternalSubmitReturnsTask() {
         try (var pool = new ForkJoinPool()) {
             var task = ForkJoinTask.adapt(() -> "foo");
@@ -105,6 +120,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
     /**
      * Test externalSubmit(null) throws NullPointerException.
      */
+    @Test
     public void testExternalSubmitWithNull() {
         try (var pool = new ForkJoinPool()) {
             assertThrows(NullPointerException.class, () -> pool.externalSubmit(null));
@@ -114,6 +130,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
     /**
      * Test externalSubmit throws RejectedExecutionException when pool is shutdown.
      */
+    @Test
     public void testExternalSubmitWhenShutdown() {
         try (var pool = new ForkJoinPool()) {
             pool.shutdown();
@@ -126,6 +143,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
      * Test that tasks submitted with submit(ForkJoinTask) are pushed to a
      * submission queue.
      */
+    @Test
     public void testSubmit() throws Exception {
         try (var pool = new ForkJoinPool(1)) {
             ForkJoinWorkerThread worker = submitBusyTask(pool);
@@ -154,6 +172,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
      * current thread's queue. This test runs with parallelism of 1 to ensure that tasks
      * aren't stolen.
      */
+    @Test
     public void testGetQueuedTaskCount1() throws Exception {
         try (var pool = new ForkJoinPool(1)) {
             pool.submit(() -> {
@@ -177,6 +196,7 @@ public class ForkJoinPool20Test extends JSR166TestCase {
      * thread's queue. This test runs with parallelism of 2 and one worker active running
      * a task. This gives the test two task queues to sample.
      */
+    @Test
     public void testGetQueuedTaskCount2() throws Exception {
         try (var pool = new ForkJoinPool(2)) {
             // keep one worker thread active
