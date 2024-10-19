@@ -3552,6 +3552,10 @@ package java.lang {
     field public static final Class<java.lang.Long> TYPE;
   }
 
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final class MatchException extends java.lang.RuntimeException {
+    ctor @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public MatchException(String, Throwable);
+  }
+
   public final class Math {
     method public static double IEEEremainder(double, double);
     method public static int abs(int);
