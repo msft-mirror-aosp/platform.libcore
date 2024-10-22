@@ -114,7 +114,8 @@ public class Timer {
     /** @hide */
     public static boolean skipMultipleMissedPeriodicTasks() {
         return Compatibility.isChangeEnabled(
-            SKIP_MULTIPLE_MISSED_PERIODIC_TASKS);
+            SKIP_MULTIPLE_MISSED_PERIODIC_TASKS)
+            || com.android.libcore.Flags.scheduleAtFixedRateNewBehavior();
     }
 
     /**
