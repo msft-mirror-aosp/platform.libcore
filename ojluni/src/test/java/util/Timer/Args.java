@@ -156,10 +156,18 @@ latch));
 
         check(y1.await(DELAY_MS / 4, MILLISECONDS));
         check(y2.await(DELAY_MS / 4, MILLISECONDS));
+
+        long y3_timeout = DELAY_MS / 4;
+        if (Timer.skipMultipleMissedPeriodicTasks()) {
+            // If skipMultipleMissedPeriodicTasks is enabled then a task
+            // scheduled for a time in the past may not be executed immediately,
+            // but should still be executed within the requested rate period.
+            y3_timeout = DELAY_MS;
+        }
         check(y3.await(DELAY_MS / 4, MILLISECONDS));
 
         final long elapsed = System.currentTimeMillis() - start;
-        if (elapsed >= DELAY_MS / 2)
+        if (elapsed >= DELAY_MS / 4 + y3_timeout)
             fail(String.format("Test took too long: elapsed=%d%n",
 elapsed));
     }
