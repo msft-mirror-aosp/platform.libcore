@@ -23,11 +23,9 @@ import android.annotation.UserIdInt;
 import android.compat.annotation.UnsupportedAppUsage;
 
 import libcore.util.NonNull;
-import libcore.util.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -402,76 +400,6 @@ public final class VMDebug {
      */
     @SystemApi(client = MODULE_LIBRARIES)
     public static native void resetAllocCount(int kinds);
-
-    /**
-     * Represents the location of a java method within a process'
-     * memory.
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    public static class ExecutableMethodFileOffsets {
-        private final @NonNull String mContainerPath;
-        private final long mContainerOffset;
-        private final long mMethodOffset;
-
-        private ExecutableMethodFileOffsets(
-                @NonNull String containerPath, long containerOffset, long methodOffset) {
-            this.mContainerPath = containerPath;
-            this.mContainerOffset = containerOffset;
-            this.mMethodOffset = methodOffset;
-        }
-
-        /**
-         * The OS path of the containing file (could be virtual).
-         *
-         * @hide
-         */
-        @SystemApi(client = MODULE_LIBRARIES)
-        public @NonNull String getContainerPath() {
-            return mContainerPath;
-        }
-
-        /**
-         * The offset of the containing file within the process' memory.
-         *
-         * @hide
-         */
-        @SystemApi(client = MODULE_LIBRARIES)
-        public long getContainerOffset() {
-            return mContainerOffset;
-        }
-
-        /**
-         * The offset of the method within the containing file.
-         *
-         * @hide
-         */
-        @SystemApi(client = MODULE_LIBRARIES)
-        public long getMethodOffset() {
-            return mMethodOffset;
-        }
-    }
-
-    private static native @Nullable ExecutableMethodFileOffsets
-        getExecutableMethodFileOffsetsNative(Method javaMethod);
-
-    /**
-     * Fetches offset information about the location of the native executable code within the
-     * running process' memory.
-     *
-     * @param javaMethod method for which info is to be identified.
-     * @return {@link ExecutableMethodFileOffsets} containing offset information for the specified
-     *         method, or null if the method is not AOT compiled.
-     * @throws RuntimeException for unexpected failures in ART retrieval of info.
-     *
-     * @hide
-     */
-    @SystemApi(client = MODULE_LIBRARIES)
-    public static @Nullable ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
-            @NonNull Method javaMethod) {
-        return getExecutableMethodFileOffsetsNative(javaMethod);
-    }
 
     /**
      * This method exists for binary compatibility.  It was part of
