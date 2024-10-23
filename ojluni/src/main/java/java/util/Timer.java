@@ -334,6 +334,7 @@ public class Timer {
         sched(task, firstTime.getTime(), -period);
     }
 
+    // Android-changed: document go/scheduleAtFixedRate-behavior-change
     /**
      * Schedules the specified task for repeated <i>fixed-rate execution</i>,
      * beginning after the specified delay.  Subsequent executions take place
@@ -385,6 +386,7 @@ public class Timer {
         sched(task, System.currentTimeMillis()+delay, period);
     }
 
+    // Android-changed: document go/scheduleAtFixedRate-behavior-change
     /**
      * Schedules the specified task for repeated <i>fixed-rate execution</i>,
      * beginning at the specified time. Subsequent executions take place at
