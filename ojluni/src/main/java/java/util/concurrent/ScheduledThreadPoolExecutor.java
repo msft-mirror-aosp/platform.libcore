@@ -628,6 +628,7 @@ public class ScheduledThreadPoolExecutor
         return t;
     }
 
+    // Android-changed: document go/scheduleAtFixedRate-behavior-change
     /**
      * Submits a periodic action that becomes enabled first after the
      * given initial delay, and subsequently with the given period;
