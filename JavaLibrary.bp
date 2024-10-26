@@ -904,7 +904,6 @@ java_test {
 
 java_genrule {
     name: "libcore-non-cts-tests-txt",
-    host_supported: true,
     srcs: [
         ":apache-harmony-tests{.jar}",
         ":conscrypt-tests{.jar}",
