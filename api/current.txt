@@ -3552,6 +3552,10 @@ package java.lang {
     field public static final Class<java.lang.Long> TYPE;
   }
 
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final class MatchException extends java.lang.RuntimeException {
+    ctor @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public MatchException(String, Throwable);
+  }
+
   public final class Math {
     method public static double IEEEremainder(double, double);
     method public static int abs(int);
@@ -14498,6 +14502,7 @@ package java.util {
     method @NonNull public static <T> T requireNonNull(@Nullable T, @NonNull java.util.function.Supplier<java.lang.String>);
     method @NonNull public static <T> T requireNonNullElse(@Nullable T, @NonNull T);
     method @NonNull public static <T> T requireNonNullElseGet(@Nullable T, @NonNull java.util.function.Supplier<? extends T>);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static String toIdentityString(@NonNull Object);
     method @NonNull public static String toString(@Nullable Object);
     method @NonNull public static String toString(@Nullable Object, @NonNull String);
   }
