@@ -970,7 +970,7 @@ ojluni/src/main/java/java/util/MissingResourceException.java,jdk17u/jdk-17.0.6-g
 ojluni/src/main/java/java/util/NavigableMap.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NavigableMap.java
 ojluni/src/main/java/java/util/NavigableSet.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NavigableSet.java
 ojluni/src/main/java/java/util/NoSuchElementException.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NoSuchElementException.java
-ojluni/src/main/java/java/util/Objects.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Objects.java
+ojluni/src/main/java/java/util/Objects.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Objects.java
 ojluni/src/main/java/java/util/Observable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Observable.java
 ojluni/src/main/java/java/util/Observer.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Observer.java
 ojluni/src/main/java/java/util/Optional.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Optional.java
@@ -2494,6 +2494,7 @@ ojluni/src/test/java/util/LinkedHashMap/Cache.java,jdk21u/jdk-21.0.4-ga,test/jdk
 ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java
 ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
 ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashSet/Basic.java
+ojluni/src/test/java/util/Objects/BasicObjectsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Objects/BasicObjectsTest.java
 ojluni/src/test/java/util/Optional/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/Basic.java
 ojluni/src/test/java/util/Optional/BasicDouble.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicDouble.java
 ojluni/src/test/java/util/Optional/BasicInt.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicInt.java
