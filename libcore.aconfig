@@ -88,3 +88,12 @@ flag {
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
+
+flag {
+    namespace: "core_libraries"
+    name: "schedule_at_fixed_rate_new_behavior"
+    description: "If true, force-enables go/scheduleAtFixedRate-behavior-change regardless of AppCompat flag or SDK_INT value"
+    bug: "352746637"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
