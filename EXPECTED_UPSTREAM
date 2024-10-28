@@ -960,7 +960,7 @@ ojluni/src/main/java/java/util/LinkedList.java,jdk21u/jdk-21.0.4-ga,src/java.bas
 ojluni/src/main/java/java/util/List.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/List.java
 ojluni/src/main/java/java/util/ListIterator.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/ListIterator.java
 ojluni/src/main/java/java/util/ListResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ListResourceBundle.java
-ojluni/src/main/java/java/util/Locale.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Locale.java
+ojluni/src/main/java/java/util/Locale.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Locale.java
 ojluni/src/main/java/java/util/LocaleISOData.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LocaleISOData.java
 ojluni/src/main/java/java/util/LongSummaryStatistics.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/LongSummaryStatistics.java
 ojluni/src/main/java/java/util/Map.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Map.java
@@ -2494,6 +2494,7 @@ ojluni/src/test/java/util/LinkedHashMap/Cache.java,jdk21u/jdk-21.0.4-ga,test/jdk
 ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java
 ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
 ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashSet/Basic.java
+ojluni/src/test/java/util/Locale/AvailableLocalesTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Locale/AvailableLocalesTest.java
 ojluni/src/test/java/util/Objects/BasicObjectsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Objects/BasicObjectsTest.java
 ojluni/src/test/java/util/Optional/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/Basic.java
 ojluni/src/test/java/util/Optional/BasicDouble.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicDouble.java
