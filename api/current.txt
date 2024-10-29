@@ -14237,9 +14237,10 @@ package java.util {
   }
 
   public final class Locale implements java.lang.Cloneable java.io.Serializable {
-    ctor public Locale(@NonNull String, @NonNull String, @NonNull String);
-    ctor public Locale(@NonNull String, @NonNull String);
-    ctor public Locale(@NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String, @NonNull String, @NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String, @NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.stream.Stream<java.util.Locale> availableLocales();
     method @NonNull public Object clone();
     method @NonNull public static java.util.List<java.util.Locale> filter(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>, @NonNull java.util.Locale.FilteringMode);
     method @NonNull public static java.util.List<java.util.Locale> filter(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>);
@@ -14276,6 +14277,9 @@ package java.util {
     method public boolean hasExtensions();
     method @Nullable public static java.util.Locale lookup(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>);
     method @Nullable public static String lookupTag(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.lang.String>);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String, @NonNull String, @NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String, @NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String);
     method public static void setDefault(@NonNull java.util.Locale);
     method public static void setDefault(@NonNull java.util.Locale.Category, @NonNull java.util.Locale);
     method @NonNull public java.util.Locale stripExtensions();
