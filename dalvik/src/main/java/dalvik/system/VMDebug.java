@@ -23,9 +23,11 @@ import android.annotation.UserIdInt;
 import android.compat.annotation.UnsupportedAppUsage;
 
 import libcore.util.NonNull;
+import libcore.util.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -402,6 +404,76 @@ public final class VMDebug {
     public static native void resetAllocCount(int kinds);
 
     /**
+     * Represents the location of a java method within a process'
+     * memory.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static class ExecutableMethodFileOffsets {
+        private final @NonNull String mContainerPath;
+        private final long mContainerOffset;
+        private final long mMethodOffset;
+
+        private ExecutableMethodFileOffsets(
+                @NonNull String containerPath, long containerOffset, long methodOffset) {
+            this.mContainerPath = containerPath;
+            this.mContainerOffset = containerOffset;
+            this.mMethodOffset = methodOffset;
+        }
+
+        /**
+         * The OS path of the containing file (could be virtual).
+         *
+         * @hide
+         */
+        @SystemApi(client = MODULE_LIBRARIES)
+        public @NonNull String getContainerPath() {
+            return mContainerPath;
+        }
+
+        /**
+         * The offset of the containing file within the process' memory.
+         *
+         * @hide
+         */
+        @SystemApi(client = MODULE_LIBRARIES)
+        public long getContainerOffset() {
+            return mContainerOffset;
+        }
+
+        /**
+         * The offset of the method within the containing file.
+         *
+         * @hide
+         */
+        @SystemApi(client = MODULE_LIBRARIES)
+        public long getMethodOffset() {
+            return mMethodOffset;
+        }
+    }
+
+    private static native @Nullable ExecutableMethodFileOffsets
+        getExecutableMethodFileOffsetsNative(Method javaMethod);
+
+    /**
+     * Fetches offset information about the location of the native executable code within the
+     * running process' memory.
+     *
+     * @param javaMethod method for which info is to be identified.
+     * @return {@link ExecutableMethodFileOffsets} containing offset information for the specified
+     *         method, or null if the method is not AOT compiled.
+     * @throws RuntimeException for unexpected failures in ART retrieval of info.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static @Nullable ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
+            @NonNull Method javaMethod) {
+        return getExecutableMethodFileOffsetsNative(javaMethod);
+    }
+
+    /**
      * This method exists for binary compatibility.  It was part of
      * the allocation limits API which was removed in Android 3.0 (Honeycomb).
      *
@@ -729,4 +801,95 @@ public final class VMDebug {
      */
     @SystemApi(client = MODULE_LIBRARIES)
     public static native void setWaitingForDebugger(boolean waiting);
+
+
+    /**
+     * A class to encapsulate different modes of trace output. Currently traceFileName and file
+     * descriptor are supported.
+     *
+     * @hide
+     */
+   @SystemApi(client = MODULE_LIBRARIES)
+    public static class TraceDestination {
+        private final String traceFileName;
+        private final FileDescriptor fd;
+
+        private TraceDestination(String traceFileName, FileDescriptor fd) {
+            this.traceFileName = traceFileName;
+            this.fd = fd;
+        }
+
+        /** @hide */
+        public int getFd() {
+            return fd.getInt$();
+        }
+
+        /** @hide */
+        public String getFileName() {
+            return traceFileName;
+        }
+
+        /**
+         * Returns a TraceDestination that uses a fileName. Use this to provide a fileName to dump
+         * the generated trace.
+         *
+         * @hide
+         */
+        @SystemApi(client = MODULE_LIBRARIES)
+        public static @NonNull TraceDestination fromFileName(@NonNull String traceFileName) {
+            return new TraceDestination(traceFileName,  null);
+        }
+
+        /**
+         * Returns a TraceDestination that uses a file descriptor. Use this to provide a file
+         * descriptor to dump the generated trace.
+         *
+         * @hide
+         */
+        @SystemApi(client = MODULE_LIBRARIES)
+        public static @NonNull TraceDestination fromFileDescriptor(@NonNull FileDescriptor fd) {
+            return new TraceDestination(null, fd);
+        }
+    }
+
+    /**
+     * Start an ART trace of executed dex methods. This uses a circular buffer to store entries
+     * so it will only hold the most recently executed ones. The tracing is not precise.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static void startLowOverheadTrace() {
+        startLowOverheadTraceImpl();
+    }
+
+    /**
+     * Stop an ongoing ART trace of executed dex methods.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static void stopLowOverheadTrace() {
+        stopLowOverheadTraceImpl();
+    }
+
+    /**
+     * Dump the collected trace into the trace file provided.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static void dumpLowOverheadTrace(@NonNull TraceDestination traceOutput) {
+        if (traceOutput.getFd() == -1) {
+            dumpLowOverheadTraceImpl(traceOutput.getFileName());
+        } else {
+            dumpLowOverheadTraceFdImpl(traceOutput.getFd());
+        }
+    }
+
+    private static native void startLowOverheadTraceImpl();
+    private static native void stopLowOverheadTraceImpl();
+    private static native void dumpLowOverheadTraceImpl(String traceFileName);
+    private static native void dumpLowOverheadTraceFdImpl(int fd);
+
 }
