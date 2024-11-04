@@ -26,6 +26,9 @@
 
 package java.lang;
 
+import com.android.libcore.Flags;
+
+import dalvik.annotation.compat.VersionCodes;
 import dalvik.annotation.optimization.FastNative;
 import java.io.*;
 import java.math.BigInteger;
@@ -53,6 +56,11 @@ import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.util.EmptyArray;
 import static android.system.OsConstants._SC_NPROCESSORS_CONF;
+
+import android.compat.Compatibility;
+import android.compat.annotation.ChangeId;
+import android.compat.annotation.EnabledSince;
+import android.compat.annotation.Overridable;
 
 /**
  * Every Java application has a single instance of class
@@ -88,6 +96,16 @@ public class Runtime {
      * Reflects whether we are already shutting down the VM.
      */
     private boolean shuttingDown;
+
+    // Android-added: flag
+    /**
+     * Throw UnsatisfiedLinkError if loading a writable library using {@link Runtime#load(String)}.
+     * @hide
+     */
+    @ChangeId
+    @EnabledSince(targetSdkVersion = VersionCodes.CUR_DEVELOPMENT)
+    @Overridable
+    public static final long RO_DCL_CHANGE_ID = 354921003L;
 
     private static native void nativeExit(int code);
 
@@ -920,19 +938,30 @@ public class Runtime {
         }
     }
 
+    // BEGIN Android-changed: Different implementation of load0(Class, String).
     synchronized void load0(Class<?> fromClass, String filename) {
-        if (!(new File(filename).isAbsolute())) {
+        File file = new File(filename);
+        if (!(file.isAbsolute())) {
             throw new UnsatisfiedLinkError(
                 "Expecting an absolute path of the library: " + filename);
         }
         if (filename == null) {
             throw new NullPointerException("filename == null");
         }
+        if (Flags.readOnlyDynamicCodeLoad()) {
+            if (!file.toPath().getFileSystem().isReadOnly() && file.canWrite()) {
+                if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
+                    throw new UnsatisfiedLinkError("Attempt to load writable file: " + filename);
+                }
+            }
+        }
+
         String error = nativeLoad(filename, fromClass.getClassLoader(), fromClass);
         if (error != null) {
             throw new UnsatisfiedLinkError(error);
         }
     }
+    // END Android-changed: Different implementation of load0(Class, String).
 
     /**
      * Loads the native library specified by the {@code libname}
