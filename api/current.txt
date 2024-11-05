@@ -14705,6 +14705,7 @@ package java.util {
     method public java.util.stream.DoubleStream doubles();
     method public java.util.stream.DoubleStream doubles(long, double, double);
     method public java.util.stream.DoubleStream doubles(double, double);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static java.util.Random from(java.util.random.RandomGenerator);
     method public java.util.stream.IntStream ints(long);
     method public java.util.stream.IntStream ints();
     method public java.util.stream.IntStream ints(long, int, int);
