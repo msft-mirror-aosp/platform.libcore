@@ -3552,6 +3552,10 @@ package java.lang {
     field public static final Class<java.lang.Long> TYPE;
   }
 
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final class MatchException extends java.lang.RuntimeException {
+    ctor @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public MatchException(String, Throwable);
+  }
+
   public final class Math {
     method public static double IEEEremainder(double, double);
     method public static int abs(int);
@@ -14233,9 +14237,10 @@ package java.util {
   }
 
   public final class Locale implements java.lang.Cloneable java.io.Serializable {
-    ctor public Locale(@NonNull String, @NonNull String, @NonNull String);
-    ctor public Locale(@NonNull String, @NonNull String);
-    ctor public Locale(@NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String, @NonNull String, @NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String, @NonNull String);
+    ctor @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Locale(@NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.stream.Stream<java.util.Locale> availableLocales();
     method @NonNull public Object clone();
     method @NonNull public static java.util.List<java.util.Locale> filter(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>, @NonNull java.util.Locale.FilteringMode);
     method @NonNull public static java.util.List<java.util.Locale> filter(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>);
@@ -14272,6 +14277,9 @@ package java.util {
     method public boolean hasExtensions();
     method @Nullable public static java.util.Locale lookup(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.util.Locale>);
     method @Nullable public static String lookupTag(@NonNull java.util.List<java.util.Locale.LanguageRange>, @NonNull java.util.Collection<java.lang.String>);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String, @NonNull String, @NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String, @NonNull String);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static java.util.Locale of(@NonNull String);
     method public static void setDefault(@NonNull java.util.Locale);
     method public static void setDefault(@NonNull java.util.Locale.Category, @NonNull java.util.Locale);
     method @NonNull public java.util.Locale stripExtensions();
@@ -14498,6 +14506,7 @@ package java.util {
     method @NonNull public static <T> T requireNonNull(@Nullable T, @NonNull java.util.function.Supplier<java.lang.String>);
     method @NonNull public static <T> T requireNonNullElse(@Nullable T, @NonNull T);
     method @NonNull public static <T> T requireNonNullElseGet(@Nullable T, @NonNull java.util.function.Supplier<? extends T>);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") @NonNull public static String toIdentityString(@NonNull Object);
     method @NonNull public static String toString(@Nullable Object);
     method @NonNull public static String toString(@Nullable Object, @NonNull String);
   }
