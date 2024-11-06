@@ -2495,6 +2495,7 @@ ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk21u/j
 ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
 ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashSet/Basic.java
 ojluni/src/test/java/util/Locale/AvailableLocalesTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Locale/AvailableLocalesTest.java
+ojluni/src/test/java/util/Locale/TestOf.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Locale/TestOf.java
 ojluni/src/test/java/util/Objects/BasicObjectsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Objects/BasicObjectsTest.java
 ojluni/src/test/java/util/Optional/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/Basic.java
 ojluni/src/test/java/util/Optional/BasicDouble.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicDouble.java
