@@ -983,7 +983,7 @@ ojluni/src/main/java/java/util/Properties.java,jdk17u/jdk-17.0.6-ga,src/java.bas
 ojluni/src/main/java/java/util/PropertyPermission.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PropertyPermission.java
 ojluni/src/main/java/java/util/PropertyResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PropertyResourceBundle.java
 ojluni/src/main/java/java/util/Queue.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Queue.java
-ojluni/src/main/java/java/util/Random.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Random.java
+ojluni/src/main/java/java/util/Random.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Random.java
 ojluni/src/main/java/java/util/RandomAccess.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/RandomAccess.java
 ojluni/src/main/java/java/util/RegularEnumSet.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
@@ -2565,7 +2565,7 @@ ojluni/src/test/java/util/Random/RandomCanaryPi.java,jdk21u/jdk-21.0.4-ga,test/j
 ojluni/src/test/java/util/Random/RandomExponentialTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomExponentialTest.java
 ojluni/src/test/java/util/Random/RandomNextDoubleBoundary.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomNextDoubleBoundary.java
 ojluni/src/test/java/util/Random/RandomStreamTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomStreamTest.java
-ojluni/src/test/java/util/Random/RandomTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomTest.java
+ojluni/src/test/java/util/Random/RandomTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTest.java
 ojluni/src/test/java/util/Random/RandomTestBsi1999.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomTestBsi1999.java
 ojluni/src/test/java/util/Random/RandomTestChiSquared.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTestChiSquared.java
 ojluni/src/test/java/util/Random/RandomTestCoverage.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTestCoverage.java
