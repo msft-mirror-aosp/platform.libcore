@@ -14705,6 +14705,7 @@ package java.util {
     method public java.util.stream.DoubleStream doubles();
     method public java.util.stream.DoubleStream doubles(long, double, double);
     method public java.util.stream.DoubleStream doubles(double, double);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static java.util.Random from(java.util.random.RandomGenerator);
     method public java.util.stream.IntStream ints(long);
     method public java.util.stream.IntStream ints();
     method public java.util.stream.IntStream ints(long, int, int);
@@ -15987,10 +15988,12 @@ package java.util.concurrent {
     ctor public ForkJoinPool(int, java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory, java.lang.Thread.UncaughtExceptionHandler, boolean, int, int, int, java.util.function.Predicate<? super java.util.concurrent.ForkJoinPool>, long, java.util.concurrent.TimeUnit);
     method public boolean awaitQuiescence(long, java.util.concurrent.TimeUnit);
     method public boolean awaitTermination(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public void close();
     method public static java.util.concurrent.ForkJoinPool commonPool();
     method protected int drainTasksTo(java.util.Collection<? super java.util.concurrent.ForkJoinTask<?>>);
     method public void execute(java.util.concurrent.ForkJoinTask<?>);
     method public void execute(Runnable);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public <T> java.util.concurrent.ForkJoinTask<T> externalSubmit(java.util.concurrent.ForkJoinTask<T>);
     method public int getActiveThreadCount();
     method public boolean getAsyncMode();
     method public static int getCommonPoolParallelism();
@@ -16009,8 +16012,10 @@ package java.util.concurrent {
     method public boolean isShutdown();
     method public boolean isTerminated();
     method public boolean isTerminating();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public <T> java.util.concurrent.ForkJoinTask<T> lazySubmit(java.util.concurrent.ForkJoinTask<T>);
     method public static void managedBlock(java.util.concurrent.ForkJoinPool.ManagedBlocker) throws java.lang.InterruptedException;
     method protected java.util.concurrent.ForkJoinTask<?> pollSubmission();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public int setParallelism(int);
     method public void shutdown();
     method public java.util.List<java.lang.Runnable> shutdownNow();
     method public <T> java.util.concurrent.ForkJoinTask<T> submit(java.util.concurrent.ForkJoinTask<T>);
@@ -16034,10 +16039,12 @@ package java.util.concurrent {
     method public static java.util.concurrent.ForkJoinTask<?> adapt(Runnable);
     method public static <T> java.util.concurrent.ForkJoinTask<T> adapt(Runnable, T);
     method public static <T> java.util.concurrent.ForkJoinTask<T> adapt(java.util.concurrent.Callable<? extends T>);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static <T> java.util.concurrent.ForkJoinTask<T> adaptInterruptible(java.util.concurrent.Callable<? extends T>);
     method public boolean cancel(boolean);
     method public final boolean compareAndSetForkJoinTaskTag(short, short);
     method public void complete(V);
     method public void completeExceptionally(Throwable);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public Throwable exceptionNow();
     method protected abstract boolean exec();
     method public final java.util.concurrent.ForkJoinTask<V> fork();
     method public final V get() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException;
@@ -16065,16 +16072,22 @@ package java.util.concurrent {
     method public final void quietlyComplete();
     method public final void quietlyInvoke();
     method public final void quietlyJoin();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final boolean quietlyJoin(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final boolean quietlyJoinUninterruptibly(long, java.util.concurrent.TimeUnit);
     method public void reinitialize();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public V resultNow();
     method public final short setForkJoinTaskTag(short);
     method protected abstract void setRawResult(V);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public java.util.concurrent.Future.State state();
     method public boolean tryUnfork();
   }
 
   public class ForkJoinWorkerThread extends java.lang.Thread {
+    ctor @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") protected ForkJoinWorkerThread(ThreadGroup, java.util.concurrent.ForkJoinPool, boolean);
     ctor protected ForkJoinWorkerThread(java.util.concurrent.ForkJoinPool);
     method public java.util.concurrent.ForkJoinPool getPool();
     method public int getPoolIndex();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public int getQueuedTaskCount();
     method protected void onStart();
     method protected void onTermination(Throwable);
   }
