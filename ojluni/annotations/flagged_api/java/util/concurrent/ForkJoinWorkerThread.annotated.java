@@ -28,60 +28,33 @@
  * However, the following notice accompanied the original version of this
  * file:
  *
- * Written by Doug Lea and Josh Bloch with assistance from members of JCP
- * JSR-166 Expert Group and released to the public domain, as explained at
+ * Written by Doug Lea with assistance from members of JCP JSR-166
+ * Expert Group and released to the public domain, as explained at
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
 
-package java.util;
+package java.util.concurrent;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
-public interface NavigableMap<K, V> extends java.util.SortedMap<K,V> {
+public class ForkJoinWorkerThread extends java.lang.Thread {
 
-public java.util.Map.Entry<K,V> lowerEntry(K key);
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_OPENJDK_21_V1_APIS)
+protected ForkJoinWorkerThread(java.lang.ThreadGroup group, java.util.concurrent.ForkJoinPool pool, boolean preserveThreadLocals) { throw new RuntimeException("Stub!"); }
 
-public K lowerKey(K key);
+protected ForkJoinWorkerThread(java.util.concurrent.ForkJoinPool pool) { throw new RuntimeException("Stub!"); }
 
-public java.util.Map.Entry<K,V> floorEntry(K key);
+public java.util.concurrent.ForkJoinPool getPool() { throw new RuntimeException("Stub!"); }
 
-public K floorKey(K key);
+public int getPoolIndex() { throw new RuntimeException("Stub!"); }
 
-public java.util.Map.Entry<K,V> ceilingEntry(K key);
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_OPENJDK_21_V1_APIS)
+public int getQueuedTaskCount() { throw new RuntimeException("Stub!"); }
 
-public K ceilingKey(K key);
+protected void onStart() { throw new RuntimeException("Stub!"); }
 
-public java.util.Map.Entry<K,V> higherEntry(K key);
+protected void onTermination(java.lang.Throwable exception) { throw new RuntimeException("Stub!"); }
 
-public K higherKey(K key);
-
-public java.util.Map.Entry<K,V> firstEntry();
-
-public java.util.Map.Entry<K,V> lastEntry();
-
-public java.util.Map.Entry<K,V> pollFirstEntry();
-
-public java.util.Map.Entry<K,V> pollLastEntry();
-
-public java.util.NavigableMap<K,V> descendingMap();
-
-public java.util.NavigableSet<K> navigableKeySet();
-
-public java.util.NavigableSet<K> descendingKeySet();
-
-public java.util.NavigableMap<K,V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive);
-
-public java.util.NavigableMap<K,V> headMap(K toKey, boolean inclusive);
-
-public java.util.NavigableMap<K,V> tailMap(K fromKey, boolean inclusive);
-
-public java.util.SortedMap<K,V> subMap(K fromKey, K toKey);
-
-public java.util.SortedMap<K,V> headMap(K toKey);
-
-public java.util.SortedMap<K,V> tailMap(K fromKey);
-
-
-public default java.util.NavigableMap<K,V> reversed() { throw new RuntimeException("Stub!"); }
+public void run() { throw new RuntimeException("Stub!"); }
 }
 
