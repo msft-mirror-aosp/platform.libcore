@@ -48,6 +48,15 @@ flag {
     is_fixed_read_only: true
 }
 
+flag {
+    namespace: "core_libraries"
+    name: "openjdk21_stringconcat"
+    is_exported: true
+    description: "This flag exposes StringConcatException"
+    bug: "285090974"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
 
 flag {
     namespace: "devtools"
