@@ -26,12 +26,16 @@ import dalvik.system.VMRuntime;
 import libcore.junit.util.compat.CoreCompatChangeRule;
 import libcore.junit.util.compat.CoreCompatChangeRule.DisableCompatChanges;
 import libcore.junit.util.compat.CoreCompatChangeRule.EnableCompatChanges;
+import libcore.junit.util.SwitchTargetSdkVersionRule;
+import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.text.BreakIterator;
 import java.text.Collator;
@@ -44,13 +48,18 @@ import java.util.Map;
 
 import sun.util.locale.BaseLocale;
 
+@RunWith(JUnit4.class)
 public class LegacyLocalesTest {
 
     @Rule
     public final TestRule compatChangeRule = new CoreCompatChangeRule();
 
+    @Rule
+    public TestRule switchTargetSdkVersionRule = SwitchTargetSdkVersionRule.getInstance();
+
     // http://b/3452611; Locale.getDisplayLanguage fails for the obsolete language codes.
     @Test
+    @TargetSdkVersion(VersionCodes.UPSIDE_DOWN_CAKE)
     @DisableCompatChanges({BaseLocale.USE_NEW_ISO_LOCALE_CODES})
     public void test_getDisplayName_obsolete() {
         // he (new) -> iw (obsolete)
@@ -60,6 +69,7 @@ public class LegacyLocalesTest {
     }
 
     @Test
+    @TargetSdkVersion(VersionCodes.VANILLA_ICE_CREAM)
     @EnableCompatChanges({BaseLocale.USE_NEW_ISO_LOCALE_CODES})
     public void obsoleteLocales_withFlagEnabled() {
         var msg = "Test should run on V+ only, current SDK level=" + VMRuntime.getSdkVersion();
