@@ -4792,6 +4792,11 @@ package java.lang.invoke {
     method public void setTarget(java.lang.invoke.MethodHandle);
   }
 
+  @FlaggedApi("com.android.libcore.openjdk21_stringconcat") public class StringConcatException extends java.lang.Exception {
+    ctor @FlaggedApi("com.android.libcore.openjdk21_stringconcat") public StringConcatException(String);
+    ctor @FlaggedApi("com.android.libcore.openjdk21_stringconcat") public StringConcatException(String, Throwable);
+  }
+
   public interface TypeDescriptor {
     method public String descriptorString();
   }
