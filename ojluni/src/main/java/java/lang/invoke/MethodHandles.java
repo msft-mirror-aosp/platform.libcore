@@ -995,8 +995,12 @@ assertEquals("", (String) MH_newString.invokeExact());
 
             // Insert the leading reference parameter.
             MethodType handleType = type.insertParameterTypes(0, refc);
-            int kind = refc.isInterface()
-                    ? MethodHandle.INVOKE_INTERFACE : MethodHandle.INVOKE_VIRTUAL;
+            int kind = MethodHandle.INVOKE_VIRTUAL;
+            // This is the same check what Class::FindVirtualMethodForVirtualOrInterface is doing.
+            // Not doing `isCopied` check as copied methods are not exposed in the reflection APIs.
+            if (method.getDeclaringClass().isInterface() /* && !method.isCopied() */) {
+                kind = MethodHandle.INVOKE_INTERFACE;
+            }
             return createMethodHandle(method, kind, handleType);
         }
 
