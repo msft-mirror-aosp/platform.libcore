@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,27 +23,25 @@
  * questions.
  */
 
+package java.lang.invoke;
 
-package java.lang;
+public final class StringConcatFactory {
 
-@SuppressWarnings({"unchecked", "deprecation", "all"})
-public interface CharSequence {
+    private StringConcatFactory() {}
 
-public int length();
+    public static CallSite makeConcat(MethodHandles.Lookup lookup,
+            String name,
+            MethodType concatType) throws StringConcatException {
+        return null;
+    }
 
-public char charAt(int index);
-
-
-public default boolean isEmpty() { throw new RuntimeException("Stub!"); }
-
-public java.lang.CharSequence subSequence(int start, int end);
-
-public java.lang.String toString();
-
-public default java.util.stream.IntStream chars() { throw new RuntimeException("Stub!"); }
-
-public default java.util.stream.IntStream codePoints() { throw new RuntimeException("Stub!"); }
-
-public static int compare(java.lang.CharSequence cs1, java.lang.CharSequence cs2) { throw new RuntimeException("Stub!"); }
+    public static CallSite makeConcatWithConstants(MethodHandles.Lookup lookup,
+            String name,
+            MethodType concatType,
+            String recipe,
+            Object... constants)
+            throws StringConcatException {
+        return null;
+    }
 }
 
