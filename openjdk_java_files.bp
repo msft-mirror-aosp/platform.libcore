@@ -1463,6 +1463,7 @@ filegroup {
         "ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java",
         "ojluni/src/lambda/java/java/lang/invoke/MethodType.java",
         "ojluni/src/lambda/java/java/lang/invoke/StringConcatException.java",
+        "ojluni/src/lambda/java/java/lang/runtime/SwitchBootstraps.java",
     ],
 }
 
