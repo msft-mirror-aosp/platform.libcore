@@ -21,18 +21,17 @@
  * questions.
  */
 
+package test.java.lang.Double;
+
 /*
  * @test
  * @bug 4428772
  * @summary Testing recognition of "NaN" and "Infinity" strings
  * @author Joseph D. Darcy
  */
-package test.java.lang.Float;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
 
-public class NaNInfinityParsingTest {
+public class NaNInfinityParsing {
     /*
      * Regression tests for:
      * 4428772 -- Establish invariant for Float & Double classes and
@@ -40,7 +39,7 @@ public class NaNInfinityParsingTest {
      *
      * Added capability for parse{Float, Double} and related methods
      * to recognize "NaN" and "Infinity" strings so that
-     * parseFloat(toString(d)) will always return the original
+     * parseDouble(toString(d)) will always return the original
      * floating-point value.
      */
 
@@ -125,46 +124,48 @@ public class NaNInfinityParsingTest {
 
     public static void main(String [] argv) throws Exception {
         int i;
-        float d;
-    }
+        double d;
 
-    @Test
-    public void testValidNaNStrings() {
-        for (String naNString : NaNStrings) {
-            float d = Float.parseFloat(naNString);
-            Assert.assertTrue(Float.isNaN(d), "NaN string ``" + naNString
-                    + "'' did not parse as a NaN; returned " +
-                    d + " instead.");
+        // Test valid NaN strings
+        for(i = 0; i < NaNStrings.length; i++) {
+            if(!Double.isNaN(d=Double.parseDouble(NaNStrings[i]))) {
+                throw new RuntimeException("NaN string ``" + NaNStrings[i]
+                                           + "'' did not parse as a NaN; returned " +
+                                           d + " instead.");
+            }
         }
-    }
 
-    @Test
-    public void testValidInfinityStrings() {
-        for (String infinityString : infinityStrings) {
-            float d = Float.parseFloat(infinityString);
-            Assert.assertTrue(Float.isInfinite(d), "Infinity string ``" +
-                infinityString +
-                "'' did not parse as infinity; returned " +
-                d + "instead.");
+        // Test valid Infinity strings
+        for(i = 0; i < infinityStrings.length; i++) {
+            if(!Double.isInfinite(d=Double.parseDouble(infinityStrings[i]))) {
+                throw new RuntimeException("Infinity string ``" +
+                                           infinityStrings[i] +
+                                           "'' did not parse as infinity; returned " +
+                                           d + "instead.");
+            }
             // check sign of result
 
-            boolean negative = (infinityString.charAt(0) == '-');
-            Assert.assertEquals(d, (negative ? Float.NEGATIVE_INFINITY :
-                Float.POSITIVE_INFINITY), "Infinity has wrong sign;" +
-                    (negative ? "positive instead of negative." :
-                        "negative instead of positive."));
+            boolean negative = (infinityStrings[i].charAt(0) == '-');
+            if(d != (negative?Double.NEGATIVE_INFINITY:
+                          Double.POSITIVE_INFINITY))
+                throw new RuntimeException("Infinity has wrong sign;" +
+                                           (negative?"positive instead of negative.":
+                                            "negative instead of positive."));
         }
-    }
 
-    @Test
-    public void testAlmostValidStrings() {
-        for (String invalidString : invalidStrings) {
+        // Test almost valid strings
+        for(i = 0; i < invalidStrings.length; i++) {
             try {
-                float d = Float.parseFloat(invalidString);
-                Assert.fail("Invalid string ``" + invalidString + "'' parsed as " + d + ".");
-            } catch (NumberFormatException e) {
+                double result;
+                d = Double.parseDouble(invalidStrings[i]);
+                throw new RuntimeException("Invalid string ``" +
+                                           invalidStrings[i]
+                                           +"'' parsed as " + d + ".");
+            }
+            catch(NumberFormatException e) {
                 // expected
             }
         }
+
     }
 }

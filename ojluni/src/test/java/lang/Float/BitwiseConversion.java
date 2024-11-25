@@ -30,47 +30,59 @@
  * @run main BitwiseConversion
  * @author Joseph D. Darcy
  */
+
 package test.java.lang.Float;
 
 import static java.lang.Float.*;
 
 import jdk.internal.math.FloatConsts;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class BitwiseConversionTest {
-    static void testNanCase(int x) {
+public class BitwiseConversion {
+    static int testNanCase(int x) {
+        int errors  = 0;
         // Strip out sign and exponent bits
         int y = x & FloatConsts.SIGNIF_BIT_MASK;
 
-        float[] values = {
+        float values[] = {
             intBitsToFloat(FloatConsts.EXP_BIT_MASK | y),
             intBitsToFloat(FloatConsts.SIGN_BIT_MASK | FloatConsts.EXP_BIT_MASK | y)
         };
 
         for(float value: values) {
-            Assert.assertTrue(isNaN(value), "Invalid input " + y + "yielded non-NaN" + value);
-
+            if (!isNaN(value)) {
+                throw new RuntimeException("Invalid input " + y +
+                                           "yielded non-NaN" + value);
+            }
             int converted = floatToIntBits(value);
-            Assert.assertEquals(converted, 0x7fc00000,
-                String.format("Non-canonical NaN bits returned: %x%n", converted));
+            if (converted != 0x7fc00000) {
+                errors++;
+                System.err.format("Non-canoncial NaN bits returned: %x%n",
+                                  converted);
+            }
         }
+        return errors;
     }
 
-    @Test
-    public void testNanCases() {
-        for (int i = 0; i < FloatConsts.SIGNIFICAND_WIDTH - 1; i++) {
-            testNanCase(1 << i);
+    public static void main(String... argv) {
+        int errors = 0;
+
+        for (int i = 0; i < FloatConsts.SIGNIFICAND_WIDTH-1; i++) {
+            errors += testNanCase(1<<i);
         }
-    }
 
-    @Test
-    public void testFloatToIntBits() {
-        Assert.assertEquals (floatToIntBits(Float.POSITIVE_INFINITY), 0x7F800000,
-            "Bad conversion for +infinity.");
+        if (floatToIntBits(Float.POSITIVE_INFINITY)
+                != 0x7F800000) {
+            errors++;
+            System.err.println("Bad conversion for +infinity.");
+        }
 
-        Assert.assertEquals(floatToIntBits(Float.NEGATIVE_INFINITY), 0xFF800000,
-            "Bad conversion for -infinity.");
+        if (floatToIntBits(Float.NEGATIVE_INFINITY)
+                != 0xFF800000) {
+            errors++;
+            System.err.println("Bad conversion for -infinity.");
+        }
+
+        if (errors > 0)
+            throw new RuntimeException();
     }
 }
