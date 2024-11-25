@@ -231,47 +231,50 @@ public final class Daemons {
             super("ReferenceQueueDaemon");
         }
 
-        private long lastGcCount = 0;
-
-        private void onRefQueueEmptyAfterGc() {
-            long gcCount = VMRuntime.getFullGcCount();
-            if (gcCount > lastGcCount) {
-                VMRuntime.onPostCleanup();
-                lastGcCount = gcCount;
-            }
-        }
-
         @Override public void runInternal() {
             FinalizerWatchdogDaemon.INSTANCE.monitoringNeeded(FinalizerWatchdogDaemon.RQ_DAEMON);
 
             // Call once early to reduce later allocation, and hence chance of OOMEs.
             FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
 
-            lastGcCount = VMRuntime.getFullGcCount();
+            long lastGcCount = VMRuntime.getFullGcCount();
 
             while (isRunning()) {
-                Reference<?> list;
+                Reference<?> list = null;
+                boolean runPostCleanupCallbacks = false;
                 try {
                     synchronized (ReferenceQueue.class) {
                         if (ReferenceQueue.unenqueued == null) {
-                            onRefQueueEmptyAfterGc();
-                            FinalizerWatchdogDaemon.INSTANCE.monitoringNotNeeded(
+                            long gcCount = VMRuntime.getFullGcCount();
+                            if (gcCount > lastGcCount) {
+                                lastGcCount = gcCount;
+                                runPostCleanupCallbacks = true;
+                            } else {
+                                FinalizerWatchdogDaemon.INSTANCE.monitoringNotNeeded(
                                     FinalizerWatchdogDaemon.RQ_DAEMON);
-                            // Increment after above call. If watchdog saw it active, it should see
-                            // the counter update.
-                            progressCounter.incrementAndGet();
-                            do {
-                               ReferenceQueue.class.wait();
-                            } while (ReferenceQueue.unenqueued == null);
-                            progressCounter.incrementAndGet();
-                            FinalizerWatchdogDaemon.INSTANCE.monitoringNeeded(
+                                // Increment after above call. If watchdog saw it active,
+                                // it should see the counter update.
+                                progressCounter.incrementAndGet();
+                                do {
+                                   ReferenceQueue.class.wait();
+                                } while (ReferenceQueue.unenqueued == null);
+                                progressCounter.incrementAndGet();
+                                FinalizerWatchdogDaemon.INSTANCE.monitoringNeeded(
                                     FinalizerWatchdogDaemon.RQ_DAEMON);
+                            }
                         }
-                        list = ReferenceQueue.unenqueued;
-                        ReferenceQueue.unenqueued = null;
+                        if (!runPostCleanupCallbacks) {
+                            list = ReferenceQueue.unenqueued;
+                            ReferenceQueue.unenqueued = null;
+                        }
                     }
-                    ReferenceQueue.enqueuePending(list, progressCounter);
-                    FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
+                    if (runPostCleanupCallbacks) {
+                        VMRuntime.onPostCleanup();
+                    }
+                    if (list != null) {
+                        ReferenceQueue.enqueuePending(list, progressCounter);
+                        FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
+                    }
                 } catch (InterruptedException e) {
                     // Happens when we are asked to stop.
                 } catch (OutOfMemoryError ignored) {

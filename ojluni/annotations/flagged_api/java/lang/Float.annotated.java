@@ -112,7 +112,7 @@ public static final float NaN = (0.0f/0.0f);
 
 public static final float POSITIVE_INFINITY = (1.0f/0.0f);
 
-@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+
 public static final int PRECISION = 24; // 0x18
 
 public static final int SIZE = 32; // 0x20
