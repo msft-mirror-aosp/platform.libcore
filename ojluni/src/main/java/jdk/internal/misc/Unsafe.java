@@ -1258,6 +1258,69 @@ public final class Unsafe {
     }
 
     /**
+     * Reports the location of a given static field, in conjunction with {@link
+     * #staticFieldBase}.
+     * <p>Do not expect to perform any sort of arithmetic on this offset;
+     * it is just a cookie which is passed to the unsafe heap memory accessors.
+     *
+     * <p>Any given field will always have the same offset, and no two distinct
+     * fields of the same class will ever have the same offset.
+     *
+     * <p>As of 1.4.1, offsets for fields are represented as long values,
+     * although the Sun JVM does not use the most significant 32 bits.
+     * It is hard to imagine a JVM technology which needs more than
+     * a few bits to encode an offset within a non-array object,
+     * However, for consistency with other methods in this class,
+     * this method reports its result as a long value.
+     * @see #getInt(Object, long)
+     * @hide
+     */
+    public long staticFieldOffset(Field f) {
+        // BEGIN Android-changed: Implemented differently on Android.
+        if (!Modifier.isStatic(f.getModifiers())) {
+            throw new IllegalArgumentException("valid for static fields only");
+        }
+        return f.getOffset();
+        /*
+        if (f == null) {
+            throw new NullPointerException();
+        }
+
+        return staticFieldOffset0(f);
+         */
+        // END Android-changed: Implemented differently on Android.
+    }
+
+    /**
+     * Reports the location of a given static field, in conjunction with {@link
+     * #staticFieldOffset}.
+     * <p>Fetch the base "Object", if any, with which static fields of the
+     * given class can be accessed via methods like {@link #getInt(Object,
+     * long)}.  This value may be null.  This value may refer to an object
+     * which is a "cookie", not guaranteed to be a real Object, and it should
+     * not be used in any way except as argument to the get and put routines in
+     * this class.
+     *
+     * @hide
+     */
+    public Object staticFieldBase(Field f) {
+        // BEGIN Android-changed: Implemented differently on Android.
+        if (!Modifier.isStatic(f.getModifiers())) {
+            throw new IllegalArgumentException("valid for static fields only");
+        }
+        Class c = f.getDeclaringClass();
+        return c;
+        /*
+        if (f == null) {
+            throw new NullPointerException();
+        }
+
+        return staticFieldBase0(f);
+         */
+        // END Android-changed: Implemented differently on Android.
+    }
+
+    /**
      * Ensures the given class has been initialized. This is often
      * needed in conjunction with obtaining the static field base of a
      * class.
@@ -2199,13 +2262,18 @@ public final class Unsafe {
                                                   long expected,
                                                   long x);
 
-    // BEGIN Android-removed: Not used in Android.
-    /*
+    /**
+     * @hide
+     */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public final native long compareAndExchangeLong(Object o, long offset,
                                                     long expected,
                                                     long x);
 
+    // BEGIN Android-removed: Not used in Android.
+    /*
     @IntrinsicCandidate
     public final long compareAndExchangeLongAcquire(Object o, long offset,
                                                            long expected,
