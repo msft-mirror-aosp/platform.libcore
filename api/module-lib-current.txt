@@ -274,6 +274,7 @@ package dalvik.system {
     method @FlaggedApi("com.android.art.flags.always_enable_profile_code") public static void dumpLowOverheadTrace(@NonNull dalvik.system.VMDebug.TraceDestination);
     method public static void dumpReferenceTables();
     method public static int getAllocCount(int);
+    method @FlaggedApi("com.android.art.flags.executable_method_file_offsets") @Nullable public static dalvik.system.VMDebug.ExecutableMethodFileOffsets getExecutableMethodFileOffsets(@NonNull java.lang.reflect.Method);
     method public static int getLoadedClassCount();
     method public static int getMethodTracingMode();
     method public static String getRuntimeStat(String);
@@ -311,6 +312,12 @@ package dalvik.system {
     field public static final int KIND_THREAD_ALLOCATED_OBJECTS = 65536; // 0x10000
     field public static final int KIND_THREAD_GC_INVOCATIONS = 1048576; // 0x100000
     field public static final int TRACE_COUNT_ALLOCS = 1; // 0x1
+  }
+
+  @FlaggedApi("com.android.art.flags.executable_method_file_offsets") public static class VMDebug.ExecutableMethodFileOffsets {
+    method @FlaggedApi("com.android.art.flags.executable_method_file_offsets") public long getContainerOffset();
+    method @FlaggedApi("com.android.art.flags.executable_method_file_offsets") @NonNull public String getContainerPath();
+    method @FlaggedApi("com.android.art.flags.executable_method_file_offsets") public long getMethodOffset();
   }
 
   @FlaggedApi("com.android.art.flags.always_enable_profile_code") public static class VMDebug.TraceDestination {
@@ -566,7 +573,7 @@ package javax.crypto {
   }
 
   public class KeyAgreement {
-    method @FlaggedApi("com.android.libcore.v_apis") public javax.crypto.KeyAgreementSpi getCurrentSpi();
+    method public javax.crypto.KeyAgreementSpi getCurrentSpi();
   }
 
   public class Mac implements java.lang.Cloneable {

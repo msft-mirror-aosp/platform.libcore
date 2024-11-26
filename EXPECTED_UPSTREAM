@@ -270,6 +270,7 @@ ojluni/src/main/java/java/lang/invoke/MethodHandles.java,jdk8u/jdk8u121-b13,jdk/
 ojluni/src/main/java/java/lang/invoke/MethodType.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodType.java
 ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodTypeForm.java
 ojluni/src/main/java/java/lang/invoke/MutableCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MutableCallSite.java
+ojluni/src/main/java/java/lang/invoke/StringConcatException.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/lang/invoke/StringConcatException.java
 ojluni/src/main/java/java/lang/invoke/TypeDescriptor.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/lang/invoke/TypeDescriptor.java
 # java.lang.invoke.Transformers isn't in the upstream OpenJDK
 ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/VarHandle.java
@@ -960,7 +961,7 @@ ojluni/src/main/java/java/util/LinkedList.java,jdk21u/jdk-21.0.4-ga,src/java.bas
 ojluni/src/main/java/java/util/List.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/List.java
 ojluni/src/main/java/java/util/ListIterator.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/ListIterator.java
 ojluni/src/main/java/java/util/ListResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ListResourceBundle.java
-ojluni/src/main/java/java/util/Locale.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Locale.java
+ojluni/src/main/java/java/util/Locale.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Locale.java
 ojluni/src/main/java/java/util/LocaleISOData.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LocaleISOData.java
 ojluni/src/main/java/java/util/LongSummaryStatistics.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/LongSummaryStatistics.java
 ojluni/src/main/java/java/util/Map.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Map.java
@@ -970,7 +971,7 @@ ojluni/src/main/java/java/util/MissingResourceException.java,jdk17u/jdk-17.0.6-g
 ojluni/src/main/java/java/util/NavigableMap.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NavigableMap.java
 ojluni/src/main/java/java/util/NavigableSet.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NavigableSet.java
 ojluni/src/main/java/java/util/NoSuchElementException.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/NoSuchElementException.java
-ojluni/src/main/java/java/util/Objects.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Objects.java
+ojluni/src/main/java/java/util/Objects.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Objects.java
 ojluni/src/main/java/java/util/Observable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Observable.java
 ojluni/src/main/java/java/util/Observer.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Observer.java
 ojluni/src/main/java/java/util/Optional.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Optional.java
@@ -983,7 +984,7 @@ ojluni/src/main/java/java/util/Properties.java,jdk17u/jdk-17.0.6-ga,src/java.bas
 ojluni/src/main/java/java/util/PropertyPermission.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PropertyPermission.java
 ojluni/src/main/java/java/util/PropertyResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PropertyResourceBundle.java
 ojluni/src/main/java/java/util/Queue.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Queue.java
-ojluni/src/main/java/java/util/Random.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Random.java
+ojluni/src/main/java/java/util/Random.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/Random.java
 ojluni/src/main/java/java/util/RandomAccess.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/RandomAccess.java
 ojluni/src/main/java/java/util/RegularEnumSet.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
@@ -1053,15 +1054,15 @@ ojluni/src/main/java/java/util/concurrent/ExecutorCompletionService.java,jdk21u/
 ojluni/src/main/java/java/util/concurrent/ExecutorService.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/ExecutorService.java
 ojluni/src/main/java/java/util/concurrent/Executors.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/Executors.java
 ojluni/src/main/java/java/util/concurrent/Flow.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/Flow.java
-ojluni/src/main/java/java/util/concurrent/ForkJoinPool.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinPool.java
-ojluni/src/main/java/java/util/concurrent/ForkJoinTask.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinTask.java
-ojluni/src/main/java/java/util/concurrent/ForkJoinWorkerThread.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinWorkerThread.java
+ojluni/src/main/java/java/util/concurrent/ForkJoinPool.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinPool.java
+ojluni/src/main/java/java/util/concurrent/ForkJoinTask.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinTask.java
+ojluni/src/main/java/java/util/concurrent/ForkJoinWorkerThread.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/ForkJoinWorkerThread.java
 ojluni/src/main/java/java/util/concurrent/Future.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/Future.java
 ojluni/src/main/java/java/util/concurrent/FutureTask.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/FutureTask.java
 ojluni/src/main/java/java/util/concurrent/Helpers.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/Helpers.java
 ojluni/src/main/java/java/util/concurrent/LinkedBlockingDeque.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/LinkedBlockingDeque.java
 ojluni/src/main/java/java/util/concurrent/LinkedBlockingQueue.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/LinkedBlockingQueue.java
-ojluni/src/main/java/java/util/concurrent/LinkedTransferQueue.java,jdk21u/jdk-21.0.2-ga,src/java.base/share/classes/java/util/concurrent/LinkedTransferQueue.java
+ojluni/src/main/java/java/util/concurrent/LinkedTransferQueue.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/LinkedTransferQueue.java
 ojluni/src/main/java/java/util/concurrent/Phaser.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/Phaser.java
 ojluni/src/main/java/java/util/concurrent/PriorityBlockingQueue.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/PriorityBlockingQueue.java
 ojluni/src/main/java/java/util/concurrent/RecursiveAction.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/util/concurrent/RecursiveAction.java
@@ -2494,6 +2495,9 @@ ojluni/src/test/java/util/LinkedHashMap/Cache.java,jdk21u/jdk-21.0.4-ga,test/jdk
 ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java
 ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
 ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/LinkedHashSet/Basic.java
+ojluni/src/test/java/util/Locale/AvailableLocalesTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Locale/AvailableLocalesTest.java
+ojluni/src/test/java/util/Locale/TestOf.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Locale/TestOf.java
+ojluni/src/test/java/util/Objects/BasicObjectsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Objects/BasicObjectsTest.java
 ojluni/src/test/java/util/Optional/Basic.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/Basic.java
 ojluni/src/test/java/util/Optional/BasicDouble.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicDouble.java
 ojluni/src/test/java/util/Optional/BasicInt.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Optional/BasicInt.java
@@ -2562,7 +2566,7 @@ ojluni/src/test/java/util/Random/RandomCanaryPi.java,jdk21u/jdk-21.0.4-ga,test/j
 ojluni/src/test/java/util/Random/RandomExponentialTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomExponentialTest.java
 ojluni/src/test/java/util/Random/RandomNextDoubleBoundary.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomNextDoubleBoundary.java
 ojluni/src/test/java/util/Random/RandomStreamTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomStreamTest.java
-ojluni/src/test/java/util/Random/RandomTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomTest.java
+ojluni/src/test/java/util/Random/RandomTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTest.java
 ojluni/src/test/java/util/Random/RandomTestBsi1999.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Random/RandomTestBsi1999.java
 ojluni/src/test/java/util/Random/RandomTestChiSquared.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTestChiSquared.java
 ojluni/src/test/java/util/Random/RandomTestCoverage.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/Random/RandomTestCoverage.java
@@ -2605,6 +2609,9 @@ ojluni/src/test/java/util/WeakHashMap/GCDuringIteration.java,jdk21u/jdk-21.0.4-g
 ojluni/src/test/java/util/WeakHashMap/Iteration.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/WeakHashMap/Iteration.java
 ojluni/src/test/java/util/WeakHashMap/ZeroInitCap.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/WeakHashMap/ZeroInitCap.java
 ojluni/src/test/java/util/concurrent/tck/CompletableFutureTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/concurrent/tck/CompletableFutureTest.java
+ojluni/src/test/java/util/concurrent/tck/ForkJoinPool19Test.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/concurrent/tck/ForkJoinPool19Test.java
+ojluni/src/test/java/util/concurrent/tck/ForkJoinPool20Test.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/concurrent/tck/ForkJoinPool20Test.java
+ojluni/src/test/java/util/concurrent/tck/ForkJoinTaskTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/concurrent/tck/ForkJoinTaskTest.java
 ojluni/src/test/java/util/concurrent/tck/SplittableRandomTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/concurrent/tck/SplittableRandomTest.java
 ojluni/src/test/java/util/function/BiFunction/BiFunctionTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/function/BiFunction/BiFunctionTest.java
 ojluni/src/test/java/util/function/BinaryOperator/BasicTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/util/function/BinaryOperator/BasicTest.java
