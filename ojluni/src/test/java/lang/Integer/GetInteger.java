@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2005, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -21,27 +21,17 @@
  * questions.
  */
 
+package test.java.lang.Integer;
+
 /*
  * @test
- * @bug 4408489 4826652
- * @summary Testing values of Float.{MIN_VALUE, MIN_NORMAL, MAX_VALUE}
- * @author Joseph D. Darcy
+ * @bug 4252315
+ * @summary test Integer.getInteger method with empty key
  */
-package test.java.lang.Float;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class ExtremaTest {
-    @Test
-    public void testExtremalValues() throws Exception {
-        Assert.assertEquals(Float.intBitsToFloat(0x1), Float.MIN_VALUE,
-            "Float.MIN_VALUE is not equal to intBitsToFloat(0x1).");
-
-        Assert.assertEquals(Float.intBitsToFloat(0x00800000), Float.MIN_NORMAL,
-            "Float.MIN_NORMAL is not equal to intBitsToFloat(0x00800000).");
-
-        Assert.assertEquals(Float.intBitsToFloat(0x7f7fffff), Float.MAX_VALUE,
-            "Float.MAX_VALUE is not equal to intBitsToFloat(0x7f7fffff).");
+public class GetInteger {
+    public static void main(String[] args) throws Exception {
+        Integer.getInteger("", 1);
+        Integer.getInteger(null, 1);
     }
 }

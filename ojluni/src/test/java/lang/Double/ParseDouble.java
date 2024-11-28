@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2001, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,22 +26,20 @@
  * @bug 4160406 4705734 4707389 4826774 4895911 4421494 6358355 7021568 7039369 4396272
  * @summary Test for Double.parseDouble method and acceptance regex
  */
+
 package test.java.lang.Double;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.regex.*;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-// Android-changed: remove pass/fail counting; migrate to org.testng assertions instead of throws
-public class ParseDoubleTest {
+public class ParseDouble {
 
     private static final BigDecimal HALF = BigDecimal.valueOf(0.5);
 
     private static void fail(String val, double n) {
-        Assert.fail("Double.parseDouble failed. String:" + val + " Result:" + n);
+        throw new RuntimeException("Double.parseDouble failed. String:" +
+                                                val + " Result:" + n);
     }
 
     private static void check(String val) {
@@ -129,8 +127,7 @@ public class ParseDoubleTest {
         check(val);
     }
 
-    @Test
-    public void rudimentaryTest() {
+    private static void rudimentaryTest() {
         check(new String(""+Double.MIN_VALUE), Double.MIN_VALUE);
         check(new String(""+Double.MAX_VALUE), Double.MAX_VALUE);
 
@@ -144,7 +141,7 @@ public class ParseDoubleTest {
     }
 
 
-    static String[] badStrings = {
+    static  String badStrings[] = {
         "",
         "+",
         "-",
@@ -298,7 +295,7 @@ public class ParseDoubleTest {
         "0xp22"
     };
 
-    static String[] goodStrings = {
+    static String goodStrings[] = {
         "NaN",
         "+NaN",
         "-NaN",
@@ -535,8 +532,8 @@ public class ParseDoubleTest {
         "0.00000000000000000001e328",
     };
 
-    static String[] paddedBadStrings;
-    static String[] paddedGoodStrings;
+    static String paddedBadStrings[];
+    static String paddedGoodStrings[];
     static {
         String pad = " \t\n\r\f\u0001\u000b\u001f";
         paddedBadStrings = new String[badStrings.length];
@@ -560,22 +557,24 @@ public class ParseDoubleTest {
      * proper value; just whether the input is accepted appropriately
      * or not.
      */
-    private static void testParsing(String [] input, boolean exceptionalInput) {
-        for(int i = 0; i < input.length; i++) {
-            double d;
-
+    private static void testParsing(String [] input,
+                                    boolean exceptionalInput) {
+        for (String s : input) {
             try {
-                d = Double.parseDouble(input[i]);
-                check(input[i]);
-            }
-            catch (NumberFormatException e) {
-                if (! exceptionalInput) {
-                    Assert.fail("Double.parseDouble rejected good string `" + input[i] + "'.");
+                Double.parseDouble(s);
+                check(s);
+            } catch (NumberFormatException e) {
+                if (!exceptionalInput) {
+                    throw new RuntimeException("Double.parseDouble rejected " +
+                                               "good string `" + s +
+                                               "'.");
                 }
-                break;
+                continue;
             }
             if (exceptionalInput) {
-                Assert.fail("Double.parseDouble accepted bad string `" + input[i] + "'.");
+                throw new RuntimeException("Double.parseDouble accepted " +
+                                           "bad string `" + s +
+                                           "'.");
             }
         }
     }
@@ -646,13 +645,15 @@ public class ParseDoubleTest {
 
         for(int i = 0; i < input.length; i++) {
              Matcher m = fpPattern.matcher(input[i]);
-             Assert.assertEquals(m.matches(), ! exceptionalInput, "Regular expression " +
+             if (m.matches() != ! exceptionalInput) {
+                 throw new RuntimeException("Regular expression " +
                                             (exceptionalInput?
                                              "accepted bad":
                                              "rejected good") +
                                             " string `" +
                                             input[i] + "'.");
              }
+        }
 
     }
 
@@ -660,8 +661,8 @@ public class ParseDoubleTest {
      * For each subnormal power of two, test at boundaries of
      * region that should convert to that value.
      */
-    @Test
-    public void testSubnormalPowers() {
+    private static void testSubnormalPowers() {
+        boolean failed = false;
         BigDecimal TWO = BigDecimal.valueOf(2);
         // An ulp is the same for all subnormal values
         BigDecimal ulp_BD = new BigDecimal(Double.MIN_VALUE);
@@ -680,34 +681,48 @@ public class ParseDoubleTest {
 
             double convertedLowerBound = Double.parseDouble(lowerBound.toString());
             double convertedUpperBound = Double.parseDouble(upperBound.toString());
-            Assert.assertEquals(convertedLowerBound, d,
-                    String.format("2^%d lowerBound converts as %a %s%n", i,
-                            convertedLowerBound, lowerBound));
-            Assert.assertEquals(convertedUpperBound, d,
-                    String.format("2^%d upperBound converts as %a %s%n",
-                                  i, convertedUpperBound, upperBound));
+            if (convertedLowerBound != d) {
+                failed = true;
+                System.out.printf("2^%d lowerBound converts as %a %s%n",
+                                  i, convertedLowerBound, lowerBound);
+            }
+            if (convertedUpperBound != d) {
+                failed = true;
+                System.out.printf("2^%d upperBound converts as %a %s%n",
+                                  i, convertedUpperBound, upperBound);
+            }
         }
         /*
          * Double.MIN_VALUE
          * The region ]0.5*Double.MIN_VALUE, 1.5*Double.MIN_VALUE[ should round to Double.MIN_VALUE .
          */
         BigDecimal minValue = new BigDecimal(Double.MIN_VALUE);
-        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(0.5)).toString()), 0.0,
-                "0.5*MIN_VALUE doesn't convert 0");
-        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(0.50000000001)).toString()), Double.MIN_VALUE,
-                "0.50000000001*MIN_VALUE doesn't convert to MIN_VALUE");
-        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(1.49999999999)).toString()), Double.MIN_VALUE,
-                "1.49999999999*MIN_VALUE doesn't convert to MIN_VALUE");
-        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(1.5)).toString()), 2*Double.MIN_VALUE,
-                "1.5*MIN_VALUE doesn't convert to 2*MIN_VALUE");
+        if (Double.parseDouble(minValue.multiply(new BigDecimal(0.5)).toString()) != 0.0) {
+            failed = true;
+            System.out.printf("0.5*MIN_VALUE doesn't convert 0%n");
+        }
+        if (Double.parseDouble(minValue.multiply(new BigDecimal(0.50000000001)).toString()) != Double.MIN_VALUE) {
+            failed = true;
+            System.out.printf("0.50000000001*MIN_VALUE doesn't convert to MIN_VALUE%n");
+        }
+        if (Double.parseDouble(minValue.multiply(new BigDecimal(1.49999999999)).toString()) != Double.MIN_VALUE) {
+            failed = true;
+            System.out.printf("1.49999999999*MIN_VALUE doesn't convert to MIN_VALUE%n");
+        }
+        if (Double.parseDouble(minValue.multiply(new BigDecimal(1.5)).toString()) != 2*Double.MIN_VALUE) {
+            failed = true;
+            System.out.printf("1.5*MIN_VALUE doesn't convert to 2*MIN_VALUE%n");
+        }
+
+        if (failed)
+            throw new RuntimeException("Inconsistent conversion");
     }
 
     /**
      * For each power of two, test at boundaries of
      * region that should convert to that value.
      */
-    @Test
-    public void testPowers() {
+    private static void testPowers() {
         for(int i = -1074; i <= +1023; i++) {
             double d = Math.scalb(1.0, i);
             BigDecimal d_BD = new BigDecimal(d);
@@ -721,10 +736,10 @@ public class ParseDoubleTest {
         check(new BigDecimal(Double.MAX_VALUE).add(new BigDecimal(Math.ulp(Double.MAX_VALUE)).multiply(HALF)).toString());
     }
 
-    @Test
-    public void testStrictness() {
+    private static void testStrictness() {
         final double expected = 0x0.0000008000000p-1022;
 //        final double expected = 0x0.0000008000001p-1022;
+        boolean failed = false;
         double conversion = 0.0;
         double sum = 0.0; // Prevent conversion from being optimized away
 
@@ -734,38 +749,33 @@ public class ParseDoubleTest {
         for(int i = 0; i <= 12_000; i++) {
             conversion = Double.parseDouble(decimal);
             sum += conversion;
-        // BEGIN Android-changed: replace printf with assert
-        /*
             if (conversion != expected) {
                 failed = true;
                 System.out.printf("Iteration %d converts as %a%n",
                                   i, conversion);
             }
-         */
-            Assert.assertEquals(conversion, expected,
-                    String.format("Iteration %d converts as %a%n", i, conversion));
         }
-        /*
+
         System.out.println("Sum = "  + sum);
         if (failed)
             throw new RuntimeException("Inconsistent conversion");
-         */
-        // END Android-changed: replace printf with assert
     }
 
-    @Test
-    public void testParsing() {
+    public static void main(String[] args) throws Exception {
+        rudimentaryTest();
+
         testParsing(goodStrings, false);
         testParsing(paddedGoodStrings, false);
         testParsing(badStrings, true);
         testParsing(paddedBadStrings, true);
-    }
 
-    @Test
-    public void testRegex() {
         testRegex(goodStrings, false);
         testRegex(paddedGoodStrings, false);
         testRegex(badStrings, true);
         testRegex(paddedBadStrings, true);
+
+        testSubnormalPowers();
+        testPowers();
+        testStrictness();
     }
 }

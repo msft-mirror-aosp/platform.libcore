@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2001, 2005, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,20 +23,25 @@
 
 /*
  * @test
- * @bug 4428022
- * @summary Tests for Double.toString
- * @author Andrew Haley <aph@redhat.com>
+ * @bug 4408489 4826652
+ * @summary Testing values of Float.{MIN_VALUE, MIN_NORMAL, MAX_VALUE}
+ * @author Joseph D. Darcy
  */
-package test.java.lang.Double;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
+package test.java.lang.Float;
 
-public class ToStringTest {
+public class Extrema {
+    public static void main(String[] args) throws Exception {
+        if (Float.MIN_VALUE != Float.intBitsToFloat(0x1))
+            throw new RuntimeException("Float.MIN_VALUE is not equal "+
+                                       "to intBitsToFloat(0x1).");
 
-    @Test
-    public void testToString() {
-        Assert.assertEquals(Double.toString(0.001), "0.001");
-        Assert.assertEquals(Double.toString(0.002), "0.002");
+        if (Float.MIN_NORMAL != Float.intBitsToFloat(0x00800000))
+            throw new RuntimeException("Float.MIN_NORMAL is not equal "+
+                                       "to intBitsToFloat(0x00800000).");
+
+        if (Float.MAX_VALUE != Float.intBitsToFloat(0x7f7fffff))
+            throw new RuntimeException("Float.MAX_VALUE is not equal "+
+                                       "to intBitsToFloat(0x7f7fffff).");
     }
 }
