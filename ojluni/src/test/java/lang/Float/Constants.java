@@ -25,45 +25,46 @@
  * @test
  * @compile Constants.java
  * @bug 4397405 4826652
- * @summary Testing constant-ness of Double.{MIN_VALUE, MAX_VALUE}, etc.
+ * @summary Testing constant-ness of Float.{MIN_VALUE, MAX_VALUE}, etc.
  * @author Joseph D. Darcy
  */
-package test.java.lang.Double;
 
-public class ConstantsTest {
+package test.java.lang.Float;
+
+public class Constants {
     /*
      * This compile-only test is to make sure that the primitive
-     * public static final fields in java.lang.Double are "constant
+     * public static final fields in java.lang.Float are "constant
      * expressions" as defined by "The Java Language Specification,
      * 2nd edition" section 15.28; a different test checks the values
      * of those fields.
      */
-    public void testPublicStaticFinalFields_areConstantExpressions() throws Exception {
+    public static void main(String[] args) throws Exception {
         int i = 0;
         switch (i) {
-        case (int)Double.NaN:                   // 0
-            System.out.println("Double.NaN is a constant!");
+        case (int)Float.NaN:                    // 0
+            System.out.println("Float.NaN is a constant!");
             break;
-        case (int)Double.MIN_VALUE + 1:         // 0 + 1
-            System.out.println("Double.MIN_VALUE is a constant!");
+        case (int)Float.MIN_VALUE + 1:          // 0 + 1
+            System.out.println("Float.MIN_VALUE is a constant!");
             break;
-        case (int)Double.MIN_NORMAL + 2:        // 0 + 2
-            System.out.println("Double.MIN_NORMAL is a constant!");
+        case (int)Float.MIN_NORMAL + 2:         // 0 + 2
+            System.out.println("Float.MIN_NORMAL is a constant!");
             break;
-        case Double.MIN_EXPONENT:               // -1022
-            System.out.println("Double.MIN_EXPONENT is a constant!");
+        case Float.MIN_EXPONENT:                // -126
+            System.out.println("Float.MIN_EXPONENT is a constant!");
             break;
-        case Double.MAX_EXPONENT:               // 1023
-            System.out.println("Double.MAX_EXPONENT is a constant!");
+        case Float.MAX_EXPONENT:                // 127
+            System.out.println("Float.MAX_EXPONENT is a constant!");
             break;
-        case (int)Double.MAX_VALUE - 1:         // Integer.MAX_VALUE - 1
-            System.out.println("Double.MAX_VALUE is a constant!");
+        case (int)Float.MAX_VALUE - 1:          // Integer.MAX_VALUE - 1
+            System.out.println("Float.MAX_VALUE is a constant!");
             break;
-        case (int)Double.POSITIVE_INFINITY:     // Integer.MAX_VALUE
-            System.out.println("Double.POSITIVE_INFINITY is a constant!");
+        case (int)Float.POSITIVE_INFINITY:      // Integer.MAX_VALUE
+            System.out.println("Float.POSITIVE_INFINITY is a constant!");
             break;
-        case (int)Double.NEGATIVE_INFINITY:     // Integer.MIN_VALUE
-            System.out.println("Double.NEGATIVE_INFINITY is a constant!");
+        case (int)Float.NEGATIVE_INFINITY:      // Integer.MIN_VALUE
+            System.out.println("Float.NEGATIVE_INFINITY is a constant!");
             break;
         }
     }
