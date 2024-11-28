@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,20 +26,19 @@
  * @bug 4160406 4705734 4707389 6358355 7032154
  * @summary Tests for Float.parseFloat method
  */
+
 package test.java.lang.Float;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class ParseFloatTest {
+public class ParseFloat {
 
     private static final BigDecimal HALF = BigDecimal.valueOf(0.5);
 
     private static void fail(String val, float n) {
-        Assert.fail("Float.parseFloat failed. String:" + val + " Result:" + n);
+        throw new RuntimeException("Float.parseFloat failed. String:" +
+                                                val + " Result:" + n);
     }
 
     private static void check(String val) {
@@ -127,8 +126,7 @@ public class ParseFloatTest {
         check(val);
     }
 
-    @Test
-    public void rudimentaryTest() {
+    private static void rudimentaryTest() {
         check(new String(""+Float.MIN_VALUE), Float.MIN_VALUE);
         check(new String(""+Float.MAX_VALUE), Float.MAX_VALUE);
 
@@ -152,7 +150,7 @@ public class ParseFloatTest {
         check("0.050000002607703209", 0.050000004f);
     }
 
-    static String[] badStrings = {
+    static  String badStrings[] = {
         "",
         "+",
         "-",
@@ -208,7 +206,7 @@ public class ParseFloatTest {
         "\u0967e\u0967" // 1e1 in Devanagari digits
     };
 
-    static String[] goodStrings = {
+    static String goodStrings[] = {
         "NaN",
         "+NaN",
         "-NaN",
@@ -254,8 +252,8 @@ public class ParseFloatTest {
         "-9223372036854775810"
     };
 
-    static String[] paddedBadStrings;
-    static String[] paddedGoodStrings;
+    static String paddedBadStrings[];
+    static String paddedGoodStrings[];
     static {
         String pad = " \t\n\r\f\u0001\u000b\u001f";
         paddedBadStrings = new String[badStrings.length];
@@ -280,24 +278,21 @@ public class ParseFloatTest {
      */
     private static void testParsing(String [] input,
                                     boolean exceptionalInput) {
-        for(int i = 0; i < input.length; i++) {
-            double d;
-
+        for (String s : input) {
             try {
-                d = Float.parseFloat(input[i]);
-                check(input[i]);
-            }
-            catch (NumberFormatException e) {
-                if (! exceptionalInput) {
+                Float.parseFloat(s);
+                check(s);
+            } catch (NumberFormatException e) {
+                if (!exceptionalInput) {
                     throw new RuntimeException("Float.parseFloat rejected " +
-                                               "good string `" + input[i] +
+                                               "good string `" + s +
                                                "'.");
                 }
-                break;
+                continue;
             }
             if (exceptionalInput) {
                 throw new RuntimeException("Float.parseFloat accepted " +
-                                           "bad string `" + input[i] +
+                                           "bad string `" + s +
                                            "'.");
             }
         }
@@ -307,8 +302,7 @@ public class ParseFloatTest {
      * For each power of two, test at boundaries of
      * region that should convert to that value.
      */
-    @Test
-    public void testPowers() {
+    private static void testPowers() {
         for(int i = -149; i <= +127; i++) {
             float f = Math.scalb(1.0f, i);
             BigDecimal f_BD = new BigDecimal(f);
@@ -322,11 +316,14 @@ public class ParseFloatTest {
         check(new BigDecimal(Float.MAX_VALUE).add(new BigDecimal(Math.ulp(Float.MAX_VALUE)).multiply(HALF)).toString());
     }
 
-    @Test
-    public void testParsing() {
+    public static void main(String[] args) throws Exception {
+        rudimentaryTest();
+
         testParsing(goodStrings, false);
         testParsing(paddedGoodStrings, false);
         testParsing(badStrings, true);
         testParsing(paddedBadStrings, true);
+
+        testPowers();
     }
 }
