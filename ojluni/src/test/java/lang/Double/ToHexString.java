@@ -30,17 +30,16 @@
  * @run main ToHexString
  * @author Joseph D. Darcy
  */
+
 package test.java.lang.Double;
 
 import java.util.regex.*;
 
 import jdk.internal.math.DoubleConsts;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class ToHexStringTest {
-    private ToHexStringTest() {}
+public class ToHexString {
+    // Android-changed: JUnit expects exactly one public constructor.
+    // private ToHexString() {}
 
     /*
      * Given a double value, create a hexadecimal floating-point
@@ -108,8 +107,8 @@ public class ToHexStringTest {
             return result.toString();
     }
 
-    @Test
-    public void testToHexString() {
+    public static int toHexStringTests() {
+        int failures = 0;
         String [][] testCases1 = {
             {"Infinity",                "Infinity"},
             {"-Infinity",               "-Infinity"},
@@ -131,10 +130,13 @@ public class ToHexStringTest {
 
         // Compare decimal string -> double -> hex string to hex string
         for (int i = 0; i < testCases1.length; i++) {
-            String result = Double.toHexString(Double.parseDouble(testCases1[i][0]));
-            Assert.assertEquals(result, testCases1[i][1],
-                "For floating-point string " + testCases1[i][0] +
+            String result;
+            if(! (result=Double.toHexString(Double.parseDouble(testCases1[i][0]))).
+               equals(testCases1[i][1])) {
+                failures ++;
+                System.err.println("For floating-point string " + testCases1[i][0] +
                                    ", expected hex output " + testCases1[i][1] + ", got " + result +".");
+            }
         }
 
 
@@ -161,10 +163,13 @@ public class ToHexStringTest {
         };
         // Compare decimal string -> double -> hex string to hex string
         for (int i = 0; i < floatTestCases.length; i++) {
-            String result = Float.toHexString(Float.parseFloat(floatTestCases[i][0]));
-            Assert.assertEquals(result, floatTestCases[i][1],
-                "For floating-point string " + floatTestCases[i][0] +
-                          ", expected hex output\n" + floatTestCases[i][1] + ", got\n" + result +".");
+            String result;
+            if(! (result=Float.toHexString(Float.parseFloat(floatTestCases[i][0]))).
+               equals(floatTestCases[i][1])) {
+                failures++;
+                System.err.println("For floating-point string " + floatTestCases[i][0] +
+                                   ", expected hex output\n" + floatTestCases[i][1] + ", got\n" + result +".");
+            }
         }
 
         // Particular floating-point values and hex equivalents, mostly
@@ -214,25 +219,40 @@ public class ToHexStringTest {
         // Compare decimal string -> double -> hex string to
         // long hex string -> double hex string
         for (int i = 0; i < testCases2.length; i++) {
-            String result = Double.toHexString(Double.parseDouble(testCases2[i][0]));
-            String expected = hexLongStringtoHexDoubleString(testCases2[i][1]);
-            Assert.assertEquals(result, expected,
-                "For floating-point string " + testCases2[i][0] +
-                          ", expected hex output " + expected + ", got " + result +".");
+            String result;
+            String expected;
+            if(! (result=Double.toHexString(Double.parseDouble(testCases2[i][0]))).
+               equals( expected=hexLongStringtoHexDoubleString(testCases2[i][1]) )) {
+                failures ++;
+                System.err.println("For floating-point string " + testCases2[i][0] +
+                                   ", expected hex output " + expected + ", got " + result +".");
+            }
         }
-    }
 
-    @Test
-    public void testRandomDoubles() {
         // Test random double values;
         // compare double -> Double.toHexString with local doubleToHexString
         java.util.Random rand = new java.util.Random(0);
         for (int i = 0; i < 1000; i++) {
+            String result;
+            String expected;
             double d = rand.nextDouble();
-            String result = Double.toHexString(d);
-            String expected = doubleToHexString(d);
-            Assert.assertEquals(result, expected, "For floating-point value " + d +
-                    ", expected hex output " + expected + ", got " + result +".");
+            if(! (expected=doubleToHexString(d)).equals(result=Double.toHexString(d)) ) {
+                failures ++;
+                System.err.println("For floating-point value " + d +
+                                   ", expected hex output " + expected + ", got " + result +".");
+            }
+        }
+
+        return failures;
+    }
+
+    public static void main(String argv[]) {
+        int failures = 0;
+
+        failures = toHexStringTests();
+
+        if (failures != 0) {
+            throw new RuntimeException("" + failures + " failures while testing Double.toHexString");
         }
     }
 }
