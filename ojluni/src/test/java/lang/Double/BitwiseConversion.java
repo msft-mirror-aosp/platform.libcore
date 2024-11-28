@@ -30,47 +30,59 @@
  * @run main BitwiseConversion
  * @author Joseph D. Darcy
  */
+
 package test.java.lang.Double;
 
 import static java.lang.Double.*;
 
 import jdk.internal.math.DoubleConsts;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class BitwiseConversionTest {
-    static void testNanCase(long x) {
+public class BitwiseConversion {
+    static int testNanCase(long x) {
+        int errors  = 0;
         // Strip out sign and exponent bits
         long y = x & DoubleConsts.SIGNIF_BIT_MASK;
 
-        double[] values = {
+        double values[] = {
             longBitsToDouble(DoubleConsts.EXP_BIT_MASK | y),
             longBitsToDouble(DoubleConsts.SIGN_BIT_MASK | DoubleConsts.EXP_BIT_MASK | y)
         };
 
-        for(double value : values) {
-            Assert.assertTrue(isNaN(value), "Invalid input " + y + "yielded non-NaN" + value);
-
+        for(double value: values) {
+            if (!isNaN(value)) {
+                throw new RuntimeException("Invalid input " + y +
+                                           "yielded non-NaN" + value);
+            }
             long converted = doubleToLongBits(value);
-            Assert.assertEquals(converted, 0x7ff8000000000000L,
-                String.format("Non-canonical NaN bits returned: %x%n", converted));
+            if (converted != 0x7ff8000000000000L) {
+                errors++;
+                System.err.format("Non-canoncial NaN bits returned: %x%n",
+                                  converted);
+            }
         }
+        return errors;
     }
 
-    @Test
-    public void testNanCases() {
-        for (int i = 0; i < DoubleConsts.SIGNIFICAND_WIDTH - 1; i++) {
-            testNanCase(1L << i);
+    public static void main(String... argv) {
+        int errors = 0;
+
+        for (int i = 0; i < DoubleConsts.SIGNIFICAND_WIDTH-1; i++) {
+            errors += testNanCase(1L<<i);
         }
-    }
 
-    @Test
-    public void testDoubleToLongBits() {
-        Assert.assertEquals(doubleToLongBits(Double.POSITIVE_INFINITY), 0x7ff0000000000000L,
-            "Bad conversion for +infinity.");
+        if (doubleToLongBits(Double.POSITIVE_INFINITY)
+                != 0x7ff0000000000000L) {
+            errors++;
+            System.err.println("Bad conversion for +infinity.");
+        }
 
-        Assert.assertEquals(doubleToLongBits(Double.NEGATIVE_INFINITY), 0xfff0000000000000L,
-            "Bad conversion for -infinity.");
+        if (doubleToLongBits(Double.NEGATIVE_INFINITY)
+                != 0xfff0000000000000L) {
+            errors++;
+            System.err.println("Bad conversion for -infinity.");
+        }
+
+        if (errors > 0)
+            throw new RuntimeException();
     }
 }
