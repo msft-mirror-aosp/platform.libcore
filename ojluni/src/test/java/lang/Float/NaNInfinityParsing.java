@@ -27,12 +27,10 @@
  * @summary Testing recognition of "NaN" and "Infinity" strings
  * @author Joseph D. Darcy
  */
-package test.java.lang.Double;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
+package test.java.lang.Float;
 
-public class NaNInfinityParsingTest {
+public class NaNInfinityParsing {
     /*
      * Regression tests for:
      * 4428772 -- Establish invariant for Float & Double classes and
@@ -40,23 +38,23 @@ public class NaNInfinityParsingTest {
      *
      * Added capability for parse{Float, Double} and related methods
      * to recognize "NaN" and "Infinity" strings so that
-     * parseDouble(toString(d)) will always return the original
+     * parseFloat(toString(d)) will always return the original
      * floating-point value.
      */
 
-    static String[] NaNStrings = {
+    static String NaNStrings[] = {
         "NaN",
         "+NaN",
         "-NaN"
     };
 
-    static String[] infinityStrings = {
+    static String infinityStrings[] = {
         "Infinity",
         "+Infinity",
         "-Infinity",
     };
 
-    static String[] invalidStrings = {
+    static String invalidStrings[] = {
         "+",
         "-",
         "@",
@@ -123,42 +121,48 @@ public class NaNInfinityParsingTest {
         "infinity"
     };
 
-    @Test
-    public void testValidNaNStrings() {
-        for (String naNString : NaNStrings) {
-            double d = Double.parseDouble(naNString);
-            Assert.assertTrue(Double.isNaN(d), "NaN string ``" + naNString
-                    + "'' did not parse as a NaN; returned " +
-                    d + " instead.");
-        }
-    }
+    public static void main(String [] argv) throws Exception {
+        int i;
+        float d;
 
-    @Test
-    public void testValidInfinityStrings() {
-        for (String infinityString : infinityStrings) {
-            double d = Double.parseDouble(infinityString);
-            Assert.assertTrue(Double.isInfinite(d), "Infinity string ``" +
-                    infinityString +
-                    "'' did not parse as infinity; returned " +
-                    d + "instead.");
+        // Test valid NaN strings
+        for(i = 0; i < NaNStrings.length; i++) {
+            if(!Float.isNaN(d=Float.parseFloat(NaNStrings[i]))) {
+                throw new RuntimeException("NaN string ``" + NaNStrings[i]
+                                           + "'' did not parse as a NaN; returned " +
+                                           d + " instead.");
+            }
+        }
+
+        // Test valid Infinity strings
+        for(i = 0; i < infinityStrings.length; i++) {
+            if(!Float.isInfinite(d=Float.parseFloat(infinityStrings[i]))) {
+                throw new RuntimeException("Infinity string ``" +
+                                           infinityStrings[i] +
+                                           "'' did not parse as infinity; returned " +
+                                           d + "instead.");
+            }
             // check sign of result
 
-            boolean negative = (infinityString.charAt(0) == '-');
-            Assert.assertEquals(d, (negative ? Double.NEGATIVE_INFINITY :
-                Double.POSITIVE_INFINITY), "Infinity has wrong sign;" +
-                    (negative ? "positive instead of negative." :
-                        "negative instead of positive."));
+            boolean negative = (infinityStrings[i].charAt(0) == '-');
+            if(d != (negative?Float.NEGATIVE_INFINITY:
+                          Float.POSITIVE_INFINITY))
+                throw new RuntimeException("Infinity has wrong sign;" +
+                                           (negative?"positive instead of negative.":
+                                            "negative instead of positive."));
         }
-    }
 
-    @Test
-    public void testAlmostValidStrings() {
-        for (String invalidString : invalidStrings) {
+        // Test almost valid strings
+        for(i = 0; i < invalidStrings.length; i++) {
             try {
-                double d = Double.parseDouble(invalidString);
-                Assert.fail("Invalid string ``" + invalidString + "'' parsed as " + d + ".");
-            } catch (NumberFormatException e) {
-               // expected
+                float result;
+                d = Float.parseFloat(invalidStrings[i]);
+                throw new RuntimeException("Invalid string ``" +
+                                           invalidStrings[i]
+                                           +"'' parsed as " + d + ".");
+            }
+            catch(NumberFormatException e) {
+                // expected
             }
         }
 

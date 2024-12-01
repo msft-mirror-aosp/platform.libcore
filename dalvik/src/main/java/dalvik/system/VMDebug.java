@@ -857,9 +857,9 @@ public final class VMDebug {
      * so it will only hold the most recently executed ones. The tracing is not precise.
      * If a low overhead tracing is already in progress then this request is ignored but an error
      * will be logged. The ongoing trace will not be impacted. For example, if there are two calls
-     * to startLowOverheadTrace without a stopLowOverheadTrace in between, the second request is
-     * ignored after logging an error. The first one will continue to trace until the next
-     * stopLowOverheadTrace call.
+     * to {@link #startLowOverheadTrace} without a {@link #stopLowOverheadTrace} in between, the
+     * second request is ignored after logging an error. The first one will continue to trace until
+     * the next {@link #stopLowOverheadTrace} call.
      *
      * @hide
      */
@@ -881,6 +881,13 @@ public final class VMDebug {
 
     /**
      * Dump the collected trace into the trace file provided.
+     *
+     * The trace destination can be a file descriptor or a file name. If the file name or the file
+     * descriptor aren't valid we log an error and ignore the request. When a filename is provided
+     * and a file already exists this method unlinks the file and creates a new file for writing.
+     * This method unlinks instead of overwriting to prevent any problems if there are other uses
+     * of the file. If the file does not exist then a new file is created. If for any reason the
+     * file cannot be created then this method logs an error and the method returns.
      *
      * @hide
      */
