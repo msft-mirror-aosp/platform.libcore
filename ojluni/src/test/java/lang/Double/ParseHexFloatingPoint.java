@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.Double;
+
 /*
  * @test
  * @library /test/lib
@@ -31,30 +33,34 @@
  * @author Joseph D. Darcy
  * @key randomness
  */
-package test.java.lang.Double;
 
-import java.util.Random;
+import jdk.test.lib.RandomFactory;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-public class ParseHexFloatingPointTest {
-    private ParseHexFloatingPointTest(){}
+public class ParseHexFloatingPoint {
+    // Android-changed: JUnit expects exactly one public constructor.
+    // private ParseHexFloatingPoint(){}
 
     public static final double infinityD = Double.POSITIVE_INFINITY;
     public static final double NaND = Double.NaN;
 
-    static void test(String testName, String input,
+    static int test(String testName, String input,
                     double result, double expected) {
-        Assert.assertEquals(Double.compare(result, expected), 0,
-            "Failure for " + testName +
+        int failures =0;
+
+        if (Double.compare(result, expected) != 0 ) {
+            System.err.println("Failure for " + testName +
                                ": For input " + input +
                                " expected " + expected +
                                " got " + result + ".");
+        }
 
+        return failures;
     }
 
-    static void testCase(String input, double expected) {
+    static int testCase(String input, double expected) {
+        int failures =0;
+
+
         // Try different combination of letter components
         input = input.toLowerCase(java.util.Locale.US);
 
@@ -80,11 +86,12 @@ public class ParseHexFloatingPointTest {
                     for(int m = 0; m < suffices.length; m++) {
                         String s4 = s3 + suffices[m];
 
+
                         for(int n = 0; n < signs.length; n++) {
                             String s5 = signs[n] + s4;
 
                             double result = Double.parseDouble(s5);
-                            test("Double.parseDouble",
+                            failures += test("Double.parseDouble",
                                              s5, result, (signs[n].equals("-") ?
                                                           -expected:
                                                           expected));
@@ -93,6 +100,8 @@ public class ParseHexFloatingPointTest {
                 }
             }
         }
+
+        return failures;
     }
 
     static String upperCaseHex(String s) {
@@ -103,8 +112,7 @@ public class ParseHexFloatingPointTest {
     /*
      * Test easy and tricky double rounding cases.
      */
-    @Test
-    public void testDouble() {
+    static int doubleTests() {
 
         /*
          * A String, double pair
@@ -117,6 +125,9 @@ public class ParseHexFloatingPointTest {
                 this.d = d;
             }
         }
+        int failures = 0;
+
+
 
         // Hex strings that convert to three; test basic functionality
         // of significand and exponent shift adjusts along with the
@@ -145,10 +156,10 @@ public class ParseHexFloatingPointTest {
         };
         for(int i=0; i < threeTests.length; i++) {
             String input = threeTests[i];
-            testCase(input, 3.0);
+            failures += testCase(input, 3.0);
 
             input.replaceFirst("^0x", leadingZeros);
-            testCase(input, 3.0);
+            failures += testCase(input, 3.0);
         }
 
         long bigExponents [] = {
@@ -172,13 +183,13 @@ public class ParseHexFloatingPointTest {
 
         // Test zero significand with large exponents.
         for(int i = 0; i < bigExponents.length; i++) {
-            testCase("0x0.0p"+Long.toString(bigExponents[i]) , 0.0);
+            failures += testCase("0x0.0p"+Long.toString(bigExponents[i]) , 0.0);
         }
 
         // Test nonzero significand with large exponents.
         for(int i = 0; i < bigExponents.length; i++) {
             long exponent = bigExponents[i];
-            testCase("0x10000.0p"+Long.toString(exponent) ,
+            failures += testCase("0x10000.0p"+Long.toString(exponent) ,
                                  (exponent <0?0.0:infinityD));
         }
 
@@ -187,7 +198,7 @@ public class ParseHexFloatingPointTest {
             long signif = 0;
                 for(int i = 1; i <= 0xe; i++) {
                     signif = (signif <<4) | (long)i;
-                    testCase("0x"+Long.toHexString(signif)+"p0", signif);
+                    failures += testCase("0x"+Long.toHexString(signif)+"p0", signif);
                 }
         }
 
@@ -244,19 +255,22 @@ public class ParseHexFloatingPointTest {
         };
 
         for (int i = 0; i < testCases.length; i++) {
-            testCase(testCases[i].s,testCases[i].d);
+            failures += testCase(testCases[i].s,testCases[i].d);
         }
-    }
 
-    @Test
-    public void testRandomDoubles() {
-        java.util.Random rand = new Random();
-        // Consistency check; double => hexadecimal => double
-        // preserves the original value.
-        for(int i = 0; i < 1000; i++) {
-            double d = rand.nextDouble();
-            testCase(Double.toHexString(d), d);
+        failures += significandAlignmentTests();
+
+        {
+            java.util.Random rand = RandomFactory.getRandom();
+            // Consistency check; double => hexadecimal => double
+            // preserves the original value.
+            for(int i = 0; i < 1000; i++) {
+                double d = rand.nextDouble();
+                failures += testCase(Double.toHexString(d), d);
+            }
         }
+
+        return failures;
     }
 
     /*
@@ -265,9 +279,9 @@ public class ParseHexFloatingPointTest {
      * to have this sort of test for strings near the overflow
      * threshold.
      */
-    @Test
-    public static void significandAlignmentTests() {
-        // baseSignif * 2^baseExp = nextDown(2.0)
+    static int significandAlignmentTests() {
+        int failures = 0;
+                // baseSignif * 2^baseExp = nextDown(2.0)
         long [] baseSignifs = {
             0x1ffffffffffffe00L,
             0x1fffffffffffff00L
@@ -311,11 +325,13 @@ public class ParseHexFloatingPointTest {
                             Long.toHexString((m >=0) ?(testValue<<m):(testValue>>(-m))) +
                             "p" + (baseExp - m);
 
-                        testCase(s, expected);
+                        failures += testCase(s, expected);
                     }
                 }
             }
         }
+
+        return failures;
     }
 
 
@@ -335,8 +351,9 @@ public class ParseHexFloatingPointTest {
      *
      * This method includes tests of the latter two possibilities.
      */
-    @Test
-    public void testFloat() {
+    static int floatTests(){
+        int failures = 0;
+
         /*
          * A String, float pair
          */
@@ -350,7 +367,7 @@ public class ParseHexFloatingPointTest {
         }
 
         String [][] roundingTestCases = {
-            // Target float value       hard rounding version
+            // Target float value       hard rouding version
 
             {"0x1.000000p0",    "0x1.0000000000001p0"},
 
@@ -404,12 +421,32 @@ public class ParseHexFloatingPointTest {
                 float expected =  Float.parseFloat(expectedIn);
                 float result   =  Float.parseFloat(resultIn);
 
-                Assert.assertEquals(Float.compare(expected, result), 0,
-                    "Expected = " + Float.toHexString(expected) +
-                    "Rounded  = " + Float.toHexString(result) +
-                     "Double   = " + Double.toHexString(Double.parseDouble(resultIn)) +
-                    "Input    = " + resultIn);
+                if( Float.compare(expected, result) != 0) {
+                    failures += 1;
+                    System.err.println("" + (i+1));
+                    System.err.println("Expected = " + Float.toHexString(expected));
+                    System.err.println("Rounded  = " + Float.toHexString(result));
+                    System.err.println("Double   = " + Double.toHexString(Double.parseDouble(resultIn)));
+                    System.err.println("Input    = " + resultIn);
+                    System.err.println("");
+                }
             }
         }
+
+        return failures;
     }
+
+    public static void main(String argv[]) {
+        int failures = 0;
+
+        failures += doubleTests();
+        failures += floatTests();
+
+        if (failures != 0) {
+            throw new RuntimeException("" + failures + " failures while " +
+                                       "testing hexadecimal floating-point " +
+                                       "parsing.");
+        }
+    }
+
 }
