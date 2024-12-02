@@ -4406,7 +4406,7 @@ package java.lang {
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long);
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long, boolean);
     method public static int activeCount();
-    method public final void checkAccess();
+    method @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final void checkAccess();
     method @Deprecated public int countStackFrames();
     method @NonNull public static Thread currentThread();
     method @Deprecated public void destroy();
@@ -4415,7 +4415,7 @@ package java.lang {
     method @NonNull public static java.util.Map<java.lang.Thread,java.lang.StackTraceElement[]> getAllStackTraces();
     method @Nullable public ClassLoader getContextClassLoader();
     method @Nullable public static java.lang.Thread.UncaughtExceptionHandler getDefaultUncaughtExceptionHandler();
-    method public long getId();
+    method @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public long getId();
     method @NonNull public final String getName();
     method public final int getPriority();
     method @NonNull public StackTraceElement[] getStackTrace();
@@ -4428,6 +4428,7 @@ package java.lang {
     method public final boolean isAlive();
     method public final boolean isDaemon();
     method public boolean isInterrupted();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final boolean isVirtual();
     method public final void join(long) throws java.lang.InterruptedException;
     method public final void join(long, int) throws java.lang.InterruptedException;
     method public final void join() throws java.lang.InterruptedException;
@@ -4446,6 +4447,7 @@ package java.lang {
     method @Deprecated public final void stop();
     method @Deprecated public final void stop(@Nullable Throwable);
     method @Deprecated public final void suspend();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final long threadId();
     method public static void yield();
     field public static final int MAX_PRIORITY = 10; // 0xa
     field public static final int MIN_PRIORITY = 1; // 0x1
