@@ -2460,6 +2460,12 @@ package java.lang {
     method public static boolean isDefined(int);
     method public static boolean isDigit(char);
     method public static boolean isDigit(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isEmoji(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isEmojiComponent(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isEmojiModifier(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isEmojiModifierBase(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isEmojiPresentation(int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static boolean isExtendedPictographic(int);
     method public static boolean isHighSurrogate(char);
     method public static boolean isISOControl(char);
     method public static boolean isISOControl(int);
@@ -2608,6 +2614,8 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock ANCIENT_SYMBOLS;
     field public static final java.lang.Character.UnicodeBlock ARABIC;
     field public static final java.lang.Character.UnicodeBlock ARABIC_EXTENDED_A;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock ARABIC_EXTENDED_B;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock ARABIC_EXTENDED_C;
     field public static final java.lang.Character.UnicodeBlock ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS;
     field public static final java.lang.Character.UnicodeBlock ARABIC_PRESENTATION_FORMS_A;
     field public static final java.lang.Character.UnicodeBlock ARABIC_PRESENTATION_FORMS_B;
@@ -2655,6 +2663,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock CJK_UNIFIED_IDEOGRAPHS_EXTENSION_E;
     field public static final java.lang.Character.UnicodeBlock CJK_UNIFIED_IDEOGRAPHS_EXTENSION_F;
     field public static final java.lang.Character.UnicodeBlock CJK_UNIFIED_IDEOGRAPHS_EXTENSION_G;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock CJK_UNIFIED_IDEOGRAPHS_EXTENSION_H;
     field public static final java.lang.Character.UnicodeBlock COMBINING_DIACRITICAL_MARKS;
     field public static final java.lang.Character.UnicodeBlock COMBINING_DIACRITICAL_MARKS_EXTENDED;
     field public static final java.lang.Character.UnicodeBlock COMBINING_DIACRITICAL_MARKS_SUPPLEMENT;
@@ -2669,14 +2678,17 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock CUNEIFORM_NUMBERS_AND_PUNCTUATION;
     field public static final java.lang.Character.UnicodeBlock CURRENCY_SYMBOLS;
     field public static final java.lang.Character.UnicodeBlock CYPRIOT_SYLLABARY;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock CYPRO_MINOAN;
     field public static final java.lang.Character.UnicodeBlock CYRILLIC;
     field public static final java.lang.Character.UnicodeBlock CYRILLIC_EXTENDED_A;
     field public static final java.lang.Character.UnicodeBlock CYRILLIC_EXTENDED_B;
     field public static final java.lang.Character.UnicodeBlock CYRILLIC_EXTENDED_C;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock CYRILLIC_EXTENDED_D;
     field public static final java.lang.Character.UnicodeBlock CYRILLIC_SUPPLEMENTARY;
     field public static final java.lang.Character.UnicodeBlock DESERET;
     field public static final java.lang.Character.UnicodeBlock DEVANAGARI;
     field public static final java.lang.Character.UnicodeBlock DEVANAGARI_EXTENDED;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock DEVANAGARI_EXTENDED_A;
     field public static final java.lang.Character.UnicodeBlock DINGBATS;
     field public static final java.lang.Character.UnicodeBlock DIVES_AKURU;
     field public static final java.lang.Character.UnicodeBlock DOGRA;
@@ -2695,6 +2707,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock ETHIOPIC;
     field public static final java.lang.Character.UnicodeBlock ETHIOPIC_EXTENDED;
     field public static final java.lang.Character.UnicodeBlock ETHIOPIC_EXTENDED_A;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock ETHIOPIC_EXTENDED_B;
     field public static final java.lang.Character.UnicodeBlock ETHIOPIC_SUPPLEMENT;
     field public static final java.lang.Character.UnicodeBlock GENERAL_PUNCTUATION;
     field public static final java.lang.Character.UnicodeBlock GEOMETRIC_SHAPES;
@@ -2733,13 +2746,16 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock IPA_EXTENSIONS;
     field public static final java.lang.Character.UnicodeBlock JAVANESE;
     field public static final java.lang.Character.UnicodeBlock KAITHI;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock KAKTOVIK_NUMERALS;
     field public static final java.lang.Character.UnicodeBlock KANA_EXTENDED_A;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock KANA_EXTENDED_B;
     field public static final java.lang.Character.UnicodeBlock KANA_SUPPLEMENT;
     field public static final java.lang.Character.UnicodeBlock KANBUN;
     field public static final java.lang.Character.UnicodeBlock KANGXI_RADICALS;
     field public static final java.lang.Character.UnicodeBlock KANNADA;
     field public static final java.lang.Character.UnicodeBlock KATAKANA;
     field public static final java.lang.Character.UnicodeBlock KATAKANA_PHONETIC_EXTENSIONS;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock KAWI;
     field public static final java.lang.Character.UnicodeBlock KAYAH_LI;
     field public static final java.lang.Character.UnicodeBlock KHAROSHTHI;
     field public static final java.lang.Character.UnicodeBlock KHITAN_SMALL_SCRIPT;
@@ -2755,6 +2771,8 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock LATIN_EXTENDED_C;
     field public static final java.lang.Character.UnicodeBlock LATIN_EXTENDED_D;
     field public static final java.lang.Character.UnicodeBlock LATIN_EXTENDED_E;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock LATIN_EXTENDED_F;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock LATIN_EXTENDED_G;
     field public static final java.lang.Character.UnicodeBlock LEPCHA;
     field public static final java.lang.Character.UnicodeBlock LETTERLIKE_SYMBOLS;
     field public static final java.lang.Character.UnicodeBlock LIMBU;
@@ -2801,6 +2819,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock MYANMAR_EXTENDED_A;
     field public static final java.lang.Character.UnicodeBlock MYANMAR_EXTENDED_B;
     field public static final java.lang.Character.UnicodeBlock NABATAEAN;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock NAG_MUNDARI;
     field public static final java.lang.Character.UnicodeBlock NANDINAGARI;
     field public static final java.lang.Character.UnicodeBlock NEWA;
     field public static final java.lang.Character.UnicodeBlock NEW_TAI_LUE;
@@ -2817,6 +2836,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock OLD_SOGDIAN;
     field public static final java.lang.Character.UnicodeBlock OLD_SOUTH_ARABIAN;
     field public static final java.lang.Character.UnicodeBlock OLD_TURKIC;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock OLD_UYGHUR;
     field public static final java.lang.Character.UnicodeBlock OL_CHIKI;
     field public static final java.lang.Character.UnicodeBlock OPTICAL_CHARACTER_RECOGNITION;
     field public static final java.lang.Character.UnicodeBlock ORIYA;
@@ -2881,6 +2901,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock TAKRI;
     field public static final java.lang.Character.UnicodeBlock TAMIL;
     field public static final java.lang.Character.UnicodeBlock TAMIL_SUPPLEMENT;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock TANGSA;
     field public static final java.lang.Character.UnicodeBlock TANGUT;
     field public static final java.lang.Character.UnicodeBlock TANGUT_COMPONENTS;
     field public static final java.lang.Character.UnicodeBlock TANGUT_SUPPLEMENT;
@@ -2890,15 +2911,18 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock TIBETAN;
     field public static final java.lang.Character.UnicodeBlock TIFINAGH;
     field public static final java.lang.Character.UnicodeBlock TIRHUTA;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock TOTO;
     field public static final java.lang.Character.UnicodeBlock TRANSPORT_AND_MAP_SYMBOLS;
     field public static final java.lang.Character.UnicodeBlock UGARITIC;
     field public static final java.lang.Character.UnicodeBlock UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS;
     field public static final java.lang.Character.UnicodeBlock UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_EXTENDED;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_EXTENDED_A;
     field public static final java.lang.Character.UnicodeBlock VAI;
     field public static final java.lang.Character.UnicodeBlock VARIATION_SELECTORS;
     field public static final java.lang.Character.UnicodeBlock VARIATION_SELECTORS_SUPPLEMENT;
     field public static final java.lang.Character.UnicodeBlock VEDIC_EXTENSIONS;
     field public static final java.lang.Character.UnicodeBlock VERTICAL_FORMS;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock VITHKUQI;
     field public static final java.lang.Character.UnicodeBlock WANCHO;
     field public static final java.lang.Character.UnicodeBlock WARANG_CITI;
     field public static final java.lang.Character.UnicodeBlock YEZIDI;
@@ -2906,6 +2930,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock YI_RADICALS;
     field public static final java.lang.Character.UnicodeBlock YI_SYLLABLES;
     field public static final java.lang.Character.UnicodeBlock ZANABAZAR_SQUARE;
+    field @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeBlock ZNAMENNY_MUSICAL_NOTATION;
   }
 
   public enum Character.UnicodeScript {
@@ -2939,6 +2964,7 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript COPTIC;
     enum_constant public static final java.lang.Character.UnicodeScript CUNEIFORM;
     enum_constant public static final java.lang.Character.UnicodeScript CYPRIOT;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript CYPRO_MINOAN;
     enum_constant public static final java.lang.Character.UnicodeScript CYRILLIC;
     enum_constant public static final java.lang.Character.UnicodeScript DESERET;
     enum_constant public static final java.lang.Character.UnicodeScript DEVANAGARI;
@@ -2972,6 +2998,7 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript KAITHI;
     enum_constant public static final java.lang.Character.UnicodeScript KANNADA;
     enum_constant public static final java.lang.Character.UnicodeScript KATAKANA;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript KAWI;
     enum_constant public static final java.lang.Character.UnicodeScript KAYAH_LI;
     enum_constant public static final java.lang.Character.UnicodeScript KHAROSHTHI;
     enum_constant public static final java.lang.Character.UnicodeScript KHITAN_SMALL_SCRIPT;
@@ -3006,6 +3033,7 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript MULTANI;
     enum_constant public static final java.lang.Character.UnicodeScript MYANMAR;
     enum_constant public static final java.lang.Character.UnicodeScript NABATAEAN;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript NAG_MUNDARI;
     enum_constant public static final java.lang.Character.UnicodeScript NANDINAGARI;
     enum_constant public static final java.lang.Character.UnicodeScript NEWA;
     enum_constant public static final java.lang.Character.UnicodeScript NEW_TAI_LUE;
@@ -3021,6 +3049,7 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript OLD_SOGDIAN;
     enum_constant public static final java.lang.Character.UnicodeScript OLD_SOUTH_ARABIAN;
     enum_constant public static final java.lang.Character.UnicodeScript OLD_TURKIC;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript OLD_UYGHUR;
     enum_constant public static final java.lang.Character.UnicodeScript OL_CHIKI;
     enum_constant public static final java.lang.Character.UnicodeScript ORIYA;
     enum_constant public static final java.lang.Character.UnicodeScript OSAGE;
@@ -3053,6 +3082,7 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript TAI_VIET;
     enum_constant public static final java.lang.Character.UnicodeScript TAKRI;
     enum_constant public static final java.lang.Character.UnicodeScript TAMIL;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript TANGSA;
     enum_constant public static final java.lang.Character.UnicodeScript TANGUT;
     enum_constant public static final java.lang.Character.UnicodeScript TELUGU;
     enum_constant public static final java.lang.Character.UnicodeScript THAANA;
@@ -3060,9 +3090,11 @@ package java.lang {
     enum_constant public static final java.lang.Character.UnicodeScript TIBETAN;
     enum_constant public static final java.lang.Character.UnicodeScript TIFINAGH;
     enum_constant public static final java.lang.Character.UnicodeScript TIRHUTA;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript TOTO;
     enum_constant public static final java.lang.Character.UnicodeScript UGARITIC;
     enum_constant public static final java.lang.Character.UnicodeScript UNKNOWN;
     enum_constant public static final java.lang.Character.UnicodeScript VAI;
+    enum_constant @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static final java.lang.Character.UnicodeScript VITHKUQI;
     enum_constant public static final java.lang.Character.UnicodeScript WANCHO;
     enum_constant public static final java.lang.Character.UnicodeScript WARANG_CITI;
     enum_constant public static final java.lang.Character.UnicodeScript YEZIDI;
@@ -4374,7 +4406,7 @@ package java.lang {
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long);
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long, boolean);
     method public static int activeCount();
-    method public final void checkAccess();
+    method @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final void checkAccess();
     method @Deprecated public int countStackFrames();
     method @NonNull public static Thread currentThread();
     method @Deprecated public void destroy();
@@ -4383,7 +4415,7 @@ package java.lang {
     method @NonNull public static java.util.Map<java.lang.Thread,java.lang.StackTraceElement[]> getAllStackTraces();
     method @Nullable public ClassLoader getContextClassLoader();
     method @Nullable public static java.lang.Thread.UncaughtExceptionHandler getDefaultUncaughtExceptionHandler();
-    method public long getId();
+    method @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public long getId();
     method @NonNull public final String getName();
     method public final int getPriority();
     method @NonNull public StackTraceElement[] getStackTrace();
@@ -4396,6 +4428,7 @@ package java.lang {
     method public final boolean isAlive();
     method public final boolean isDaemon();
     method public boolean isInterrupted();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final boolean isVirtual();
     method public final void join(long) throws java.lang.InterruptedException;
     method public final void join(long, int) throws java.lang.InterruptedException;
     method public final void join() throws java.lang.InterruptedException;
@@ -4414,6 +4447,7 @@ package java.lang {
     method @Deprecated public final void stop();
     method @Deprecated public final void stop(@Nullable Throwable);
     method @Deprecated public final void suspend();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final long threadId();
     method public static void yield();
     field public static final int MAX_PRIORITY = 10; // 0xa
     field public static final int MIN_PRIORITY = 1; // 0x1

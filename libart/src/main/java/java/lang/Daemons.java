@@ -30,6 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import libcore.util.EmptyArray;
+import libcore.util.NativeAllocationRegistry;
 
 import dalvik.system.VMRuntime;
 import dalvik.system.VMDebug;
@@ -543,6 +544,19 @@ public final class Daemons {
             }
         }
 
+        /**
+         * A toString() that cannot possibly be stopped by a hung finalizer.
+         * Mirrors Object.toString(), except that we use the system hashcode.
+         * Thus no user monitors can be acquired.
+         */
+        static private String safeToString(Object obj) {
+            if (NativeAllocationRegistry.isCleanerThunk(obj)) {
+                // Known to not acquire user monitors, and has toString() method tailored for this.
+                return obj.toString();
+            }
+            return obj.getClass().getName() + '@'
+                    + Integer.toHexString(System.identityHashCode(obj));
+        }
 
         /**
          * Return null (normal case) or an exception describing what timed out.
@@ -626,7 +640,7 @@ public final class Daemons {
                 // since we may not increment the reference counter for every processed queue
                 // element.
                 Object current = ReferenceQueueDaemon.INSTANCE.currentlyProcessing();
-                String currentTarget = current == null ? "unknown" : current.toString();
+                String currentTarget = current == null ? "unknown" : safeToString(current);
                 System.logE("ReferenceQueueDaemon timed out while targeting " + currentTarget
                         + ". Total nanos: " + (System.nanoTime() - startNanos));
                 if (observedReferenceQueueTimeouts.incrementAndGet()
@@ -663,9 +677,9 @@ public final class Daemons {
                 return "unknown";
             }
             if (obj instanceof Cleaner.Cleanable) {
-                return VH_ACTION.get(obj).toString();
+                return safeToString(VH_ACTION.get(obj));
             } else {
-                return obj.toString();
+                return safeToString(obj);
             }
         }
 
