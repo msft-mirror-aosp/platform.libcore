@@ -182,6 +182,7 @@ java_defaults {
             "-Xep:GetClassOnClass:WARN",
             "-Xep:NullableOnContainingClass:WARN",
             "-Xep:GetClassOnAnnotation:WARN",
+            "-Xep:DoNotCall:WARN",
         ],
     },
     lint: {
