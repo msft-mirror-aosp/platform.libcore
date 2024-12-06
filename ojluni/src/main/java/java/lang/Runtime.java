@@ -59,6 +59,7 @@ import static android.system.OsConstants._SC_NPROCESSORS_CONF;
 
 import android.compat.Compatibility;
 import android.compat.annotation.ChangeId;
+import android.compat.annotation.Disabled;
 import android.compat.annotation.EnabledSince;
 import android.compat.annotation.Overridable;
 
@@ -103,8 +104,7 @@ public class Runtime {
      * @hide
      */
     @ChangeId
-    @EnabledSince(targetSdkVersion = VersionCodes.CUR_DEVELOPMENT)
-    @Overridable
+    @Disabled
     public static final long RO_DCL_CHANGE_ID = 354921003L;
 
     private static native void nativeExit(int code);
@@ -952,6 +952,9 @@ public class Runtime {
             if (!file.toPath().getFileSystem().isReadOnly() && file.canWrite()) {
                 if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
                     throw new UnsatisfiedLinkError("Attempt to load writable file: " + filename);
+                } else if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM){
+                    System.logW("Attempt to load writable file: " + filename
+                            + ". This will throw on a future Android version");
                 }
             }
         }
