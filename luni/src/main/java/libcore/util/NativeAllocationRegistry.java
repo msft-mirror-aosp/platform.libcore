@@ -537,6 +537,14 @@ public class NativeAllocationRegistry {
         }
     }
 
+    /**
+     * ReferenceQueueDaemon timeout code needs to identify these for better diagnostics.
+     * @hide
+     */
+    public static boolean isCleanerThunk(Object obj) {
+        return obj instanceof CleanerThunk;
+    }
+
     private static class CleanerRunner implements Runnable {
         private final Cleaner cleaner;
 
