@@ -105,7 +105,6 @@ public class Runtime {
      */
     @ChangeId
     @Disabled
-    @Overridable
     public static final long RO_DCL_CHANGE_ID = 354921003L;
 
     private static native void nativeExit(int code);

@@ -17,6 +17,7 @@
 package libcore.icu;
 
 import android.compat.annotation.UnsupportedAppUsage;
+import android.icu.lang.UCharacter;
 import android.icu.text.DateTimePatternGenerator;
 import android.icu.text.TimeZoneFormat;
 import android.icu.util.Currency;
@@ -767,6 +768,20 @@ public final class ICU {
 
   public static String getGMTZeroFormatString(Locale locale) {
     return TimeZoneFormat.getInstance(locale).getGMTZeroFormat();
+  }
+
+    /**
+     * If {@link java.lang.Character} calls {@link UCharacter#hasBinaryProperty(int, int)} directly,
+     * Dex2oatImageTest.TestExtension gtest fails. dex2oat fails to initialize the class because
+     * class verification fails and returns kAccessChecksFailure error when creating
+     * a boot image extension.
+     * This method is created to avoid the class initialization and verification failure.
+     * If this method creates any actual runtime circular dependency between {@link Character}
+     * and {@link UCharacter#hasBinaryProperty(int, int)}, consider use the ICU4C API instead.
+     * https://developer.android.com/ndk/reference/group/icu4c#u_hasbinaryproperty
+     */
+  public static boolean hasBinaryProperty(int ch, int property) {
+      return UCharacter.hasBinaryProperty(ch, property);
   }
 
 }
