@@ -2362,41 +2362,53 @@ public final class Unsafe {
     @IntrinsicCandidate
     public native void putIntVolatile(Object obj, long offset, int newValue);
 
-    // BEGIN Android-removed: Not used in Android.
-    /*
-    /** Volatile version of {@link #getBoolean(Object, long)}  * /
+    /** Volatile version of {@link #getBoolean(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native boolean getBooleanVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putBoolean(Object, long, boolean)}  * /
+    /** Volatile version of {@link #putBoolean(Object, long, boolean)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putBooleanVolatile(Object o, long offset, boolean x);
 
-    /** Volatile version of {@link #getByte(Object, long)}  * /
+    /** Volatile version of {@link #getByte(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native byte    getByteVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putByte(Object, long, byte)}  * /
+    /** Volatile version of {@link #putByte(Object, long, byte)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putByteVolatile(Object o, long offset, byte x);
 
-    /** Volatile version of {@link #getShort(Object, long)}  * /
+    /** Volatile version of {@link #getShort(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native short   getShortVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putShort(Object, long, short)}  * /
+    /** Volatile version of {@link #putShort(Object, long, short)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putShortVolatile(Object o, long offset, short x);
 
-    /** Volatile version of {@link #getChar(Object, long)}  * /
+    /** Volatile version of {@link #getChar(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native char    getCharVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putChar(Object, long, char)}  * /
+    /** Volatile version of {@link #putChar(Object, long, char)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putCharVolatile(Object o, long offset, char x);
-     */
-    // END Android-removed: Not used in Android.
 
     /**
      * Gets a {@code long} field from the given object,
@@ -2424,26 +2436,29 @@ public final class Unsafe {
     @IntrinsicCandidate
     public native void putLongVolatile(Object obj, long offset, long newValue);
 
-    // BEGIN Android-removed: Not used in Android.
-    /*
-    /** Volatile version of {@link #getFloat(Object, long)}  * /
+    /** Volatile version of {@link #getFloat(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native float   getFloatVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putFloat(Object, long, float)}  * /
+    /** Volatile version of {@link #putFloat(Object, long, float)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putFloatVolatile(Object o, long offset, float x);
 
-    /** Volatile version of {@link #getDouble(Object, long)}  * /
+    /** Volatile version of {@link #getDouble(Object, long)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native double  getDoubleVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putDouble(Object, long, double)}  * /
+    /** Volatile version of {@link #putDouble(Object, long, double)}  */
+    // Android-added: FastNative annotation.
+    @FastNative
     @IntrinsicCandidate
     public native void    putDoubleVolatile(Object o, long offset, double x);
-     */
-    // END Android-removed: Not used in Android.
-
 
     /** Acquire version of {@link #getReferenceVolatile(Object, long)} */
     @IntrinsicCandidate
