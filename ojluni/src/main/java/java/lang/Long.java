@@ -2015,7 +2015,6 @@ public final class Long extends Number
      * @return the compressed value
      * @see #expand
      * @since 19
-     * @hide
      */
     @IntrinsicCandidate
     public static long compress(long i, long mask) {
@@ -2104,8 +2103,6 @@ public final class Long extends Number
      * @param mask the bit mask
      * @return the expanded value
      * @see #compress
-     * @since 19
-     * @hide
      */
     @IntrinsicCandidate
     public static long expand(long i, long mask) {
