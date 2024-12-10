@@ -27,8 +27,9 @@ import sun.misc.Cleaner;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.ref.Reference;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -364,9 +365,9 @@ public class NativeAllocationRegistry {
     @FlaggedApi(com.android.libcore.Flags.FLAG_NATIVE_METRICS)
     public static final class Metrics {
         private String className;
-        private long mallocedCount;
+        private int mallocedCount;
         private long mallocedBytes;
-        private long nonmallocedCount;
+        private int nonmallocedCount;
         private long nonmallocedBytes;
 
         private Metrics(@NonNull String className) {
@@ -374,7 +375,7 @@ public class NativeAllocationRegistry {
         }
 
         private void add(NativeAllocationRegistry r) {
-            long count = r.counter;
+            int count = r.counter;
             long bytes = count * (r.size & ~IS_MALLOCED);
             if (r.isMalloced()) {
                 mallocedCount += count;
@@ -421,6 +422,8 @@ public class NativeAllocationRegistry {
         }
     }
 
+    private static int numClasses = 3;  /* default number of classes with aggregated metrics */
+
     /**
      * Returns per-class metrics in a Collection.
      *
@@ -430,22 +433,36 @@ public class NativeAllocationRegistry {
      * Metrics of the registries with no class explictily specified will be aggregated
      * under the class name of `libcore.util.NativeAllocationRegistry` by default.
      *
+     * NOTE:
+     *   1) ArrayList is used here for both memory and performance given
+     *   the number of classes with aggregated metrics is typically small,
+     *   a linear search will be fast enough here
+     *   2) Use the previous number of aggregated classes + 1 to minimize
+     *   memory usage, assuming the number doesn't jump much from last time.
+     *
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
     @FlaggedApi(com.android.libcore.Flags.FLAG_NATIVE_METRICS)
     public static synchronized @NonNull Collection<Metrics> getMetrics() {
-        Map<String, Metrics> result = new HashMap<>();
+        List<Metrics> result = new ArrayList<>(numClasses + 1);
         for (NativeAllocationRegistry r : registries.keySet()) {
             String className = r.clazz.getName();
-            Metrics m = result.get(className);
+            Metrics m = null;
+            for (int i = 0; i < result.size(); i++) {
+                if (result.get(i).className == className) {
+                    m = result.get(i);
+                    break;
+                }
+            }
             if (m == null) {
                 m = new Metrics(className);
-                result.put(className, m);
+                result.add(m);
             }
             m.add(r);
         }
-        return result.values();
+        numClasses = result.size();
+        return result;
     }
 
     /**
