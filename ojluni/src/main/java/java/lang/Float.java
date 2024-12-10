@@ -1018,7 +1018,6 @@ public final class Float extends Number
      *
      * @param floatBinary16 the binary16 value to convert to {@code float}
      * @since 20
-     * @hide
      */
     @IntrinsicCandidate
     public static float float16ToFloat(short floatBinary16) {
@@ -1095,7 +1094,6 @@ public final class Float extends Number
      *
      * @param f the {@code float} value to convert to binary16
      * @since 20
-     * @hide
      */
     @IntrinsicCandidate
     public static short floatToFloat16(float f) {
