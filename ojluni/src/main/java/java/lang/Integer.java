@@ -1966,7 +1966,6 @@ public final class Integer extends Number
      * @return the compressed value
      * @see #expand
      * @since 19
-     * @hide
      */
     @IntrinsicCandidate
     public static int compress(int i, int mask) {
@@ -2056,7 +2055,6 @@ public final class Integer extends Number
      * @return the expanded value
      * @see #compress
      * @since 19
-     * @hide
      */
     @IntrinsicCandidate
     public static int expand(int i, int mask) {
