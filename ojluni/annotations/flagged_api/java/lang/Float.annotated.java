@@ -48,6 +48,12 @@ public double doubleValue() { throw new RuntimeException("Stub!"); }
 
 public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_OPENJDK_21_V1_APIS)
+public static float float16ToFloat(short floatBinary16) { throw new RuntimeException("Stub!"); }
+
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_OPENJDK_21_V1_APIS)
+public static short floatToFloat16(float f) { throw new RuntimeException("Stub!"); }
+
 public static int floatToIntBits(float value) { throw new RuntimeException("Stub!"); }
 
 public static native int floatToRawIntBits(float value);
