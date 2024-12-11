@@ -75,7 +75,7 @@ cc_library_shared {
         "libz",
     ],
     static_libs: [
-        "libcrypto_for_art",
+        "libcrypto_static", // Not FIPS tested - for bignums only.
         "libziparchive",
     ],
     version_script: "libjavacore.map",
@@ -135,7 +135,7 @@ cc_defaults {
         "libz",
     ],
     static_libs: [
-        "libcrypto_for_art",
+        "libcrypto_static", // Not FIPS tested - for bignums only.
         "libfdlibm",
     ],
 
