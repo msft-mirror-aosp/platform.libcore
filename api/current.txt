@@ -3355,6 +3355,8 @@ package java.lang {
     method public static int compare(float, float);
     method public int compareTo(@NonNull Float);
     method public double doubleValue();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static float float16ToFloat(short);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static short floatToFloat16(float);
     method public static int floatToIntBits(float);
     method public static int floatToRawIntBits(float);
     method public float floatValue();
@@ -3460,9 +3462,11 @@ package java.lang {
     method public static int compare(int, int);
     method public int compareTo(@NonNull Integer);
     method public static int compareUnsigned(int, int);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static int compress(int, int);
     method @NonNull public static Integer decode(@NonNull String) throws java.lang.NumberFormatException;
     method public static int divideUnsigned(int, int);
     method public double doubleValue();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static int expand(int, int);
     method public float floatValue();
     method @Nullable public static Integer getInteger(@NonNull String);
     method @Nullable public static Integer getInteger(@NonNull String, int);
@@ -3538,9 +3542,11 @@ package java.lang {
     method public static int compare(long, long);
     method public int compareTo(@NonNull Long);
     method public static int compareUnsigned(long, long);
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static long compress(long, long);
     method @NonNull public static Long decode(@NonNull String) throws java.lang.NumberFormatException;
     method public static long divideUnsigned(long, long);
     method public double doubleValue();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public static long expand(long, long);
     method public float floatValue();
     method @Nullable public static Long getLong(@NonNull String);
     method @Nullable public static Long getLong(@NonNull String, long);
@@ -4407,9 +4413,7 @@ package java.lang {
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long, boolean);
     method public static int activeCount();
     method @Deprecated @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final void checkAccess();
-    method @Deprecated public int countStackFrames();
     method @NonNull public static Thread currentThread();
-    method @Deprecated public void destroy();
     method public static void dumpStack();
     method public static int enumerate(Thread[]);
     method @NonNull public static java.util.Map<java.lang.Thread,java.lang.StackTraceElement[]> getAllStackTraces();
@@ -4433,7 +4437,6 @@ package java.lang {
     method public final void join(long, int) throws java.lang.InterruptedException;
     method public final void join() throws java.lang.InterruptedException;
     method public static void onSpinWait();
-    method @Deprecated public final void resume();
     method public void run();
     method public void setContextClassLoader(@Nullable ClassLoader);
     method public final void setDaemon(boolean);
@@ -4445,8 +4448,6 @@ package java.lang {
     method public static void sleep(long, int) throws java.lang.InterruptedException;
     method public void start();
     method @Deprecated public final void stop();
-    method @Deprecated public final void stop(@Nullable Throwable);
-    method @Deprecated public final void suspend();
     method @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public final long threadId();
     method public static void yield();
     field public static final int MAX_PRIORITY = 10; // 0xa
