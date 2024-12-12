@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <asm-generic/mman-common.h>
 #define LOG_TAG "OsConstants"
 
 #include <errno.h>
@@ -365,6 +366,30 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #if defined(_LINUX_CAPABILITY_VERSION_3)
     initConstant(env, c, "_LINUX_CAPABILITY_VERSION_3", _LINUX_CAPABILITY_VERSION_3);
 #endif
+    initConstant(env, c, "MADV_NORMAL", MADV_NORMAL);
+    initConstant(env, c, "MADV_RANDOM", MADV_RANDOM);
+    initConstant(env, c, "MADV_SEQUENTIAL", MADV_SEQUENTIAL);
+    initConstant(env, c, "MADV_WILLNEED", MADV_WILLNEED);
+    initConstant(env, c, "MADV_DONTNEED", MADV_DONTNEED);
+    initConstant(env, c, "MADV_REMOVE", MADV_REMOVE);
+    initConstant(env, c, "MADV_DONTFORK", MADV_DONTFORK);
+    initConstant(env, c, "MADV_DOFORK", MADV_DOFORK);
+    initConstant(env, c, "MADV_HWPOISON", MADV_HWPOISON);
+    initConstant(env, c, "MADV_MERGEABLE", MADV_MERGEABLE);
+    initConstant(env, c, "MADV_UNMERGEABLE", MADV_UNMERGEABLE);
+    initConstant(env, c, "MADV_SOFT_OFFLINE", MADV_SOFT_OFFLINE);
+    initConstant(env, c, "MADV_HUGEPAGE", MADV_HUGEPAGE);
+    initConstant(env, c, "MADV_NOHUGEPAGE", MADV_NOHUGEPAGE);
+    initConstant(env, c, "MADV_COLLAPSE", MADV_COLLAPSE);
+    initConstant(env, c, "MADV_DONTDUMP", MADV_DONTDUMP);
+    initConstant(env, c, "MADV_DODUMP", MADV_DODUMP);
+    initConstant(env, c, "MADV_FREE", MADV_FREE);
+    initConstant(env, c, "MADV_WIPEONFORK", MADV_WIPEONFORK);
+    initConstant(env, c, "MADV_KEEPONFORK", MADV_KEEPONFORK);
+    initConstant(env, c, "MADV_COLD", MADV_COLD);
+    initConstant(env, c, "MADV_PAGEOUT", MADV_PAGEOUT);
+    initConstant(env, c, "MADV_POPULATE_READ", MADV_POPULATE_READ);
+    initConstant(env, c, "MADV_POPULATE_WRITE", MADV_POPULATE_WRITE);
     initConstant(env, c, "MAP_FIXED", MAP_FIXED);
     initConstant(env, c, "MAP_ANONYMOUS", MAP_ANONYMOUS);
     initConstant(env, c, "MAP_POPULATE", MAP_POPULATE);
