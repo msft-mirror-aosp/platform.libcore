@@ -1199,6 +1199,7 @@ class Thread implements Runnable {
      *        For more information, see
      *        <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *        are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      */
     @Deprecated
     public final synchronized void stop(Throwable obj) {
@@ -1343,6 +1344,7 @@ class Thread implements Runnable {
      *     "frozen" processes. For more information, see
      *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">
      *     Why are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated
@@ -1378,6 +1380,7 @@ class Thread implements Runnable {
      *   For more information, see
      *   <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *   are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated(since="1.2")
@@ -1398,6 +1401,7 @@ class Thread implements Runnable {
      *     For more information, see
      *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *     are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated(since="1.2")
@@ -1582,6 +1586,7 @@ class Thread implements Runnable {
      *             which is deprecated.  Further, the results of this call
      *             were never well-defined.
      *             This method is subject to removal in a future version of Java SE.
+     * @removed
      */
     @Deprecated(since="1.2", forRemoval=true)
     // Android-changed: Provide non-native implementation of countStackFrames().
