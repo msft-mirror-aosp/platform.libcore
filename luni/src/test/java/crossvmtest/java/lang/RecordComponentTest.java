@@ -33,7 +33,9 @@ import java.lang.reflect.RecordComponent;
 import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class RecordComponentTest {
 
@@ -53,7 +55,24 @@ public class RecordComponentTest {
     record RecordString(String s) {}
 
     record GenericRecord<A, B extends AbstractMap<String, BigInteger>> (
-            A a, B b, List<String> c) {}
+            A a, B b, List<String> c) {
+        @SuppressWarnings("SelfAssignment")
+        GenericRecord { // compact canonical constructor
+            c = Objects.requireNonNull(c);
+        }
+
+        // The following constructors are useful when the definition of a record evolves,
+        // and more record components are added into the record.
+        GenericRecord(A a) {
+            this(a, null, List.of());
+        }
+
+        GenericRecord(A a, B b) {
+            this(a, b, List.of());
+        }
+
+
+    }
 
     @Test
     public void testBasic() {
@@ -145,6 +164,31 @@ public class RecordComponentTest {
         assertEquals("A", components[0].getGenericType().getTypeName());
         assertEquals("B", components[1].getGenericType().getTypeName());
         assertEquals("java.util.List<java.lang.String>", components[2].getGenericType().getTypeName());
+    }
+
+    @Test
+    public void testSecondaryConstructors() {
+        var r = new GenericRecord<String, HashMap<String, BigInteger>>("abc");
+        assertEquals("abc", r.a);
+        assertNull(r.b);
+        assertEquals(List.of(), r.c);
+
+        HashMap<String, BigInteger> map = HashMap.newHashMap(1);
+        map.put("123", BigInteger.valueOf(5L));
+        r = new GenericRecord<>("abc", map);
+        assertEquals("abc", r.a);
+        assertEquals(BigInteger.valueOf(5L), r.b.get("123"));
+        assertEquals(List.of(), r.c);
+    }
+
+    @Test
+    public void testCanonicalConstructors() {
+        GenericRecord<String, HashMap<String, BigInteger>> r = new GenericRecord<>(null, null,
+                List.of());
+        assertEquals(List.of(), r.c);
+
+        Assert.assertThrows(NullPointerException.class,
+                () -> new GenericRecord<>(null, null, null));
     }
 
     @Test
