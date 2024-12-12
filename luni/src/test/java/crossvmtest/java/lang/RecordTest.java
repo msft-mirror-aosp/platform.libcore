@@ -42,6 +42,8 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 public class RecordTest {
 
@@ -236,5 +238,62 @@ public class RecordTest {
             assertEquals(9, r.x());
             assertEquals("abc", r.s());
         }
+    }
+
+    @Test
+    public void testLocalRecord() {
+        record Point(int x, int y) {
+            @Override
+            public int y() {
+                return Math.abs(y);
+            }
+
+            public long sum() {
+                return (long) x + y;
+            }
+        }
+        var r = new Point(3, 4);
+        assertEquals(3, r.x);
+        assertEquals(4, r.y());
+        assertEquals(7, r.sum());
+        r = new Point(-6, -7);
+        assertEquals(-6, r.x);
+        assertEquals(-6, r.x());
+        assertEquals(-7, r.y);
+        assertEquals(7, r.y());
+        assertEquals(-13, r.sum());
+    }
+
+    record SupplierRecord(int x)  implements Supplier<String> {
+
+        private static int A = 9;
+
+        static void setStatic(int a) {
+            A = a;
+        }
+
+        static int getStatic() {
+            return A;
+        }
+
+        @Override
+        public String get() {
+            return String.valueOf(x);
+        }
+    }
+
+    @Test
+    public void testOverriddenInterfaceMethod() {
+        var r = new SupplierRecord(5);
+        assertEquals(5, r.x);
+        assertEquals("5", r.get());
+    }
+
+    @Test
+    public void testStaticMethods() {
+        SupplierRecord.setStatic(5);
+        assertEquals(5, SupplierRecord.getStatic());
+        SupplierRecord.setStatic(3);
+        assertEquals(3, SupplierRecord.getStatic());
     }
 }
