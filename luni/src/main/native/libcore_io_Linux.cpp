@@ -1903,6 +1903,11 @@ static jobject Linux_lstat(JNIEnv* env, jobject, jstring javaPath) {
     return doStat(env, javaPath, true);
 }
 
+static void Linux_madvise(JNIEnv* env, jobject, jlong address, jlong byteCount, jint advice) {
+    void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+    throwIfMinusOne(env, "madvise", TEMP_FAILURE_RETRY(madvise(ptr, byteCount, advice)));
+}
+
 static jobject Linux_memfd_create(JNIEnv* env, jobject, jstring javaName, jint flags) {
 #if defined(__BIONIC__)
     ScopedUtfChars name(env, javaName);
@@ -2833,6 +2838,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, listxattr, "(Ljava/lang/String;)[Ljava/lang/String;"),
     NATIVE_METHOD(Linux, lseek, "(Ljava/io/FileDescriptor;JI)J"),
     NATIVE_METHOD(Linux, lstat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
+    NATIVE_METHOD(Linux, madvise, "(JJI)V"),
     NATIVE_METHOD(Linux, memfd_create, "(Ljava/lang/String;I)Ljava/io/FileDescriptor;"),
     NATIVE_METHOD(Linux, mincore, "(JJ[B)V"),
     NATIVE_METHOD(Linux, mkdir, "(Ljava/lang/String;I)V"),

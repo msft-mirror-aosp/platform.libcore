@@ -275,6 +275,7 @@ public class BlockGuardOsTest {
                 "kill(int,int)",
                 "listen(java.io.FileDescriptor,int)",
                 "listxattr(java.lang.String)",
+                "madvise(long,long,int)",
                 "memfd_create(java.lang.String,int)",
                 "mincore(long,long,byte[])",
                 "mlock(long,long)",
