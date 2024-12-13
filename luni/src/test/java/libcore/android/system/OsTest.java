@@ -2306,6 +2306,34 @@ public class OsTest {
         Os.munmap(address, size);
     }
 
+    @Test
+    public void testMadvise() throws Exception {
+        final long size = 4096;
+        final long address = Os.mmap(0, size, PROT_READ,
+                MAP_PRIVATE | MAP_ANONYMOUS, new FileDescriptor(), 0);
+        try {
+            // madvise just gives advice to the kernel.
+            // The kernel chooses whether and when to act on it.
+            // We can't directly observe the effect of the advice.
+            // So we just try the common values and make sure we don't crash.
+            Os.madvise(address, size, OsConstants.MADV_NORMAL);
+            Os.madvise(address, size, OsConstants.MADV_RANDOM);
+            Os.madvise(address, size, OsConstants.MADV_SEQUENTIAL);
+            Os.madvise(address, size, OsConstants.MADV_WILLNEED);
+            Os.madvise(address, size, OsConstants.MADV_DONTNEED);
+
+            Os.mlock(address, size);
+            expectException(
+                    () -> Os.madvise(address, size, OsConstants.MADV_DONTNEED),
+                    ErrnoException.class,
+                    OsConstants.EINVAL,
+                    "MADV_DONTNEED on mlock'ed memory should fail");
+            Os.munlock(address, size);
+        } finally {
+            Os.munmap(address, size);
+        }
+    }
+
     /*
      * Checks that all ways of accessing the environment are consistent by collecting:
      * osEnvironment      - The environment returned by Os.environ()
