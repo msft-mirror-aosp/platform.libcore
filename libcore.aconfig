@@ -116,3 +116,13 @@ flag {
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
+
+flag {
+    namespace: "core_libraries"
+    name: "madvise_api"
+    is_exported: true
+    description: "Java APIs to access madvise()"
+    bug: "383173082"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
