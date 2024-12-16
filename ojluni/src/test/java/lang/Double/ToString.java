@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2005, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -21,27 +21,21 @@
  * questions.
  */
 
-/*
- * @test
- * @bug 4408489 4826652
- * @summary Testing values of Double.{MIN_VALUE, MIN_NORMAL, MAX_VALUE}
- * @author Joseph D. Darcy
- */
 package test.java.lang.Double;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
+/*
+ * @test
+ * @bug 4428022
+ * @summary Tests for Double.toString
+ * @author Andrew Haley <aph@redhat.com>
+ */
 
-public class ExtremaTest {
-    @Test
-    public void testExtremalValues() throws Exception {
-        Assert.assertEquals(Double.longBitsToDouble(0x1L), Double.MIN_VALUE,
-            "Double.MIN_VALUE is not equal to longBitsToDouble(0x1L).");
+public class ToString {
 
-        Assert.assertEquals(Double.longBitsToDouble(0x0010000000000000L), Double.MIN_NORMAL,
-            "Double.MIN_NORMAL is not equal to longBitsToDouble(0x0010000000000000L).");
-
-        Assert.assertEquals (Double.longBitsToDouble(0x7fefffffffffffffL), Double.MAX_VALUE,
-            "Double.MAX_VALUE is not equal to longBitsToDouble(0x7fefffffffffffffL).");
+    public static void main(String args[]) {
+      if (!Double.toString(0.001).equals("0.001"))
+          throw new RuntimeException("Double.toString(0.001) is not \"0.001\"");
+      if (!Double.toString(0.002).equals("0.002"))
+          throw new RuntimeException("Double.toString(0.001) is not \"0.002\"");
     }
 }
