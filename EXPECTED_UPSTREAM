@@ -2082,6 +2082,7 @@ ojluni/src/test/java/lang/invoke/VarHandles/generate-vh-tests.sh,jdk11u/jdk-11.0
 ojluni/src/test/java/lang/ref/CleanerTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/ref/CleanerTest.java
 ojluni/src/test/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java
 ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/reflect/records/RecordReflectionTest.java
+ojluni/src/test/java/lang/runtime/SwitchBootstrapsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/runtime/SwitchBootstrapsTest.java
 ojluni/src/test/java/math/BigDecimal/AddTests.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/math/BigDecimal/AddTests.java
 ojluni/src/test/java/math/BigDecimal/CompareToTests.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/math/BigDecimal/CompareToTests.java
 ojluni/src/test/java/math/BigDecimal/Constructor.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/math/BigDecimal/Constructor.java
