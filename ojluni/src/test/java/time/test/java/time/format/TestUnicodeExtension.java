@@ -35,7 +35,9 @@ import static org.testng.Assert.assertEquals;
 import android.icu.util.VersionInfo;
 
 import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
 import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
@@ -363,6 +365,8 @@ public class TestUnicodeExtension {
         };
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     @DataProvider(name="shortTZID")
     Object[][] shortTZID() {
         return new Object[][] {
