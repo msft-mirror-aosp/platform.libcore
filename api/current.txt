@@ -5366,6 +5366,11 @@ package java.lang.runtime {
     method @NonNull public static Object bootstrap(@NonNull java.lang.invoke.MethodHandles.Lookup, @NonNull String, @NonNull java.lang.invoke.TypeDescriptor, @NonNull Class<?>, @Nullable String, @NonNull java.lang.invoke.MethodHandle...) throws java.lang.Throwable;
   }
 
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public class SwitchBootstraps {
+    method public static java.lang.invoke.CallSite enumSwitch(java.lang.invoke.MethodHandles.Lookup, String, java.lang.invoke.MethodType, java.lang.Object...);
+    method public static java.lang.invoke.CallSite typeSwitch(java.lang.invoke.MethodHandles.Lookup, String, java.lang.invoke.MethodType, java.lang.Object...);
+  }
+
 }
 
 package java.math {
