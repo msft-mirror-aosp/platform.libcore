@@ -19,6 +19,9 @@ package org.apache.harmony.tests.java.util;
 
 import android.icu.util.VersionInfo;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -300,6 +303,7 @@ public class DateTest extends junit.framework.TestCase {
     /**
      * java.util.Date#parse(java.lang.String)
      */
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_parseLjava_lang_String() {
         // Test for method long java.util.Date.parse(java.lang.String)
         Date d = new Date(Date.parse("13 October 1998"));

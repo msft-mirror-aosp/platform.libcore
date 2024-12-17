@@ -16,6 +16,11 @@
  */
 package org.apache.harmony.tests.java.text;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.FieldPosition;
@@ -230,6 +235,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertFalse("objects has equal hash code", format2.hashCode() == format.hashCode());
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     public void test_formatToCharacterIteratorLjava_lang_Object() {
         try {
             // Regression for HARMONY-466
@@ -244,6 +251,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
                 .t_formatToCharacterIterator();
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     public void test_formatLjava_util_DateLjava_lang_StringBufferLjava_text_FieldPosition() {
         // Test for method java.lang.StringBuffer
         // java.text.SimpleDateFormat.format(java.util.Date,
@@ -406,6 +415,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
                 position.getEndIndex() == result.length());
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     public void test_format_time_zones() throws Exception {
         Calendar cal = new GregorianCalendar(1999, Calendar.JUNE, 2, 15, 3, 6);
 
@@ -451,6 +462,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertFormat(format, " z", cal, " GMT-01:30", DateFormat.TIMEZONE_FIELD);
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     public void test_timeZoneFormatting() {
         // tests specific to formatting of timezones
         Date summerDate = new GregorianCalendar(1999, Calendar.JUNE, 2, 15, 3, 6).getTime();
