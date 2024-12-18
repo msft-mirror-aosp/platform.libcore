@@ -28,6 +28,11 @@ import java.util.function.Supplier;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.SwitchTargetSdkVersionRule;
 import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
+import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
+
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
@@ -68,12 +73,14 @@ public class TimeZoneTest extends TestCaseWithRules {
     }
 
     // http://code.google.com/p/android/issues/detail?id=14395
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     public void testPreHistoricInDaylightTime() {
         // A replacement for testPreHistoricInDaylightTime_old() using a zone that lacks an
         // explicit transition at Integer.MIN_VALUE with zic 2019a and 2019a data.
         TimeZone tz = TimeZone.getTimeZone("CET");
 
-        long firstTransitionTimeMillis = -1693706400000L; // Apr 30, 1916 22:00:00 GMT
+        long firstTransitionTimeMillis = -1693702800000L; // Apr 30, 1916 23:00:00 GMT
         assertEquals(7200000L, tz.getOffset(firstTransitionTimeMillis));
         assertTrue(tz.inDaylightTime(new Date(firstTransitionTimeMillis)));
 
