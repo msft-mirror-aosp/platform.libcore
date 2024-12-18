@@ -128,4 +128,16 @@ public class DirectByteBufferTest extends ByteBufferTest {
         buf.setAccessible(true);
         buf.get(0);
     }
+
+    public void testAbsoluteBulkGet() {
+        buf = ByteBuffer.allocateDirect(1000);
+        for (int i = 0; i < buf.capacity(); i++) {
+            buf.put(i, (byte) i);
+        }
+        byte[] array = new byte[buf.capacity()];
+        buf.get(0, array, 0, array.length);
+        for (int i = 0; i < array.length; i++) {
+            assertEquals(array[i], (byte) i);
+        }
+    }
 }

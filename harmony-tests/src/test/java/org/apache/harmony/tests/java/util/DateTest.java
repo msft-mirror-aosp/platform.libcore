@@ -19,6 +19,9 @@ package org.apache.harmony.tests.java.util;
 
 import android.icu.util.VersionInfo;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -300,6 +303,7 @@ public class DateTest extends junit.framework.TestCase {
     /**
      * java.util.Date#parse(java.lang.String)
      */
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_parseLjava_lang_String() {
         // Test for method long java.util.Date.parse(java.lang.String)
         Date d = new Date(Date.parse("13 October 1998"));
@@ -320,11 +324,11 @@ public class DateTest extends junit.framework.TestCase {
         cal.clear();
         cal.set(1969, Calendar.JANUARY, 12, 1, 0);
         assertTrue("Wrong parsed date 3", d.equals(cal.getTime()));
-        d = new Date(Date.parse("6:45:13 3/2/1200 MST"));
+        d = new Date(Date.parse("6:45:13 3/2/1900 MST"));
         cal.setTimeZone(TimeZone.getTimeZone("MST"));
         cal.clear();
-        cal.set(1200, 2, 2, 6, 45, 13);
-        assertTrue("Wrong parsed date 4", d.equals(cal.getTime()));
+        cal.set(1900, 2, 2, 6, 45, 13);
+        assertEquals("Wrong parsed date 4", d, cal.getTime());
         d = new Date(Date.parse("Mon, 22 Nov 1999 12:52:06 GMT"));
         cal.setTimeZone(TimeZone.getTimeZone("GMT"));
         cal.clear();
