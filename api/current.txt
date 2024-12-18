@@ -1,6 +1,39 @@
 // Signature format: 2.0
 package android.crypto.hpke {
 
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class AeadParameterSpec extends java.security.spec.NamedParameterSpec {
+    ctor public AeadParameterSpec(@NonNull String);
+    field public static final android.crypto.hpke.AeadParameterSpec AES_128_GCM;
+    field public static final android.crypto.hpke.AeadParameterSpec AES_256_GCM;
+    field public static final android.crypto.hpke.AeadParameterSpec CHACHA20POLY1305;
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke {
+    method @NonNull public static String getAlgorithmName(@NonNull android.crypto.hpke.KemParameterSpec, @NonNull android.crypto.hpke.KdfParameterSpec, @NonNull android.crypto.hpke.AeadParameterSpec);
+    method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String) throws java.security.NoSuchAlgorithmException;
+    method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String, @NonNull String) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
+    method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String, @NonNull java.security.Provider) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
+    method @NonNull public java.security.Provider getProvider();
+    method public android.crypto.hpke.Hpke.RecipientBuilder newRecipient(@NonNull byte[], @NonNull java.security.PrivateKey);
+    method public android.crypto.hpke.Hpke.SenderBuilder newSender(@NonNull java.security.PublicKey);
+    method @NonNull public byte[] open(@NonNull java.security.PrivateKey, @Nullable byte[], @NonNull android.crypto.hpke.Message, @Nullable byte[]) throws java.security.GeneralSecurityException, java.security.InvalidKeyException;
+    method @NonNull public android.crypto.hpke.Message seal(@NonNull java.security.PublicKey, @Nullable byte[], @NonNull byte[], @Nullable byte[]) throws java.security.InvalidKeyException;
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke.RecipientBuilder {
+    method @NonNull public android.crypto.hpke.Recipient build() throws java.security.InvalidKeyException;
+    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setApplicationInfo(@NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setPsk(@NonNull byte[], @NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setSenderKey(@NonNull java.security.PublicKey);
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke.SenderBuilder {
+    method @NonNull public android.crypto.hpke.Sender build() throws java.security.InvalidKeyException;
+    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setApplicationInfo(@NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setPsk(@NonNull byte[], @NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setSenderKey(@NonNull java.security.PrivateKey);
+  }
+
   public interface HpkeSpi {
     method @NonNull public byte[] engineExport(int, @Nullable byte[]);
     method public void engineInitRecipient(@NonNull byte[], @NonNull java.security.PrivateKey, @Nullable byte[], @Nullable java.security.PublicKey, @Nullable byte[], @Nullable byte[]) throws java.security.InvalidKeyException;
@@ -9,6 +42,40 @@ package android.crypto.hpke {
     method @NonNull public byte[] engineOpen(@NonNull byte[], @Nullable byte[]) throws java.security.GeneralSecurityException;
     method @NonNull public byte[] engineSeal(@NonNull byte[], @Nullable byte[]);
     method @NonNull public byte[] getEncapsulated();
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class KdfParameterSpec extends java.security.spec.NamedParameterSpec {
+    ctor public KdfParameterSpec(@NonNull String);
+    field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA256;
+    field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA384;
+    field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA512;
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class KemParameterSpec extends java.security.spec.NamedParameterSpec {
+    ctor public KemParameterSpec(@NonNull String);
+    field public static final android.crypto.hpke.KemParameterSpec DHKEM_P256_HKDF_SHA256;
+    field public static final android.crypto.hpke.KemParameterSpec DHKEM_X25519_HKDF_SHA256;
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Message {
+    ctor public Message(@NonNull byte[], @NonNull byte[]);
+    method @NonNull public byte[] getCiphertext();
+    method @NonNull public byte[] getEncapsulated();
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Recipient {
+    method @NonNull public byte[] export(int, @Nullable byte[]);
+    method @NonNull public java.security.Provider getProvider();
+    method @NonNull public android.crypto.hpke.HpkeSpi getSpi();
+    method @NonNull public byte[] open(@NonNull byte[], @Nullable byte[]) throws java.security.GeneralSecurityException;
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public class Sender {
+    method @NonNull public byte[] export(int, @Nullable byte[]);
+    method @NonNull public byte[] getEncapsulated();
+    method @NonNull public java.security.Provider getProvider();
+    method @NonNull public android.crypto.hpke.HpkeSpi getSpi();
+    method @NonNull public byte[] seal(@NonNull byte[], @Nullable byte[]);
   }
 
   public final class XdhKeySpec extends java.security.spec.EncodedKeySpec {
@@ -81,6 +148,7 @@ package android.system {
     method public static String[] listxattr(String) throws android.system.ErrnoException;
     method public static long lseek(java.io.FileDescriptor, long, int) throws android.system.ErrnoException;
     method public static android.system.StructStat lstat(String) throws android.system.ErrnoException;
+    method @FlaggedApi("com.android.libcore.madvise_api") public static void madvise(long, long, int) throws android.system.ErrnoException;
     method @NonNull public static java.io.FileDescriptor memfd_create(@NonNull String, int) throws android.system.ErrnoException;
     method public static void mincore(long, long, byte[]) throws android.system.ErrnoException;
     method public static void mkdir(String, int) throws android.system.ErrnoException;
@@ -386,6 +454,30 @@ package android.system {
     field public static final int IP_MULTICAST_TTL;
     field public static final int IP_TOS;
     field public static final int IP_TTL;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_COLD;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_COLLAPSE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_DODUMP;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_DOFORK;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_DONTDUMP;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_DONTFORK;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_DONTNEED;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_FREE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_HUGEPAGE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_HWPOISON;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_KEEPONFORK;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_MERGEABLE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_NOHUGEPAGE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_NORMAL;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_PAGEOUT;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_POPULATE_READ;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_POPULATE_WRITE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_RANDOM;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_REMOVE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_SEQUENTIAL;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_SOFT_OFFLINE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_UNMERGEABLE;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_WILLNEED;
+    field @FlaggedApi("com.android.libcore.madvise_api") public static final int MADV_WIPEONFORK;
     field public static final int MAP_ANONYMOUS;
     field public static final int MAP_FIXED;
     field public static final int MAP_PRIVATE;
@@ -5272,6 +5364,11 @@ package java.lang.runtime {
 
   public class ObjectMethods {
     method @NonNull public static Object bootstrap(@NonNull java.lang.invoke.MethodHandles.Lookup, @NonNull String, @NonNull java.lang.invoke.TypeDescriptor, @NonNull Class<?>, @Nullable String, @NonNull java.lang.invoke.MethodHandle...) throws java.lang.Throwable;
+  }
+
+  @FlaggedApi("com.android.libcore.openjdk_21_v1_apis") public class SwitchBootstraps {
+    method public static java.lang.invoke.CallSite enumSwitch(java.lang.invoke.MethodHandles.Lookup, String, java.lang.invoke.MethodType, java.lang.Object...);
+    method public static java.lang.invoke.CallSite typeSwitch(java.lang.invoke.MethodHandles.Lookup, String, java.lang.invoke.MethodType, java.lang.Object...);
   }
 
 }
