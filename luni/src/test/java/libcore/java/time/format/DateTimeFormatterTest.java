@@ -52,7 +52,7 @@ public class DateTimeFormatterTest {
 
     @Test
     public void test_getDecimalStyle() {
-        Locale arLocale = Locale.forLanguageTag("ar");
+        Locale arLocale = Locale.forLanguageTag("ar-EG");
         DateTimeFormatter[] formatters = new DateTimeFormatter[] {
                 DateTimeFormatter.ISO_DATE,
                 DateTimeFormatter.RFC_1123_DATE_TIME,
