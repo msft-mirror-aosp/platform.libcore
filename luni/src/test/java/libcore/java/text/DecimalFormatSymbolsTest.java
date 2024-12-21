@@ -123,7 +123,7 @@ public class DecimalFormatSymbolsTest extends junit.framework.TestCase {
         //
         // It is expected that the symbols may change with future CLDR updates.
 
-        dfs = new DecimalFormatSymbols(Locale.forLanguageTag("ar"));
+        dfs = new DecimalFormatSymbols(Locale.forLanguageTag("ar-EG"));
         assertEquals('٪', dfs.getPercent());
         assertEquals('-', dfs.getMinusSign());
 
