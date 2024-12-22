@@ -746,6 +746,7 @@ public class MethodHandles {
                             && !name.equals("java.util.HashMap")
                             && !name.equals("java.util.HashSet")
                             && !name.equals("java.util.WeakHashMap")
+                            && !name.equals("java.lang.runtime.SwitchBootstraps")
                             && !name.startsWith("java.util.stream.")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
