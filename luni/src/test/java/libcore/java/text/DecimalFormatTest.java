@@ -530,7 +530,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         assertEquals("100;", new DecimalFormat(pattern, dfs).format(number));
 
         // Confirm ICU and java.text agree. Test PerMill is localized.
-        locale = new Locale("ar");
+        locale = new Locale("ar", "EG");
         {
             android.icu.text.DecimalFormat df = new android.icu.text.DecimalFormat(pattern,
                     new android.icu.text.DecimalFormatSymbols(locale));
@@ -587,7 +587,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         assertEquals("10;", new DecimalFormat(pattern, dfs).format(number));
 
         // Confirm ICU and java.text disagree because java.text strips out bidi marker
-        locale = new Locale("ar");
+        locale = new Locale("ar", "EG");
         {
             android.icu.text.DecimalFormat df = new android.icu.text.DecimalFormat(pattern,
                     new android.icu.text.DecimalFormatSymbols(locale));
@@ -635,7 +635,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         }
 
         // Confirm ICU and java.text disagree because java.text strips out bidi marker
-        locale = new Locale("ar");
+        locale = new Locale("ar", "EG");
         {
             android.icu.text.DecimalFormat df = new android.icu.text.DecimalFormat(pattern,
                     new android.icu.text.DecimalFormatSymbols(locale));
@@ -660,7 +660,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
                 .format(123));
 
         // Confirm ICU and java.text disagree because java.text doesn't localize plus sign.
-        Locale locale = new Locale("ar");
+        Locale locale = new Locale("ar", "EG");
         {
             android.icu.text.DecimalFormat df = new android.icu.text.DecimalFormat(pattern,
                     new android.icu.text.DecimalFormatSymbols(locale));
