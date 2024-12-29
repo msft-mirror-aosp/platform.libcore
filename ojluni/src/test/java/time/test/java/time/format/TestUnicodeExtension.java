@@ -365,8 +365,6 @@ public class TestUnicodeExtension {
         };
     }
 
-    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
-    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     @DataProvider(name="shortTZID")
     Object[][] shortTZID() {
         return new Object[][] {
@@ -931,6 +929,8 @@ public class TestUnicodeExtension {
             zoneExpected != null ? ZDT.withZoneSameInstant(zoneExpected) : ZDT);
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     @Test(dataProvider="shortTZID")
     public void test_shortTZID(String shortID, String expectedZone) {
         Locale l = Locale.forLanguageTag("en-US-u-tz-" + shortID);
