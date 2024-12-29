@@ -78,7 +78,7 @@ public class NumberFormatTest extends junit.framework.TestCase {
     }
 
     public void test_numberLocalization() throws Exception {
-        Locale arabic = new Locale("ar");
+        Locale arabic = new Locale("ar", "EG");
         NumberFormat nf = NumberFormat.getNumberInstance(arabic);
         assertEquals('\u0660', new DecimalFormatSymbols(arabic).getZeroDigit());
         assertEquals("١٬٢٣٤٬٥٦٧٬٨٩٠", nf.format(1234567890));
