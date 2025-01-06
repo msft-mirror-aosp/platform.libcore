@@ -76,7 +76,9 @@ public class TestNonIsoFormatter {
 
     private static final LocalDate IsoDate = LocalDate.of(2013, 2, 11);
 
-    private static final Locale ARABIC = new Locale("ar");
+    // Android-changed: Android uses CLDR data.
+    // private static final Locale ARABIC = new Locale("ar");
+    private static final Locale ARABIC = new Locale("ar", "EG");
     private static final Locale thTH = new Locale("th", "TH");
     private static final Locale thTHTH = Locale.forLanguageTag("th-TH-u-nu-thai");
     private static final Locale jaJPJP = Locale.forLanguageTag("ja-JP-u-ca-japanese");

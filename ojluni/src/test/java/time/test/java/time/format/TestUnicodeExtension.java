@@ -35,7 +35,9 @@ import static org.testng.Assert.assertEquals;
 import android.icu.util.VersionInfo;
 
 import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
 import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
@@ -486,7 +488,7 @@ public class TestUnicodeExtension {
             {"cnurc", "Asia/Urumqi"},
             {"cobog", "America/Bogota"},
             {"crsjo", "America/Costa_Rica"},
-            {"cst6cdt", "CST6CDT"},
+            {"cst6cdt", "America/Chicago"},
             {"cuhav", "America/Havana"},
             {"cvrai", "Atlantic/Cape_Verde"},
             {"cxxch", "Indian/Christmas"},
@@ -508,7 +510,7 @@ public class TestUnicodeExtension {
             {"esceu", "Africa/Ceuta"},
             {"eslpa", "Atlantic/Canary"},
             {"esmad", "Europe/Madrid"},
-            {"est5edt", "EST5EDT"},
+            {"est5edt", "America/New_York"},
             {"etadd", "Africa/Addis_Ababa"},
             {"fihel", "Europe/Helsinki"},
             {"fimhq", "Europe/Mariehamn"},
@@ -605,7 +607,7 @@ public class TestUnicodeExtension {
             {"mkskp", "Europe/Skopje"},
             {"mlbko", "Africa/Bamako"},
             {"mmrgn", "Asia/Rangoon"},
-            {"mncoq", "Asia/Choibalsan"},
+            {"mncoq", "Asia/Ulaanbaatar"},
             {"mnhvd", "Asia/Hovd"},
             {"mnuln", "Asia/Ulaanbaatar"},
             {"momfm", "Asia/Macau"},
@@ -613,7 +615,7 @@ public class TestUnicodeExtension {
             {"mqfdf", "America/Martinique"},
             {"mrnkc", "Africa/Nouakchott"},
             {"msmni", "America/Montserrat"},
-            {"mst7mdt", "MST7MDT"},
+            {"mst7mdt", "America/Denver"},
             {"mtmla", "Europe/Malta"},
             {"muplu", "Indian/Mauritius"},
             {"mvmle", "Indian/Maldives"},
@@ -659,7 +661,7 @@ public class TestUnicodeExtension {
             {"pmmqc", "America/Miquelon"},
             {"pnpcn", "Pacific/Pitcairn"},
             {"prsju", "America/Puerto_Rico"},
-            {"pst8pdt", "PST8PDT"},
+            {"pst8pdt", "America/Los_Angeles"},
             {"ptfnc", "Atlantic/Madeira"},
             {"ptlis", "Europe/Lisbon"},
             {"ptpdl", "Atlantic/Azores"},
@@ -927,6 +929,8 @@ public class TestUnicodeExtension {
             zoneExpected != null ? ZDT.withZoneSameInstant(zoneExpected) : ZDT);
     }
 
+    @NonCts(bug = 383977133, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
+    @NonMts(bug = 383977133, reason = NonMtsReasons.TZDATA_VERSION_DEPENDENCY)
     @Test(dataProvider="shortTZID")
     public void test_shortTZID(String shortID, String expectedZone) {
         Locale l = Locale.forLanguageTag("en-US-u-tz-" + shortID);

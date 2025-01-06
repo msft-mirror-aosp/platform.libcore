@@ -1024,8 +1024,10 @@ class Thread implements Runnable {
      *
      * @return {@code true} if this thread is a virtual thread
      *
+     * This method always returns false because virtual thread isn't implemented on Android yet.
+     * This method is only useful for cross-platform libraries.
+     *
      * @since 21
-     * @hide
      */
     public final boolean isVirtual() {
         // Android-changed: Virtual threads are not supported in Android.
@@ -1197,6 +1199,7 @@ class Thread implements Runnable {
      *        For more information, see
      *        <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *        are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      */
     @Deprecated
     public final synchronized void stop(Throwable obj) {
@@ -1341,6 +1344,7 @@ class Thread implements Runnable {
      *     "frozen" processes. For more information, see
      *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">
      *     Why are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated
@@ -1376,6 +1380,7 @@ class Thread implements Runnable {
      *   For more information, see
      *   <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *   are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated(since="1.2")
@@ -1396,6 +1401,7 @@ class Thread implements Runnable {
      *     For more information, see
      *     <a href="{@docRoot}/../technotes/guides/concurrency/threadPrimitiveDeprecation.html">Why
      *     are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
+     * @removed
      * @throws UnsupportedOperationException always
      */
     @Deprecated(since="1.2")
@@ -1580,6 +1586,7 @@ class Thread implements Runnable {
      *             which is deprecated.  Further, the results of this call
      *             were never well-defined.
      *             This method is subject to removal in a future version of Java SE.
+     * @removed
      */
     @Deprecated(since="1.2", forRemoval=true)
     // Android-changed: Provide non-native implementation of countStackFrames().
@@ -1767,7 +1774,14 @@ class Thread implements Runnable {
      * @throws  SecurityException  if the current thread is not allowed to
      *          access this thread.
      * @see        SecurityManager#checkAccess(Thread)
+     * @deprecated This method is only useful in conjunction with
+     *       {@linkplain SecurityManager the Security Manager}, which is
+     *       deprecated and subject to removal in a future release.
+     *       Consequently, this method is also deprecated and subject to
+     *       removal. There is no replacement for the Security Manager or this
+     *       method.
      */
+    @Deprecated(since="17", forRemoval=true)
     public final void checkAccess() {
         // Android-removed: SecurityManager stubbed out on Android.
         // SecurityManager security = System.getSecurityManager();
@@ -2099,8 +2113,13 @@ class Thread implements Runnable {
      * When a thread is terminated, this thread ID may be reused.
      *
      * @return this thread's ID.
+     *
+     * @deprecated This method is not final and may be overridden to return a
+     * value that is not the thread ID. Use {@link #threadId()} instead.
+     *
      * @since 1.5
      */
+    @Deprecated(since="19")
     public long getId() {
         return tid;
     }
@@ -2112,7 +2131,6 @@ class Thread implements Runnable {
      *
      * @return this thread's ID
      * @since 19
-     * @hide
      */
     public final long threadId() {
         return tid;
