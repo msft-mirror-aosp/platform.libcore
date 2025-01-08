@@ -32,13 +32,7 @@ import dalvik.annotation.compat.VersionCodes;
 import dalvik.annotation.optimization.FastNative;
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -944,18 +938,6 @@ public class Runtime {
         }
     }
 
-    // BEGIN Android-added: Check if File is writable.
-    private boolean isFileWritable(File file) throws IOException {
-        PosixFileAttributes posixFileAttributes = Files.getFileAttributeView(
-                Path.of(file.getPath()),
-                PosixFileAttributeView.class).readAttributes();
-        Set<PosixFilePermission> permissions = posixFileAttributes.permissions();
-        boolean fileIsWritable = permissions.contains(PosixFilePermission.OWNER_WRITE)
-                || permissions.contains(PosixFilePermission.GROUP_WRITE)
-                || permissions.contains(PosixFilePermission.OTHERS_WRITE);
-        return fileIsWritable;
-    }
-
     // BEGIN Android-changed: Different implementation of load0(Class, String).
     synchronized void load0(Class<?> fromClass, String filename) {
         File file = new File(filename);
@@ -967,18 +949,13 @@ public class Runtime {
             throw new NullPointerException("filename == null");
         }
         if (Flags.readOnlyDynamicCodeLoad()) {
-            try {
-                if (!file.toPath().getFileSystem().isReadOnly() && isFileWritable(file)) {
-                    if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
-                        throw new UnsatisfiedLinkError(
-                                "Attempt to load writable file: " + filename);
-                    } else if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM) {
-                        System.logW("Attempt to load writable file: " + filename
-                                + ". This will throw on a future Android version");
-                    }
+            if (!file.toPath().getFileSystem().isReadOnly() && file.canWrite()) {
+                if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
+                    throw new UnsatisfiedLinkError("Attempt to load writable file: " + filename);
+                } else if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM){
+                    System.logW("Attempt to load writable file: " + filename
+                            + ". This will throw on a future Android version");
                 }
-            } catch (IOException e) {
-                throw new UnsatisfiedLinkError(e.getMessage());
             }
         }
 
