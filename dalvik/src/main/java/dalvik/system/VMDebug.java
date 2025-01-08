@@ -821,7 +821,11 @@ public final class VMDebug {
 
         /** @hide */
         public int getFd() {
-            return fd.getInt$();
+            if (fd != null) {
+                return fd.getInt$();
+            } else {
+                return -1;
+            }
         }
 
         /** @hide */
