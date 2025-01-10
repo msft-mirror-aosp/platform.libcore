@@ -22,12 +22,24 @@ import libcore.util.NonNull;
 
 import java.security.spec.NamedParameterSpec;
 
+/**
+ * Specifies algorithm parameters for the KDF component of an HPKE suite
+ * which are determined by standard names as per RFC 9180.
+ * <p>
+ * These parameters can be composed into a full HKPE suite name using
+ * {@link Hpke#getSuiteName(KemParameterSpec, KdfParameterSpec, AeadParameterSpec)}.
+ * <p>
+ * Note that currently only {@code HKDF_SHA256} is implemented.
+ *
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9180.html#section-7.2">RFC 9180 Section 7.2</a>
+ * @see NamedParameterSpec
+ */
 @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
 public class KdfParameterSpec extends NamedParameterSpec {
     /**
      * @see NamedParameterSpec
      */
-    public KdfParameterSpec(@NonNull String stdName) {
+    private KdfParameterSpec(@NonNull String stdName) {
         super(stdName);
     }
 
