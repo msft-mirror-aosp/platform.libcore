@@ -83,7 +83,7 @@ public class FormatterTest {
         disabledUntilSdk = VersionCodes.VANILLA_ICE_CREAM)
     @Test
     public void test_numberLocalization() throws Exception {
-        Locale arabic = new Locale("ar");
+        Locale arabic = new Locale("ar", "EG");
 
         // Check the fast path for %d:
         assertEquals("12 \u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\u0660 34",
@@ -121,8 +121,8 @@ public class FormatterTest {
         assertEquals("1E+02", String.format(Locale.ENGLISH, "%.0E", 100.0));
         assertEquals("1e+02", String.format(Locale.ENGLISH, "%.0e", 100.0));
 
-        assertEquals("\u0661\u0623\u0633+\u0660\u0662", String.format(new Locale("ar"), "%.0E", 100.0));
-        assertEquals("\u0661\u0623\u0633+\u0660\u0662", String.format(new Locale("ar"), "%.0e", 100.0));
+        assertEquals("\u0661\u0623\u0633+\u0660\u0662", String.format(new Locale("ar", "EG"), "%.0E", 100.0));
+        assertEquals("\u0661\u0623\u0633+\u0660\u0662", String.format(new Locale("ar", "EG"), "%.0e", 100.0));
 
         assertEquals("1\u00d710^+02", String.format(new Locale("et"), "%.0E", 100.0));
         assertEquals("1\u00d710^+02", String.format(new Locale("et"), "%.0e", 100.0));
