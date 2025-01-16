@@ -26,42 +26,30 @@
 
 package java.lang;
 
+import static android.system.OsConstants._SC_NPROCESSORS_CONF;
+
 import com.android.libcore.Flags;
 
 import dalvik.annotation.compat.VersionCodes;
 import dalvik.annotation.optimization.FastNative;
-import java.io.*;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
-
 import dalvik.system.BlockGuard;
-import sun.reflect.CallerSensitive;
-import java.lang.ref.FinalizerReference;
-import java.util.ArrayList;
-import java.util.List;
 import dalvik.system.DelegateLastClassLoader;
 import dalvik.system.PathClassLoader;
-import dalvik.system.VMDebug;
 import dalvik.system.VMRuntime;
-import sun.reflect.Reflection;
 
-import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.util.EmptyArray;
-import static android.system.OsConstants._SC_NPROCESSORS_CONF;
 
-import android.compat.Compatibility;
-import android.compat.annotation.ChangeId;
-import android.compat.annotation.Disabled;
-import android.compat.annotation.EnabledSince;
-import android.compat.annotation.Overridable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 
 /**
  * Every Java application has a single instance of class
@@ -97,15 +85,6 @@ public class Runtime {
      * Reflects whether we are already shutting down the VM.
      */
     private boolean shuttingDown;
-
-    // Android-added: flag
-    /**
-     * Throw UnsatisfiedLinkError if loading a writable library using {@link Runtime#load(String)}.
-     * @hide
-     */
-    @ChangeId
-    @Disabled
-    public static final long RO_DCL_CHANGE_ID = 354921003L;
 
     private static native void nativeExit(int code);
 
@@ -950,9 +929,7 @@ public class Runtime {
         }
         if (Flags.readOnlyDynamicCodeLoad()) {
             if (!file.toPath().getFileSystem().isReadOnly() && file.canWrite()) {
-                if (Compatibility.isChangeEnabled(RO_DCL_CHANGE_ID)) {
-                    throw new UnsatisfiedLinkError("Attempt to load writable file: " + filename);
-                } else if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM){
+                if (VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM) {
                     System.logW("Attempt to load writable file: " + filename
                             + ". This will throw on a future Android version");
                 }
