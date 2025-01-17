@@ -22,18 +22,40 @@ import libcore.util.NonNull;
 
 import java.security.spec.NamedParameterSpec;
 
+/**
+ * Specifies algorithm parameters for the KEM component of an HPKE suite
+ * which are determined by standard names as per RFC 9180.
+ * <p>
+ * These parameters can be composed into a full HKPE suite name using
+ * {@link Hpke#getSuiteName(KemParameterSpec, KdfParameterSpec, AeadParameterSpec)}.
+ * <p>
+ * Note that currently only {@code DHKEM_X25519_HKDF_SHA256} is implemented.
+ *
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9180.html#section-7.1">RFC 9180 Section 7.1</a>
+ * @see NamedParameterSpec
+ */
 @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
 public class KemParameterSpec extends NamedParameterSpec {
     /**
      * @see NamedParameterSpec
      */
-    public KemParameterSpec(@NonNull String stdName) {
+    private KemParameterSpec(@NonNull String stdName) {
         super(stdName);
     }
+
+    public static final KemParameterSpec DHKEM_P256_HKDF_SHA256
+            = new KemParameterSpec("DHKEM_P256_HKDF_SHA256");
+
+    public static final KemParameterSpec DHKEM_P384_HKDF_SHA384
+            = new KemParameterSpec("DHKEM_P384_HKDF_SHA384");
+
+    public static final KemParameterSpec DHKEM_P521_HKDF_SHA256
+            = new KemParameterSpec("DHKEM_P521_HKDF_SHA256");
 
     public static final KemParameterSpec DHKEM_X25519_HKDF_SHA256
             = new KemParameterSpec("DHKEM_X25519_HKDF_SHA256");
 
-    public static final KemParameterSpec DHKEM_P256_HKDF_SHA256
-            = new KemParameterSpec("DHKEM_P256_HKDF_SHA256");
+    public static final KemParameterSpec DHKEM_X448_HKDF_SHA512
+            = new KemParameterSpec("DHKEM_X448_HKDF_SHA512");
+
 }

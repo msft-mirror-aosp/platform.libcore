@@ -29,53 +29,66 @@ import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.PublicKey;
 import java.security.Security;
-import java.util.Objects;
 
 /**
  * Provides access to implementations of HPKE hybrid cryptography as per RFC 9180.
  * <p>
- * Provider and HPKE algorithm selection are done via the {@code getInstance}
+ * Provider and HPKE suite selection are done via the {@code getInstance}
  * methods, and then instances of senders and receivers can be created using
  * {@code newSender} or {newReceiver}.  Each sender and receiver is independent, i.e. does
  * not share any encapsulated state with other senders or receivers created via this
  * {@code Hpke}.
+ * <p>
+ * HPKE suites are composed of a key encapsulation mechanism (KEM), a key derivation
+ * function (KDF) and an authenticated cipher algorithm (AEAD) as defined in
+ * RFC 9180 section 7. {@link java.security.spec.NamedParameterSpec NamedParameterSpecs} for
+ * these can be found in {@link KemParameterSpec}, {@link KdfParameterSpec} and
+ * {@link AeadParameterSpec}.  These can be composed into a full HPKE suite name used to
+ * request a particular implementation using
+ * {@link Hpke#getSuiteName(KemParameterSpec, KdfParameterSpec, AeadParameterSpec)}.
+ *
+ * @see KemParameterSpec
+ * @see KdfParameterSpec
+ * @see AeadParameterSpec
  */
+@SuppressWarnings("NewApi") // Public HPKE classes are always all present together.
 @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
 public class Hpke {
-    private static final byte[] DEFAULT_PSK = new byte[0];
-    private static final byte[] DEFAULT_PSK_ID = DEFAULT_PSK;
-    private static final String SERVICE = "ConscryptHpke";
+    private static final String SERVICE_NAME = "ConscryptHpke";
+    static final byte[] DEFAULT_PSK = new byte[0];
+    static final byte[] DEFAULT_PSK_ID = DEFAULT_PSK;
     private final Provider provider;
     private final Provider.Service service;
 
-    private Hpke(@NonNull String algorithm, @NonNull Provider provider)
+    private Hpke(@NonNull String suiteName, @NonNull Provider provider)
             throws NoSuchAlgorithmException {
         this.provider = provider;
-        service = getService(provider, algorithm);
+        service = getService(provider, suiteName);
         if (service == null) {
-            throw new NoSuchAlgorithmException("No such HPKE algorithm: " + algorithm);
+            throw new NoSuchAlgorithmException("No such HPKE suite: " + suiteName);
         }
     }
 
-    private static @NonNull Provider findFirstProvider(@NonNull String algorithm)
+    private static @NonNull Provider findFirstProvider(@NonNull String suiteName)
             throws NoSuchAlgorithmException {
         for (Provider provider : Security.getProviders()) {
-            if (getService(provider, algorithm) != null) {
+            if (getService(provider, suiteName) != null) {
                 return provider;
             }
         }
-        throw new NoSuchAlgorithmException("No Provider found for: " + algorithm);
+        throw new NoSuchAlgorithmException("No Provider found for HPKE suite: " + suiteName);
     }
 
-    private static Provider.Service getService(Provider provider, String algorithm)
+    @SuppressWarnings("InlinedApi") // For SERVICE_NAME field which belongs to this class
+    private static Provider.Service getService(Provider provider, String suiteName)
             throws NoSuchAlgorithmException {
-        if (algorithm == null || algorithm.isEmpty()) {
+        if (suiteName == null || suiteName.isEmpty()) {
             throw new NoSuchAlgorithmException();
         }
-        return provider.getService(SERVICE, algorithm);
+        return provider.getService(SERVICE_NAME, suiteName);
     }
 
-    private @NonNull HpkeSpi findSpi() {
+    @NonNull HpkeSpi findSpi() {
         Object instance;
         try {
             instance = service.newInstance(null);
@@ -105,30 +118,34 @@ public class Hpke {
     }
 
     /**
-     * Returns an Hpke instance configured for the supplied HPKE algorithm, using the
-     * highest priority Provider which implements it.
+     * Returns an Hpke instance configured for the requested HPKE suite, using the
+     * highest priority {@link Provider} which implements it.
+     * <p>
+     * Use {@link Hpke#getSuiteName(KemParameterSpec, KdfParameterSpec, AeadParameterSpec)} for
+     * generating HPKE suite names from {@link java.security.spec.NamedParameterSpec
+     * NamedParameterSpecs}
      *
-     * @param algorithm the HPKE algorithm to use
-     * @return an Hpke instance configured for the requested algorithm
-     * @throws NoSuchAlgorithmException if no Providers can be found for the requested algorithm
+     * @param suiteName the HPKE suite to use
+     * @return an Hpke instance configured for the requested suite
+     * @throws NoSuchAlgorithmException if no Providers can be found for the requested suite
      */
-    public static @NonNull Hpke getInstance(@NonNull String algorithm)
+    public static @NonNull Hpke getInstance(@NonNull String suiteName)
             throws NoSuchAlgorithmException {
-        return new Hpke(algorithm, findFirstProvider(algorithm));
+        return new Hpke(suiteName, findFirstProvider(suiteName));
     }
 
     /**
-     * Returns an Hpke instance configured for the supplied HPKE algorithm, using the
-     * requested Provider.
+     * Returns an Hpke instance configured for the requested HPKE suite, using the
+     * requested {@link Provider} by name.
      *
-     * @param algorithm    the HPKE algorithm to use
+     * @param suiteName    the HPKE suite to use
      * @param providerName the name of the provider to use
-     * @return an Hpke instance configured for the requested algorithm and Provider
-     * @throws NoSuchAlgorithmException if the named Provider does not implement this algorithm
+     * @return an Hpke instance configured for the requested suite and Provider
+     * @throws NoSuchAlgorithmException if the named Provider does not implement this suite
      * @throws NoSuchProviderException  if no Provider with the requested name can be found
      * @throws IllegalArgumentException if providerName is null or empty
      */
-    public static @NonNull Hpke getInstance(@NonNull String algorithm, @NonNull String providerName)
+    public static @NonNull Hpke getInstance(@NonNull String suiteName, @NonNull String providerName)
             throws NoSuchAlgorithmException, NoSuchProviderException {
         if (providerName == null || providerName.isEmpty()) {
             throw new IllegalArgumentException("Invalid Provider Name");
@@ -137,211 +154,50 @@ public class Hpke {
         if (provider == null) {
             throw new NoSuchProviderException();
         }
-        return new Hpke(algorithm, provider);
+        return new Hpke(suiteName, provider);
     }
 
     /**
-     * Returns an Hpke instance configured for the supplied HPKE algorithm, using the
-     * requested Provider.
+     * Returns an Hpke instance configured for the requested HPKE suite, using the
+     * requested {@link Provider}.
      *
-     * @param algorithm the HPKE algorithm to use
+     * @param suiteName the HPKE suite to use
      * @param provider  the provider to use
-     * @return an Hpke instance configured for the requested algorithm and Provider
-     * @throws NoSuchAlgorithmException if the named Provider does not implement this algorithm
+     * @return an Hpke instance configured for the requested suite and Provider
+     * @throws NoSuchAlgorithmException if the Provider does not implement this suite
      * @throws IllegalArgumentException if provider is null
      */
-    public static @NonNull Hpke getInstance(@NonNull String algorithm, @NonNull Provider provider)
+    public static @NonNull Hpke getInstance(@NonNull String suiteName, @NonNull Provider provider)
             throws NoSuchAlgorithmException, NoSuchProviderException {
         if (provider == null) {
             throw new IllegalArgumentException("Null Provider");
         }
-        return new Hpke(algorithm, provider);
+        return new Hpke(suiteName, provider);
     }
 
     /**
-     * Generates the HPKE suite algorithm name from the named parameter specifications of its
-     * components.
+     * Generates a full HPKE suite name from the named parameter specifications of its components,
+     * which have names reflecting their usage in RFC 9180.
+     * <p>
+     * HPKE suites are composed of a key encapsulation mechanism (KEM), a key derivation
+     * function (KDF) and an authenticated cipher algorithm (AEAD) as defined in
+     * RFC 9180 section 7. {@link java.security.spec.NamedParameterSpec NamedParameterSpecs} for
+     * these can be foundu in {@link KemParameterSpec}, {@link KdfParameterSpec} and
+     * {@link AeadParameterSpec}.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc9180.html#section-7">RFC 9180 Section 7</a>
+     * @see KemParameterSpec
+     * @see KdfParameterSpec
+     * @see AeadParameterSpec
      *
      * @param kem  the key encapsulation mechanism to use
      * @param kdf  the key derivation function to use
      * @param aead the AEAD cipher to use
+     * @return a fully composed HPKE suite name
      */
-    public static @NonNull String getAlgorithmName(@NonNull KemParameterSpec kem,
+    public static @NonNull String getSuiteName(@NonNull KemParameterSpec kem,
             @NonNull KdfParameterSpec kdf, @NonNull AeadParameterSpec aead) {
         return kem.getName() + "/" + kdf.getName() + "/" + aead.getName();
-    }
-
-    /**
-     * A builder for HPKE Sender objects.
-     */
-    @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
-    public class SenderBuilder {
-        private final PublicKey recipientKey;
-        private byte[] applicationInfo = null;
-        private PrivateKey senderKey = null;
-        private byte[] psk = DEFAULT_PSK;
-        private byte[] pskId = DEFAULT_PSK_ID;
-
-        /**
-         * Creates the Builder.
-         *
-         * @param recipientKey public key of the recipient
-         */
-        private SenderBuilder(@NonNull PublicKey recipientKey) {
-            Objects.requireNonNull(recipientKey);
-            this.recipientKey = recipientKey;
-        }
-
-        /**
-         * Adds optional application-related data which will be used during the key generation
-         * process.
-         *
-         * @param applicationInfo application-specific information
-         *
-         * @return the Builder
-         */
-        public @NonNull SenderBuilder setApplicationInfo(@NonNull byte[] applicationInfo) {
-            this.applicationInfo = applicationInfo;
-            return this;
-        }
-
-        /**
-         * Sets the sender key to be used by the recipient for message authentication.
-         *
-         * @param senderKey the sender's public key
-         * @return the Builder
-         */
-        public @NonNull SenderBuilder setSenderKey(@NonNull PrivateKey senderKey) {
-            this.senderKey = senderKey;
-            return this;
-        }
-
-        /**
-         * Sets pre-shared key information to be used for message authentication.
-         *
-         * @param psk          the pre-shared secret key
-         * @param pskId       the id of the pre-shared key
-         * @return the Builder
-         */
-        public @NonNull SenderBuilder setPsk(@NonNull byte[] psk, @NonNull byte[] pskId) {
-            this.psk = psk;
-            this.pskId = pskId;
-            return this;
-        }
-
-        /**
-         * Created the {@link Sender} object.
-         *
-         * @throws InvalidKeyException           if the sender or recipient key are unsupported
-         * @throws UnsupportedOperationException if this Provider does not support the expected mode
-         */
-        public @NonNull Sender build() throws InvalidKeyException {
-            HpkeSpi spi = findSpi();
-            spi.engineInitSender(recipientKey, applicationInfo, senderKey, psk, pskId);
-            return new Sender(Hpke.this, spi);
-        }
-    }
-
-    /**
-     * Creates a new {@link SenderBuilder} for this {@link Hpke} object.
-     *
-     * @param recipientKey public key of the recipient
-     */
-    public SenderBuilder newSender(@NonNull PublicKey recipientKey) {
-        return new SenderBuilder(recipientKey);
-    }
-
-    /**
-     * A builder for HPKE Recipient objects.
-     */
-    @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
-    public class RecipientBuilder {
-        private final byte[] encapsulated ;
-        private final PrivateKey recipientKey;
-        private byte[] applicationInfo = null;
-        private PublicKey senderKey = null;
-        private byte[] psk = DEFAULT_PSK;
-        private byte[] pskId = DEFAULT_PSK_ID;
-
-        /**
-         * Creates the builder.
-         *
-         * @param encapsulated encapsulated ephemeral key from an {@link Sender}
-         * @param recipientKey private key of the recipient
-         */
-        private RecipientBuilder(@NonNull byte[] encapsulated, @NonNull PrivateKey recipientKey) {
-            Objects.requireNonNull(encapsulated);
-            Objects.requireNonNull(recipientKey);
-            this.encapsulated = encapsulated;
-            this.recipientKey = recipientKey;
-        }
-
-        /**
-         * Adds optional application-related data which will be used during the key generation
-         * process.
-         *
-         * @param applicationInfo application-specific information
-         *
-         * @return the Builder
-         */
-        public @NonNull RecipientBuilder setApplicationInfo(@NonNull byte[] applicationInfo) {
-            Objects.requireNonNull(applicationInfo);
-            this.applicationInfo = applicationInfo;
-            return this;
-        }
-
-        /**
-         * Sets the sender key to be used by the recipient for message authentication.
-         *
-         * @param senderKey the sender's public key
-         * @return the Builder
-         */
-        public @NonNull RecipientBuilder setSenderKey(@NonNull PublicKey senderKey) {
-            Objects.requireNonNull(senderKey);
-            this.senderKey = senderKey;
-            return this;
-        }
-
-        /**
-         * Sets pre-shared key information to be used for message authentication.
-         *
-         * @param psk          the pre-shared secret key
-         * @param pskId       the id of the pre-shared key
-         * @return the Builder
-         */
-        public @NonNull RecipientBuilder setPsk(@NonNull byte[] psk, @NonNull byte[] pskId) {
-            Objects.requireNonNull(psk);
-            Objects.requireNonNull(pskId);
-            this.psk = psk;
-            this.pskId = pskId;
-            return this;
-        }
-
-        /**
-         * Builds the {@link Recipient}.
-         *
-         * @return the Recipient
-         * @throws InvalidKeyException           if the sender or recipient key are unsupported
-         * @throws UnsupportedOperationException if this Provider does not support the expected mode
-         */
-        public @NonNull Recipient build() throws InvalidKeyException {
-            HpkeSpi spi = findSpi();
-            spi.engineInitRecipient(encapsulated, recipientKey, applicationInfo, senderKey, psk,
-                    pskId);
-            return new Recipient(Hpke.this, spi);
-        }
-    }
-
-    /**
-     * Creates a new {@link RecipientBuilder} for this {@link Hpke} object.
-     *
-     * @param encapsulated encapsulated ephemeral key from an {@link Sender}
-     * @param recipientKey private key of the recipient
-     * @return the Builder
-     */
-    public RecipientBuilder newRecipient(
-            @NonNull byte[] encapsulated, @NonNull PrivateKey recipientKey) {
-        return new RecipientBuilder(encapsulated, recipientKey);
     }
 
     /**
@@ -359,7 +215,7 @@ public class Hpke {
     public @NonNull Message seal(@NonNull PublicKey recipientKey, @Nullable byte[] info,
             @NonNull byte[] plaintext, @Nullable byte[] aad)
             throws InvalidKeyException {
-        SenderBuilder senderBuilder = new SenderBuilder(recipientKey);
+        Sender.Builder senderBuilder = new Sender.Builder(this, recipientKey);
         if (info != null) {
             senderBuilder.setApplicationInfo(info);
         }
@@ -386,8 +242,8 @@ public class Hpke {
             @NonNull PrivateKey recipientKey, @Nullable byte[] info, @NonNull Message message,
             @Nullable byte[] aad)
             throws GeneralSecurityException, InvalidKeyException {
-        RecipientBuilder recipientBuilder
-                = new RecipientBuilder(message.getEncapsulated(), recipientKey);
+        Recipient.Builder recipientBuilder
+                = new Recipient.Builder(this, message.getEncapsulated(), recipientKey);
         if (info != null) {
             recipientBuilder.setApplicationInfo(info);
         }

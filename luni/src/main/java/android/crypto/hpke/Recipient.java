@@ -22,18 +22,23 @@ import libcore.util.NonNull;
 import libcore.util.Nullable;
 
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.PublicKey;
+import java.util.Objects;
 
 /**
  * A class for receiving HPKE messages.
  */
+@SuppressWarnings("NewApi") // Public HPKE classes are always all present together.
 @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
 public class Recipient {
-    private final Hpke parent;
+    private final Hpke hpke;
     private final HpkeSpi spi;
 
-    Recipient(@NonNull Hpke parent, @NonNull HpkeSpi spi) {
-        this.parent = parent;
+    Recipient(@NonNull Hpke hpke, @NonNull HpkeSpi spi) {
+        this.hpke = hpke;
         this.spi = spi;
     }
 
@@ -79,6 +84,91 @@ public class Recipient {
      * @return the Provider
      */
     public @NonNull Provider getProvider() {
-        return parent.getProvider();
+        return hpke.getProvider();
+    }
+
+    /**
+     * A builder for HPKE Recipient objects.
+     */
+    @FlaggedApi(com.android.libcore.Flags.FLAG_HPKE_PUBLIC_API)
+    public static class Builder {
+        private final Hpke hpke;
+        private final byte[] encapsulated ;
+        private final PrivateKey recipientKey;
+        private byte[] applicationInfo = null;
+        private PublicKey senderKey = null;
+        private byte[] psk = Hpke.DEFAULT_PSK;
+        private byte[] pskId = Hpke.DEFAULT_PSK_ID;
+
+        /**
+         * Creates the builder.
+         *
+         * @param encapsulated encapsulated ephemeral key from an {@link Sender}
+         * @param recipientKey private key of the recipient
+         */
+        public Builder(@NonNull Hpke hpke,
+                @NonNull byte[] encapsulated, @NonNull PrivateKey recipientKey) {
+            Objects.requireNonNull(hpke);
+            Objects.requireNonNull(encapsulated);
+            Objects.requireNonNull(recipientKey);
+            this.hpke = hpke;
+            this.encapsulated = encapsulated;
+            this.recipientKey = recipientKey;
+        }
+
+        /**
+         * Adds optional application-related data which will be used during the key generation
+         * process.
+         *
+         * @param applicationInfo application-specific information
+         *
+         * @return the Builder
+         */
+        public @NonNull Builder setApplicationInfo(@NonNull byte[] applicationInfo) {
+            Objects.requireNonNull(applicationInfo);
+            this.applicationInfo = applicationInfo;
+            return this;
+        }
+
+        /**
+         * Sets the sender key to be used by the recipient for message authentication.
+         *
+         * @param senderKey the sender's public key
+         * @return the Builder
+         */
+        public @NonNull Builder setSenderKey(@NonNull PublicKey senderKey) {
+            Objects.requireNonNull(senderKey);
+            this.senderKey = senderKey;
+            return this;
+        }
+
+        /**
+         * Sets pre-shared key information to be used for message authentication.
+         *
+         * @param psk          the pre-shared secret key
+         * @param pskId       the id of the pre-shared key
+         * @return the Builder
+         */
+        public @NonNull Builder setPsk(@NonNull byte[] psk, @NonNull byte[] pskId) {
+            Objects.requireNonNull(psk);
+            Objects.requireNonNull(pskId);
+            this.psk = psk;
+            this.pskId = pskId;
+            return this;
+        }
+
+        /**
+         * Builds the {@link Recipient}.
+         *
+         * @return the Recipient
+         * @throws InvalidKeyException           if the sender or recipient key are unsupported
+         * @throws UnsupportedOperationException if this Provider does not support the expected mode
+         */
+        public @NonNull Recipient build() throws InvalidKeyException {
+            HpkeSpi spi = hpke.findSpi();
+            spi.engineInitRecipient(encapsulated, recipientKey, applicationInfo, senderKey, psk,
+                    pskId);
+            return new Recipient(hpke, spi);
+        }
     }
 }
