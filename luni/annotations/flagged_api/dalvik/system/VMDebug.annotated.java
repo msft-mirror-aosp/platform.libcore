@@ -103,13 +103,16 @@ public static class TraceDestination {
 }
 
 @android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_ALWAYS_ENABLE_PROFILE_CODE)
-public static void startLowOverheadTrace();
+public static void startLowOverheadTraceForAllMethods();
 
 @android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_ALWAYS_ENABLE_PROFILE_CODE)
 public static void stopLowOverheadTrace();
 
 @android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_ALWAYS_ENABLE_PROFILE_CODE)
 public static void dumpLowOverheadTrace(@NonNull VMDebug.TraceDestination traceFileName);
+
+@android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_ALWAYS_ENABLE_PROFILE_CODE)
+public static void startLowOverheadTraceForLongMethods(long trace_duration);
 
 @android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_EXECUTABLE_METHOD_FILE_OFFSETS)
 public static class ExecutableMethodFileOffsets {
