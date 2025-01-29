@@ -293,7 +293,7 @@ package dalvik.system {
     method @FlaggedApi("com.android.libcore.appinfo") public static void setWaitingForDebugger(boolean);
     method public static void startAllocCounting();
     method @FlaggedApi("com.android.art.flags.always_enable_profile_code") public static void startLowOverheadTraceForAllMethods();
-    method @FlaggedApi("com.android.art.flags.always_enable_profile_code") public static void startLowOverheadTraceForLongMethods(long);
+    method @FlaggedApi("com.android.art.flags.always_enable_profile_code") public static void startLowOverheadTraceForLongRunningMethods(long);
     method public static void startMethodTracing(String, int, int, boolean, int);
     method public static void startMethodTracing(String, java.io.FileDescriptor, int, int, boolean, int, boolean);
     method public static void startMethodTracingDdms(int, int, boolean, int);

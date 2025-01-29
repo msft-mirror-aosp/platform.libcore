@@ -908,15 +908,15 @@ public final class VMDebug {
      * Start an ART trace of executed dex methods that execute longer than a set threshold.
      * The threshold is defined by ART and isn't configurable. The tracing will be active
      * for a maximum of trace_duration_ns passed to this function. If another trace (started by
-     * {@link #startLowOverheadTraceForAllMethods} / {@link #startLowOverheadTraceForLongMethods} /
-     * {@link #startMethodTracing}) is running then this request is ignored and an error is
-     * logged.
+     * {@link #startLowOverheadTraceForAllMethods} /
+     * {@link #startLowOverheadTraceForLongRunningMethods} / {@link #startMethodTracing}) is running
+     * then this request is ignored and an error is logged.
      *
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    public static void startLowOverheadTraceForLongMethods(long trace_duration_ns) {
-        startLowOverheadTraceForLongMethodsImpl(trace_duration_ns);
+    public static void startLowOverheadTraceForLongRunningMethods(long traceDurationNs) {
+        startLowOverheadTraceForLongRunningMethodsImpl(traceDurationNs);
     }
 
 
@@ -924,6 +924,6 @@ public final class VMDebug {
     private static native void stopLowOverheadTraceImpl();
     private static native void dumpLowOverheadTraceImpl(String traceFileName);
     private static native void dumpLowOverheadTraceFdImpl(int fd);
-    private static native void startLowOverheadTraceForLongMethodsImpl(long trace_duration);
+    private static native void startLowOverheadTraceForLongRunningMethodsImpl(long traceDuration);
 
 }
