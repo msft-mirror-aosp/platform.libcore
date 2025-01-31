@@ -35,10 +35,11 @@
 
 package java.util.concurrent.atomic;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
+
+import jdk.internal.misc.Unsafe;
 
 /**
  * A {@code long} value that may be updated atomically.  See the
@@ -73,20 +74,9 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * This class intended to be implemented using VarHandles, but there
      * are unresolved cyclic startup dependencies.
      */
-    // BEGIN Android-changed: Using VarHandle instead of Unsafe
-    // private static final Unsafe U = Unsafe.getUnsafe();
-    // private static final long VALUE
-    //     = U.objectFieldOffset(AtomicLong.class, "value");
-    private static final VarHandle VALUE;
-    static {
-        try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            VALUE = l.findVarHandle(AtomicLong.class, "value", long.class);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-    // END Android-changed: Using VarHandle instead of Unsafe
+    private static final Unsafe U = Unsafe.getUnsafe();
+    private static final long VALUE
+         = U.objectFieldOffset(AtomicLong.class, "value");
 
     private volatile long value;
 
@@ -123,9 +113,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      */
     public final void set(long newValue) {
         // See JDK-8180620: Clarify VarHandle mixed-access subtleties
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putLongVolatile(this, VALUE, newValue);
-        VALUE.setVolatile(this, newValue);
+        U.putLongVolatile(this, VALUE, newValue);
     }
 
     /**
@@ -136,9 +124,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 1.6
      */
     public final void lazySet(long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putLongRelease(this, VALUE, newValue);
-        VALUE.setRelease(this, newValue);
+        U.putLongRelease(this, VALUE, newValue);
     }
 
     /**
@@ -149,9 +135,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final long getAndSet(long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndSetLong(this, VALUE, newValue);
-        return (long)VALUE.getAndSet(this, newValue);
+        return U.getAndSetLong(this, VALUE, newValue);
     }
 
     /**
@@ -165,9 +149,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * the actual value was not equal to the expected value.
      */
     public final boolean compareAndSet(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndSetLong(this, VALUE, expectedValue, newValue);
-        return VALUE.compareAndSet(this, expectedValue, newValue);
+        return U.compareAndSetLong(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -188,9 +170,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      */
     @Deprecated(since="9")
     public final boolean weakCompareAndSet(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetLongPlain(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
+        return U.weakCompareAndSetLongPlain(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -204,9 +184,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetPlain(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetLongPlain(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
+        return U.weakCompareAndSetLongPlain(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -218,9 +196,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final long getAndIncrement() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, 1L);
-        return (long)VALUE.getAndAdd(this, 1L);
+        return U.getAndAddLong(this, VALUE, 1L);
     }
 
     /**
@@ -232,9 +208,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final long getAndDecrement() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, -1L);
-        return (long)VALUE.getAndAdd(this, -1L);
+        return U.getAndAddLong(this, VALUE, -1L);
     }
 
     /**
@@ -245,9 +219,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final long getAndAdd(long delta) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, delta);
-        return (long)VALUE.getAndAdd(this, delta);
+        return U.getAndAddLong(this, VALUE, delta);
     }
 
     /**
@@ -259,9 +231,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final long incrementAndGet() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, 1L) + 1L;
-        return (long)VALUE.getAndAdd(this, 1L) + 1L;
+        return U.getAndAddLong(this, VALUE, 1L) + 1L;
     }
 
     /**
@@ -273,9 +243,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final long decrementAndGet() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, -1L) - 1L;
-        return (long)VALUE.getAndAdd(this, -1L) - 1L;
+        return U.getAndAddLong(this, VALUE, -1L) - 1L;
     }
 
     /**
@@ -286,9 +254,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final long addAndGet(long delta) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddLong(this, VALUE, delta) + delta;
-        return (long)VALUE.getAndAdd(this, delta) + delta;
+        return U.getAndAddLong(this, VALUE, delta) + delta;
     }
 
     /**
@@ -446,9 +412,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long getPlain() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getLong(this, VALUE);
-        return (long)VALUE.get(this);
+        return U.getLong(this, VALUE);
     }
 
     /**
@@ -460,9 +424,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setPlain(long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putLong(this, VALUE, newValue);
-        VALUE.set(this, newValue);
+        U.putLong(this, VALUE, newValue);
     }
 
     /**
@@ -473,9 +435,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long getOpaque() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getLongOpaque(this, VALUE);
-        return (long)VALUE.getOpaque(this);
+        return U.getLongOpaque(this, VALUE);
     }
 
     /**
@@ -486,9 +446,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setOpaque(long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putLongOpaque(this, VALUE, newValue);
-        VALUE.setOpaque(this, newValue);
+        U.putLongOpaque(this, VALUE, newValue);
     }
 
     /**
@@ -499,9 +457,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long getAcquire() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getLongAcquire(this, VALUE);
-        return (long)VALUE.getAcquire(this);
+        return U.getLongAcquire(this, VALUE);
     }
 
     /**
@@ -512,9 +468,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setRelease(long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putLongRelease(this, VALUE, newValue);
-        VALUE.setRelease(this, newValue);
+        U.putLongRelease(this, VALUE, newValue);
     }
 
     /**
@@ -530,9 +484,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long compareAndExchange(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeLong(this, VALUE, expectedValue, newValue);
-        return (long)VALUE.compareAndExchange(this, expectedValue, newValue);
+        return U.compareAndExchangeLong(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -548,9 +500,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long compareAndExchangeAcquire(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeLongAcquire(this, VALUE, expectedValue, newValue);
-        return (long)VALUE.compareAndExchangeAcquire(this, expectedValue, newValue);
+        return U.compareAndExchangeLongAcquire(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -566,9 +516,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final long compareAndExchangeRelease(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeLongRelease(this, VALUE, expectedValue, newValue);
-        return (long)VALUE.compareAndExchangeRelease(this, expectedValue, newValue);
+        return U.compareAndExchangeLongRelease(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -583,9 +531,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetVolatile(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetLong(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSet(this, expectedValue, newValue);
+        return U.weakCompareAndSetLong(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -600,9 +546,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetAcquire(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetLongAcquire(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetAcquire(this, expectedValue, newValue);
+        return U.weakCompareAndSetLongAcquire(this, VALUE, expectedValue, newValue);
     }
 
     /**
@@ -617,9 +561,7 @@ public class AtomicLong extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetRelease(long expectedValue, long newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetLongRelease(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetRelease(this, expectedValue, newValue);
+        return U.weakCompareAndSetLongRelease(this, VALUE, expectedValue, newValue);
     }
 
 }
