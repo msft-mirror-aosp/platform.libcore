@@ -2272,8 +2272,6 @@ public final class Unsafe {
                                                     long expected,
                                                     long x);
 
-    // BEGIN Android-removed: Not used in Android.
-    /*
     @IntrinsicCandidate
     public final long compareAndExchangeLongAcquire(Object o, long offset,
                                                            long expected,
@@ -2315,8 +2313,6 @@ public final class Unsafe {
                                                long x) {
         return compareAndSetLong(o, offset, expected, x);
     }
-     */
-    // END Android-removed: Not used in Android.
 
     /**
      * Fetches a reference value from a given Java variable, with volatile
