@@ -913,6 +913,20 @@ public class TCKDuration extends AbstractTCKTest {
     }
 
     @Test
+    public void test_isPositive() {
+        assertEquals(Duration.ofNanos(0).isPositive(), false);
+        assertEquals(Duration.ofSeconds(0).isPositive(), false);
+        assertEquals(Duration.ofNanos(1).isPositive(), true);
+        assertEquals(Duration.ofSeconds(1).isPositive(), true);
+        assertEquals(Duration.ofSeconds(1, 1).isPositive(), true);
+        assertEquals(Duration.ofSeconds(Long.MAX_VALUE, 999_999_999).isPositive(), true);
+        assertEquals(Duration.ofNanos(-1).isPositive(), false);
+        assertEquals(Duration.ofSeconds(-1).isPositive(), false);
+        assertEquals(Duration.ofSeconds(-1, -1).isPositive(), false);
+        assertEquals(Duration.ofSeconds(Long.MIN_VALUE).isPositive(), false);
+    }
+
+    @Test
     public void test_isNegative() {
         assertEquals(Duration.ofNanos(0).isNegative(), false);
         assertEquals(Duration.ofSeconds(0).isNegative(), false);
