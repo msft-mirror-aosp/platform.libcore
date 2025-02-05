@@ -23,6 +23,7 @@ import android.icu.util.ULocale;
 
 import libcore.icu.DecimalFormatData;
 import libcore.icu.ICU;
+import libcore.icu.SimpleDateFormatData;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -30,10 +31,10 @@ import java.lang.reflect.Method;
 import java.lang.ClassNotFoundException;
 import java.lang.NoSuchMethodException;
 import java.lang.ReflectiveOperationException;
-import libcore.icu.SimpleDateFormatData;
+import java.text.Collator;
+import java.util.Locale;
 
 import sun.util.locale.BaseLocale;
-import java.util.Locale;
 
 /**
  * Provides hooks for the zygote to call back into the runtime to perform
@@ -72,6 +73,7 @@ public final class ZygoteHooks {
         ICU.initializeCacheInZygote();
         DecimalFormatData.initializeCacheInZygote();
         SimpleDateFormatData.initializeCacheInZygote();
+        Collator.getInstance();
 
         // Look up JaCoCo on the boot classpath, if it exists. This will be used later for enabling
         // memory-mapped Java coverage.
