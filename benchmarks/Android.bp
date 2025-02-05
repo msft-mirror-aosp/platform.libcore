@@ -40,6 +40,10 @@ java_test {
             "-Xep:UnnecessaryStringBuilder:OFF",
         ],
     },
+    visibility: [
+        "//libcore:__subpackages__",
+        "//platform_testing:__subpackages__",
+    ],
 }
 
 android_test {

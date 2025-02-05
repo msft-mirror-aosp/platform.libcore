@@ -1453,9 +1453,13 @@ ojluni/src/main/java/jdk/internal/util/StrongReferenceKey.java,jdk21u/jdk-21.0.4
 ojluni/src/main/java/jdk/internal/util/WeakReferenceKey.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/util/WeakReferenceKey.java
 ojluni/src/main/java/jdk/internal/util/jar/JarIndex.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/jdk/internal/util/jar/JarIndex.java
 ojluni/src/main/java/jdk/internal/util/random/RandomSupport.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/util/random/RandomSupport.java
+ojluni/src/main/java/jdk/internal/vm/Continuation.java,jdk21u/jdk-21.0.6-ga,src/java.base/share/classes/jdk/internal/vm/Continuation.java
+ojluni/src/main/java/jdk/internal/vm/ContinuationScope.java,jdk21u/jdk-21.0.6-ga,src/java.base/share/classes/jdk/internal/vm/ContinuationScope.java
 ojluni/src/main/java/jdk/internal/vm/StackChunk.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/StackChunk.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Contended.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Contended.java
+ojluni/src/main/java/jdk/internal/vm/annotation/DontInline.java,jdk21u/jdk-21.0.6-ga,src/java.base/share/classes/jdk/internal/vm/annotation/DontInline.java
 ojluni/src/main/java/jdk/internal/vm/annotation/ForceInline.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/annotation/ForceInline.java
+ojluni/src/main/java/jdk/internal/vm/annotation/Hidden.java,jdk21u/jdk-21.0.6-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Hidden.java
 ojluni/src/main/java/jdk/internal/vm/annotation/IntrinsicCandidate.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/annotation/IntrinsicCandidate.java
 ojluni/src/main/java/jdk/internal/vm/annotation/ReservedStackAccess.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/annotation/ReservedStackAccess.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Stable.java
