@@ -821,7 +821,11 @@ public final class VMDebug {
 
         /** @hide */
         public int getFd() {
-            return fd.getInt$();
+            if (fd != null) {
+                return fd.getInt$();
+            } else {
+                return -1;
+            }
         }
 
         /** @hide */
@@ -857,15 +861,15 @@ public final class VMDebug {
      * so it will only hold the most recently executed ones. The tracing is not precise.
      * If a low overhead tracing is already in progress then this request is ignored but an error
      * will be logged. The ongoing trace will not be impacted. For example, if there are two calls
-     * to {@link #startLowOverheadTrace} without a {@link #stopLowOverheadTrace} in between, the
-     * second request is ignored after logging an error. The first one will continue to trace until
-     * the next {@link #stopLowOverheadTrace} call.
+     * to {@link #startLowOverheadTraceForAllMethods} without a {@link #stopLowOverheadTrace} in
+     * between, the second request is ignored after logging an error. The first one will continue to
+     * trace until the next {@link #stopLowOverheadTrace} call.
      *
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    public static void startLowOverheadTrace() {
-        startLowOverheadTraceImpl();
+    public static void startLowOverheadTraceForAllMethods() {
+        startLowOverheadTraceForAllMethodsImpl();
     }
 
     /**
@@ -900,9 +904,26 @@ public final class VMDebug {
         }
     }
 
-    private static native void startLowOverheadTraceImpl();
+    /**
+     * Start an ART trace of executed dex methods that execute longer than a set threshold.
+     * The threshold is defined by ART and isn't configurable. The tracing will be active
+     * for a maximum of trace_duration_ns passed to this function. If another trace (started by
+     * {@link #startLowOverheadTraceForAllMethods} /
+     * {@link #startLowOverheadTraceForLongRunningMethods} / {@link #startMethodTracing}) is running
+     * then this request is ignored and an error is logged.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static void startLowOverheadTraceForLongRunningMethods(long traceDurationNs) {
+        startLowOverheadTraceForLongRunningMethodsImpl(traceDurationNs);
+    }
+
+
+    private static native void startLowOverheadTraceForAllMethodsImpl();
     private static native void stopLowOverheadTraceImpl();
     private static native void dumpLowOverheadTraceImpl(String traceFileName);
     private static native void dumpLowOverheadTraceFdImpl(int fd);
+    private static native void startLowOverheadTraceForLongRunningMethodsImpl(long traceDuration);
 
 }

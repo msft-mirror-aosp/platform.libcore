@@ -22,6 +22,8 @@ import static android.crypto.hpke.KdfParameterSpec.HKDF_SHA256;
 import static android.crypto.hpke.KemParameterSpec.DHKEM_X25519_HKDF_SHA256;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
@@ -30,6 +32,8 @@ import android.crypto.hpke.Hpke;
 import android.crypto.hpke.Message;
 import android.crypto.hpke.Recipient;
 import android.crypto.hpke.Sender;
+
+import libcore.util.NonNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,12 +74,12 @@ public class HpkeTest {
             Object[] aads = new Object[]{null, EMPTY, AAD};
             Object[] infos = new Object[]{null, EMPTY, INFO};
             Object[] messages = new Object[]{EMPTY, MESSAGE};
-            Object[][] algorithms = new Object[][]{
+            Object[][] ciphers = new Object[][]{
                     {AES_128_GCM},
                     {AES_256_GCM},
                     {CHACHA20POLY1305}
             };
-            return permute(aads, permute(infos, permute(messages, algorithms)));
+            return permute(aads, permute(infos, permute(messages, ciphers)));
         }
 
         @Parameter()
@@ -90,7 +94,7 @@ public class HpkeTest {
         @Parameter(3)
         public AeadParameterSpec aead;
 
-        private String algorithm;
+        private String suiteName;
 
         @Before
         public void before() throws Exception {
@@ -98,14 +102,15 @@ public class HpkeTest {
             KeyPair pair = generator.generateKeyPair();
             publicKey = pair.getPublic();
             privateKey = pair.getPrivate();
-            algorithm = Hpke.getAlgorithmName(DHKEM_X25519_HKDF_SHA256, HKDF_SHA256, aead);
-            assertNotNull(algorithm);
+            suiteName = Hpke.getSuiteName(DHKEM_X25519_HKDF_SHA256, HKDF_SHA256, aead);
+            assertNotNull(suiteName);
         }
 
         @Test
         public void sendMessage() throws Exception {
-            Hpke hpke = Hpke.getInstance(algorithm);
-            Hpke.SenderBuilder senderBuilder = hpke.newSender(publicKey);
+            Hpke hpke = Hpke.getInstance(suiteName);
+            assertNotNull(hpke);
+            Sender.Builder senderBuilder = new Sender.Builder(hpke, publicKey);
             if (info != null) {
                 senderBuilder.setApplicationInfo(info);
             }
@@ -114,7 +119,8 @@ public class HpkeTest {
             byte[] encapsulated = sender.getEncapsulated();
             assertNotNull(encapsulated);
 
-            Hpke.RecipientBuilder recipientBuilder = hpke.newRecipient(encapsulated, privateKey);
+            Recipient.Builder recipientBuilder =
+                    new Recipient.Builder(hpke, encapsulated, privateKey);
             if (info != null) {
                 recipientBuilder.setApplicationInfo(info);
             }
@@ -127,7 +133,7 @@ public class HpkeTest {
 
         @Test
         public void oneshot() throws Exception {
-            Hpke hpke = Hpke.getInstance(algorithm);
+            Hpke hpke = Hpke.getInstance(suiteName);
             Message message = hpke.seal(publicKey, info, plaintext, aad);
             byte[] decoded = hpke.open(privateKey, info, message, aad);
             assertArrayEquals(plaintext, decoded);
@@ -151,7 +157,8 @@ public class HpkeTest {
 
     @RunWith(JUnit4.class)
     public static class OtherTests {
-        private static final String ALG = "DHKEM_X25519_HKDF_SHA256/HKDF_SHA256/AES_128_GCM";
+        private static final String SUITE_NAME = "DHKEM_X25519_HKDF_SHA256/HKDF_SHA256/AES_128_GCM";
+        private static final int EXPORT_LENGTH = 16;
         private static final String CONSCRYPT_NAME = "AndroidOpenSSL";
         private final Provider conscrypt = Security.getProvider(CONSCRYPT_NAME);
 
@@ -176,11 +183,11 @@ public class HpkeTest {
                     () ->Hpke.getInstance(null));
 
             assertThrows(IllegalArgumentException.class,
-                    () ->Hpke.getInstance(ALG, (String) null));
+                    () ->Hpke.getInstance(SUITE_NAME, (String) null));
             assertThrows(IllegalArgumentException.class,
-                    () ->Hpke.getInstance(ALG, ""));
+                    () ->Hpke.getInstance(SUITE_NAME, ""));
             assertThrows(NoSuchProviderException.class,
-                    () ->Hpke.getInstance(ALG, "No such"));
+                    () ->Hpke.getInstance(SUITE_NAME, "No such"));
             assertThrows(NoSuchAlgorithmException.class,
                     () ->Hpke.getInstance("No such", CONSCRYPT_NAME));
             assertThrows(NoSuchAlgorithmException.class,
@@ -189,7 +196,7 @@ public class HpkeTest {
                     () ->Hpke.getInstance(null, CONSCRYPT_NAME));
 
             assertThrows(IllegalArgumentException.class,
-                    () ->Hpke.getInstance(ALG, (Provider) null));
+                    () ->Hpke.getInstance(SUITE_NAME, (Provider) null));
             assertThrows(NoSuchAlgorithmException.class,
                     () ->Hpke.getInstance("No such", conscrypt));
             assertThrows(NoSuchAlgorithmException.class,
@@ -204,27 +211,96 @@ public class HpkeTest {
             KeyPair pair = generator.generateKeyPair();
             PublicKey publicRsa = pair.getPublic();
             PrivateKey privateRsa = pair.getPrivate();
-            Hpke hpke = Hpke.getInstance(ALG);
+            Hpke hpke = Hpke.getInstance(SUITE_NAME);
 
             assertThrows(InvalidKeyException.class,
-                    () -> hpke.newSender(publicRsa).build());
+                    () -> new Sender.Builder(hpke, publicRsa).build());
             assertThrows(InvalidKeyException.class,
-                    () -> hpke.newRecipient(new byte[16], privateRsa).build());
+                    () -> new Recipient.Builder(hpke, new byte[16], privateRsa).build());
         }
 
         @Test
-        public void algorithmNames() throws Exception {
+        public void suiteNames() throws Exception {
             List<AeadParameterSpec> aeads = List.of(AES_128_GCM, AES_256_GCM, CHACHA20POLY1305);
             for (AeadParameterSpec aead : aeads) {
-                String algorithm
-                        = Hpke.getAlgorithmName(DHKEM_X25519_HKDF_SHA256, HKDF_SHA256, aead);
-                assertNotNull(algorithm);
-                assertNotNull(Hpke.getInstance(algorithm));
+                String suiteName
+                        = Hpke.getSuiteName(DHKEM_X25519_HKDF_SHA256, HKDF_SHA256, aead);
+                assertNotNull(suiteName);
+                assertNotNull(Hpke.getInstance(suiteName));
                 // Also check Tink-compatible names
                 // TODO(prb) enable after https://github.com/google/conscrypt/pull/1258 lands
-                // String altName = algorithm.replaceAll("/", "_");
+                // String altName = suiteName.replaceAll("/", "_");
                 // assertNotNull(Hpke.getInstance(altName));
             }
+        }
+
+        // Note API test only, implementation tests are in Conscrypt.
+        @Test
+        public void export() throws Exception {
+            byte[] context = "Hello".getBytes(StandardCharsets.UTF_8);
+            Hpke hpke = Hpke.getInstance(SUITE_NAME);
+            assertNotNull(hpke);
+            Sender sender = new Sender.Builder(hpke, publicKey).build();
+            Recipient recipient =
+                    new Recipient.Builder(hpke, sender.getEncapsulated(), privateKey).build();
+            assertNotNull(recipient);
+
+            byte[] senderData = sender.export(EXPORT_LENGTH, context);
+            assertNotNull(senderData);
+            assertEquals(EXPORT_LENGTH, senderData.length);
+            int sum = 0;
+            for (byte b : senderData) {
+                sum += b;
+            }
+            // Check data isn't all zeroes.
+            assertNotEquals(0, sum);
+
+            byte[] recipientData = recipient.export(EXPORT_LENGTH, context);
+            assertArrayEquals(senderData, recipientData);
+        }
+
+        @Test
+        public void spiAndProvider() throws Exception{
+            Hpke hpke = Hpke.getInstance(SUITE_NAME);
+            assertNotNull(hpke);
+            assertNotNull(hpke.getProvider());
+
+            Sender sender = new Sender.Builder(hpke, publicKey).build();
+            Recipient recipient =
+                    new Recipient.Builder(hpke, sender.getEncapsulated(), privateKey).build();
+            assertNotNull(recipient);
+
+            assertNotNull(sender.getProvider());
+            assertNotNull(sender.getSpi());
+            assertNotNull(recipient.getProvider());
+            assertNotNull(recipient.getSpi());
+        }
+
+        // Note API test only.  Implementation not yet present.
+        @Test
+        public void futureBuilderMethods() throws Exception {
+            byte[] appInfo = "App Info".getBytes(StandardCharsets.UTF_8);
+            byte[] psk = "Very Secret Key".getBytes(StandardCharsets.UTF_8);
+            byte[] pskId = "ID".getBytes(StandardCharsets.UTF_8);
+
+            Hpke hpke = Hpke.getInstance(SUITE_NAME);
+            assertNotNull(hpke);
+
+            Sender.Builder senderBuilder = new Sender.Builder(hpke, publicKey)
+                    .setApplicationInfo(appInfo)
+                    .setSenderKey(privateKey)
+                    .setPsk(psk, pskId);
+            assertThrows(UnsupportedOperationException.class, senderBuilder::build);
+
+            Sender sender = new Sender.Builder(hpke, publicKey).build();
+            assertNotNull(sender);
+
+            Recipient.Builder recipientBuilder =
+                    new Recipient.Builder(hpke, sender.getEncapsulated(), privateKey)
+                            .setApplicationInfo(appInfo)
+                            .setSenderKey(publicKey)
+                            .setPsk(psk, pskId);
+            assertThrows(UnsupportedOperationException.class, recipientBuilder::build);
         }
     }
 }

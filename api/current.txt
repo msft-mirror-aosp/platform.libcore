@@ -2,36 +2,19 @@
 package android.crypto.hpke {
 
   @FlaggedApi("com.android.libcore.hpke_public_api") public class AeadParameterSpec extends java.security.spec.NamedParameterSpec {
-    ctor public AeadParameterSpec(@NonNull String);
     field public static final android.crypto.hpke.AeadParameterSpec AES_128_GCM;
     field public static final android.crypto.hpke.AeadParameterSpec AES_256_GCM;
     field public static final android.crypto.hpke.AeadParameterSpec CHACHA20POLY1305;
   }
 
   @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke {
-    method @NonNull public static String getAlgorithmName(@NonNull android.crypto.hpke.KemParameterSpec, @NonNull android.crypto.hpke.KdfParameterSpec, @NonNull android.crypto.hpke.AeadParameterSpec);
     method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String) throws java.security.NoSuchAlgorithmException;
     method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String, @NonNull String) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
     method @NonNull public static android.crypto.hpke.Hpke getInstance(@NonNull String, @NonNull java.security.Provider) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
     method @NonNull public java.security.Provider getProvider();
-    method public android.crypto.hpke.Hpke.RecipientBuilder newRecipient(@NonNull byte[], @NonNull java.security.PrivateKey);
-    method public android.crypto.hpke.Hpke.SenderBuilder newSender(@NonNull java.security.PublicKey);
+    method @NonNull public static String getSuiteName(@NonNull android.crypto.hpke.KemParameterSpec, @NonNull android.crypto.hpke.KdfParameterSpec, @NonNull android.crypto.hpke.AeadParameterSpec);
     method @NonNull public byte[] open(@NonNull java.security.PrivateKey, @Nullable byte[], @NonNull android.crypto.hpke.Message, @Nullable byte[]) throws java.security.GeneralSecurityException, java.security.InvalidKeyException;
     method @NonNull public android.crypto.hpke.Message seal(@NonNull java.security.PublicKey, @Nullable byte[], @NonNull byte[], @Nullable byte[]) throws java.security.InvalidKeyException;
-  }
-
-  @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke.RecipientBuilder {
-    method @NonNull public android.crypto.hpke.Recipient build() throws java.security.InvalidKeyException;
-    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setApplicationInfo(@NonNull byte[]);
-    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setPsk(@NonNull byte[], @NonNull byte[]);
-    method @NonNull public android.crypto.hpke.Hpke.RecipientBuilder setSenderKey(@NonNull java.security.PublicKey);
-  }
-
-  @FlaggedApi("com.android.libcore.hpke_public_api") public class Hpke.SenderBuilder {
-    method @NonNull public android.crypto.hpke.Sender build() throws java.security.InvalidKeyException;
-    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setApplicationInfo(@NonNull byte[]);
-    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setPsk(@NonNull byte[], @NonNull byte[]);
-    method @NonNull public android.crypto.hpke.Hpke.SenderBuilder setSenderKey(@NonNull java.security.PrivateKey);
   }
 
   public interface HpkeSpi {
@@ -45,16 +28,17 @@ package android.crypto.hpke {
   }
 
   @FlaggedApi("com.android.libcore.hpke_public_api") public class KdfParameterSpec extends java.security.spec.NamedParameterSpec {
-    ctor public KdfParameterSpec(@NonNull String);
     field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA256;
     field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA384;
     field public static final android.crypto.hpke.KdfParameterSpec HKDF_SHA512;
   }
 
   @FlaggedApi("com.android.libcore.hpke_public_api") public class KemParameterSpec extends java.security.spec.NamedParameterSpec {
-    ctor public KemParameterSpec(@NonNull String);
     field public static final android.crypto.hpke.KemParameterSpec DHKEM_P256_HKDF_SHA256;
+    field public static final android.crypto.hpke.KemParameterSpec DHKEM_P384_HKDF_SHA384;
+    field public static final android.crypto.hpke.KemParameterSpec DHKEM_P521_HKDF_SHA256;
     field public static final android.crypto.hpke.KemParameterSpec DHKEM_X25519_HKDF_SHA256;
+    field public static final android.crypto.hpke.KemParameterSpec DHKEM_X448_HKDF_SHA512;
   }
 
   @FlaggedApi("com.android.libcore.hpke_public_api") public class Message {
@@ -70,12 +54,28 @@ package android.crypto.hpke {
     method @NonNull public byte[] open(@NonNull byte[], @Nullable byte[]) throws java.security.GeneralSecurityException;
   }
 
+  @FlaggedApi("com.android.libcore.hpke_public_api") public static class Recipient.Builder {
+    ctor public Recipient.Builder(@NonNull android.crypto.hpke.Hpke, @NonNull byte[], @NonNull java.security.PrivateKey);
+    method @NonNull public android.crypto.hpke.Recipient build() throws java.security.InvalidKeyException;
+    method @NonNull public android.crypto.hpke.Recipient.Builder setApplicationInfo(@NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Recipient.Builder setPsk(@NonNull byte[], @NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Recipient.Builder setSenderKey(@NonNull java.security.PublicKey);
+  }
+
   @FlaggedApi("com.android.libcore.hpke_public_api") public class Sender {
     method @NonNull public byte[] export(int, @Nullable byte[]);
     method @NonNull public byte[] getEncapsulated();
     method @NonNull public java.security.Provider getProvider();
     method @NonNull public android.crypto.hpke.HpkeSpi getSpi();
     method @NonNull public byte[] seal(@NonNull byte[], @Nullable byte[]);
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_public_api") public static class Sender.Builder {
+    ctor public Sender.Builder(@NonNull android.crypto.hpke.Hpke, @NonNull java.security.PublicKey);
+    method @NonNull public android.crypto.hpke.Sender build() throws java.security.InvalidKeyException;
+    method @NonNull public android.crypto.hpke.Sender.Builder setApplicationInfo(@NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Sender.Builder setPsk(@NonNull byte[], @NonNull byte[]);
+    method @NonNull public android.crypto.hpke.Sender.Builder setSenderKey(@NonNull java.security.PrivateKey);
   }
 
   public final class XdhKeySpec extends java.security.spec.EncodedKeySpec {
@@ -11568,6 +11568,7 @@ package java.time {
     method public long getSeconds();
     method public java.util.List<java.time.temporal.TemporalUnit> getUnits();
     method public boolean isNegative();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v2_apis") public boolean isPositive();
     method public boolean isZero();
     method public java.time.Duration minus(java.time.Duration);
     method public java.time.Duration minus(long, java.time.temporal.TemporalUnit);

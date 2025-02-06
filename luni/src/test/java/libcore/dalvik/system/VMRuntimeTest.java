@@ -155,11 +155,7 @@ public final class VMRuntimeTest {
 
     @Test
     public void testIsArtTestFlagEnabled() {
-        boolean b = VMRuntime.isArtTestFlagEnabled();
-        // TODO(b/352723620): The flag value depends on the release
-        // configurations. Don't assert the value until the flag is turned on in
-        // all configurations.
-        Assume.assumeTrue(b);
+        assertTrue(VMRuntime.isArtTestFlagEnabled());
     }
 
     @Test

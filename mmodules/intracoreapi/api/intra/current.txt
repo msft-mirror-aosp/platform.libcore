@@ -30,6 +30,7 @@ package android.system {
 package dalvik.annotation.compat {
 
   @libcore.api.IntraCoreApi public class VersionCodes {
+    field @libcore.api.IntraCoreApi public static final int BAKLAVA = 36; // 0x24
     field @libcore.api.IntraCoreApi public static final int CUR_DEVELOPMENT = 10000; // 0x2710
     field @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
     field @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
