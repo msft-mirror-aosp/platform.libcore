@@ -29,6 +29,13 @@ public class NonMtsReasons {
            + "platform version. The test only passes above a certain API level.";
 
     /**
+     * If the test depends on the tzdata APEX version and version-specific data,
+     * you can use this reason.
+     */
+    public static final String TZDATA_VERSION_DEPENDENCY = "The API behavior depends on the "
+            + "tzdata APEX version.";
+
+    /**
      * If the test only passes above a certain API level.
      */
     public static final String API_LEVEL_GATING = "The test only passes above "
