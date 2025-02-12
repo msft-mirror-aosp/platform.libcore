@@ -438,4 +438,9 @@ public class OsConstantsTest {
         assertFalse(WIFSIGNALED(0));
         assertTrue(WIFSIGNALED(1));
     }
+
+    @Test
+    public void errno_returnsNull_onUnknown() {
+        assertNull(OsConstants.errnoName(99999999));
+    }
 }
