@@ -440,8 +440,8 @@ import java.util.Objects;
  * @since 9
  */
 public abstract class VarHandle {
-    // Android-added: Using sun.misc.Unsafe for fence implementation.
-    private static final sun.misc.Unsafe UNSAFE = sun.misc.Unsafe.getUnsafe();
+    // Android-added: Using jdk.internal.misc.Unsafe for fence implementation.
+    private static final jdk.internal.misc.Unsafe UNSAFE = jdk.internal.misc.Unsafe.getUnsafe();
 
     // BEGIN Android-removed: No VarForm in Android implementation.
     /*
