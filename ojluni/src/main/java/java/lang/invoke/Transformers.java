@@ -32,8 +32,8 @@ import dalvik.system.EmulatedStackFrame.StackFrameAccessor;
 import dalvik.system.EmulatedStackFrame.StackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameWriter;
 
+import jdk.internal.misc.Unsafe;
 import sun.invoke.util.Wrapper;
-import sun.misc.Unsafe;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
