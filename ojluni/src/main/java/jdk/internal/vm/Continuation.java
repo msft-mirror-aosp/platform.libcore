@@ -51,8 +51,10 @@ public class Continuation {
 
         StackChunk.init(); // ensure StackChunk class is initialized
 
-        String value = GetPropertyAction.privilegedGetProperty("jdk.preserveScopedValueCache");
-        PRESERVE_SCOPED_VALUE_CACHE = (value == null) || Boolean.parseBoolean(value);
+        // Android-changed: Remove ScopedValue until the feature is finalized.
+        // String value = GetPropertyAction.privilegedGetProperty("jdk.preserveScopedValueCache");
+        // PRESERVE_SCOPED_VALUE_CACHE = (value == null) || Boolean.parseBoolean(value);
+        PRESERVE_SCOPED_VALUE_CACHE = false;
     }
 
     /** Reason for pinning */
@@ -97,7 +99,8 @@ public class Continuation {
 
     static {
         try {
-            registerNatives();
+            // Android-removed: Not needed on Android.
+            // registerNatives();
 
             // init Pinned to avoid classloading during mounting
             pinnedReason(2);
@@ -446,14 +449,15 @@ public class Continuation {
      * Pins the current continuation (enters a critical section).
      * This increments an internal semaphore that, when greater than 0, pins the continuation.
      */
-    public static native void pin();
+    // Android-removed: unused
+    // public static native void pin();
 
     /**
      * Unpins the current continuation (exits a critical section).
      * This decrements an internal semaphore that, when equal 0, unpins the current continuation
      * if pinned with {@link #pin()}.
      */
-    public static native void unpin();
+    // public static native void unpin();
 
     /**
      * Tests whether the given scope is pinned.
@@ -484,10 +488,13 @@ public class Continuation {
         mounted = newValue; // MOUNTED.setVolatile(this, newValue);
     }
 
+    // Android-removed: unused.
+    /*
     private String id() {
         return Integer.toHexString(System.identityHashCode(this))
                 + " [" + currentCarrierThread().threadId() + "]";
     }
+    */
 
     /**
      * Tries to forcefully preempt this continuation if it is currently mounted on the given thread
@@ -502,9 +509,12 @@ public class Continuation {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    // native methods
-    private static native void registerNatives();
+    // native method
+    // Android-removed: Not needed on Android.
+    // private static native void registerNatives();
 
+    // Android-removed: unused.
+    /*
     private void dump() {
         System.out.println("Continuation@" + Long.toHexString(System.identityHashCode(this)));
         System.out.println("\tparent: " + parent);
@@ -514,11 +524,15 @@ public class Continuation {
             System.out.println(c);
         }
     }
+    */
 
+    // Android-removed: unused.
+    /*
     private static boolean isEmptyOrTrue(String property) {
         String value = GetPropertyAction.privilegedGetProperty(property);
         if (value == null)
             return false;
         return value.isEmpty() || Boolean.parseBoolean(value);
     }
+    */
 }
