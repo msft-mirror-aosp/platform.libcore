@@ -419,6 +419,8 @@ public final class VMRuntime {
     private static class SdkVersionContainer {
         // Similar to android.os.Build.VERSION.SDK_INT in the boot classpath, the default sdk is 0.
         private static final int sdkVersion = getSdkVersionNative(/*default_sdk_value=*/0);
+        private static final int sdkExtensionS =
+                getIntSystemProperty("build.version.extensions.s", /* defaultValue= */ 0);
     }
 
     /**
@@ -440,6 +442,23 @@ public final class VMRuntime {
     }
 
     /**
+     * Gets the SDK extension for S of the software currently running on this hardware
+     * device. This value never changes while a device is booted, but it may
+     * increase when the hardware manufacturer provides an OTA update.
+     * <p>
+     *
+     * For use by the ART module. Please use android.os.ext.SdkExtensions if
+     * the usage is not in the ART module.
+     *
+     * @implNote This returns {@code "build.version.extensions.s"} system property on Android
+     *
+     * @hide
+     */
+    public static int getSdkExtensionSLevel() {
+        return SdkVersionContainer.sdkExtensionS;
+    }
+
+    /**
      * Gets the target SDK version. See {@link #setTargetSdkVersion} for
      * special values.
      *
@@ -453,6 +472,9 @@ public final class VMRuntime {
     }
 
     private native void setTargetSdkVersionNative(int targetSdkVersion);
+
+    @FastNative
+    private static native int getIntSystemProperty(String sdkExtensionName, int defaultValue);
     private native void setDisabledCompatChangesNative(long[] disabledCompatChanges);
 
     /**
