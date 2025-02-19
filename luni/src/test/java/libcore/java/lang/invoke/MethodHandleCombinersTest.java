@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("EmptyCatch") // Old thrown exception testing pattern.
 public class MethodHandleCombinersTest extends TestCase {
 
     static final int TEST_THREAD_ITERATIONS = 1000;
@@ -464,6 +465,42 @@ public class MethodHandleCombinersTest extends TestCase {
             assertEquals("42", array[0]);
             assertEquals("48", array[1]);
             assertEquals("54", array[2]);
+
+            setter.invokeExact(array, 0, "43");
+            setter.invokeExact(array, 1, "49");
+            setter.invokeExact(array, 2, "55");
+            assertEquals("43", array[0]);
+            assertEquals("49", array[1]);
+            assertEquals("55", array[2]);
+
+            try {
+                setter.invoke(array, 0, new Object());
+                fail("ClassCastException is expected");
+            } catch (ClassCastException ignored) {}
+
+            try {
+                setter.invoke(array, 0, 10);
+                fail("WMTE is expected");
+            } catch (WrongMethodTypeException ignored) {}
+
+            try {
+                setter.invokeExact(array, 1, new Object());
+                fail("WMTE is expected");
+            } catch (WrongMethodTypeException ignored) {}
+
+            CharSequence[] charSequences = new CharSequence[3];
+            MethodHandle charSeqSetter = MethodHandles.arrayElementSetter(CharSequence[].class);
+
+            charSeqSetter.invoke(charSequences, 0, "");
+            assertEquals("", charSequences[0]);
+
+            charSeqSetter.invokeExact(charSequences, 1, (CharSequence) "non-empty");
+            assertEquals("non-empty", charSequences[1]);
+
+            try {
+                charSeqSetter.invokeExact(charSequences, 2, "str");
+                fail("Should throw WMTE");
+            } catch (WrongMethodTypeException ignored) {}
         }
     }
 
@@ -1564,7 +1601,7 @@ public class MethodHandleCombinersTest extends TestCase {
         try {
             adapter = MethodHandles.collectArguments(target, 3, filter);
             fail();
-        } catch (IndexOutOfBoundsException expected) {
+        } catch (IllegalArgumentException expected) {
         }
 
         // Mismatch in filter return type.
