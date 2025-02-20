@@ -311,6 +311,7 @@ ojluni/src/main/java/java/lang/reflect/UndeclaredThrowableException.java,jdk11u/
 ojluni/src/main/java/java/lang/reflect/WeakCache.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/reflect/WeakCache.java
 ojluni/src/main/java/java/lang/reflect/WildcardType.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/reflect/WildcardType.java
 ojluni/src/main/java/java/lang/reflect/package-info.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/reflect/package-info.java
+ojluni/src/main/java/java/lang/runtime/ObjectMethods.java,jdk17u/jdk-17.0.10-ga,src/java.base/share/classes/java/lang/runtime/ObjectMethods.java
 ojluni/src/main/java/java/lang/runtime/SwitchBootstraps.java,jdk21u/jdk-21.0.4-ga,src/java.base/share/classes/java/lang/runtime/SwitchBootstraps.java
 ojluni/src/main/java/java/math/BigDecimal.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/math/BigDecimal.java
 ojluni/src/main/java/java/math/BigInteger.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/math/BigInteger.java
@@ -2086,6 +2087,7 @@ ojluni/src/test/java/lang/invoke/VarHandles/generate-vh-tests.sh,jdk11u/jdk-11.0
 ojluni/src/test/java/lang/ref/CleanerTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/ref/CleanerTest.java
 ojluni/src/test/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/reflect/records/CheckEqualityIsBasedOnFields.java
 ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/reflect/records/RecordReflectionTest.java
+ojluni/src/test/java/lang/runtime/ObjectMethodsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/runtime/ObjectMethodsTest.java
 ojluni/src/test/java/lang/runtime/SwitchBootstrapsTest.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/lang/runtime/SwitchBootstrapsTest.java
 ojluni/src/test/java/math/BigDecimal/AddTests.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/math/BigDecimal/AddTests.java
 ojluni/src/test/java/math/BigDecimal/CompareToTests.java,jdk21u/jdk-21.0.4-ga,test/jdk/java/math/BigDecimal/CompareToTests.java
