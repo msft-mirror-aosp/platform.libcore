@@ -2347,12 +2347,25 @@ return mh1;
      */
     public static
     MethodHandle arrayLength(Class<?> arrayClass) throws IllegalArgumentException {
-        // Android-changed: transformer based implementation.
+        // Android-changed: calling static function directly.
         // return MethodHandleImpl.makeArrayElementAccessor(arrayClass, MethodHandleImpl.ArrayAccess.LENGTH);
         if (!arrayClass.isArray()) {
             throw newIllegalArgumentException("not an array class: " + arrayClass.getName());
         }
-        return new Transformers.ArrayLength(arrayClass);
+        Class<?> componentType = arrayClass.getComponentType();
+        Class<?> reducedArrayType = componentType.isPrimitive() ? arrayClass : Object[].class;
+
+        try {
+            Method arrayLength =
+                MethodHandles.class.getDeclaredMethod("arrayLength", reducedArrayType);
+
+            return new MethodHandleImpl(
+                    arrayLength.getArtMethod(),
+                    MethodHandle.INVOKE_STATIC,
+                    MethodType.methodType(int.class, arrayClass));
+        } catch (NoSuchMethodException nsme) {
+            throw new AssertionError(nsme);
+        }
     }
 
     // BEGIN Android-added: method to check if a class is an array.
@@ -2361,6 +2374,16 @@ return mh1;
             throw new IllegalArgumentException("Not an array type: " + c);
         }
     }
+
+    private static int arrayLength(byte[] array) { return array.length; }
+    private static int arrayLength(boolean[] array) { return array.length; }
+    private static int arrayLength(char[] array) { return array.length; }
+    private static int arrayLength(short[] array) { return array.length; }
+    private static int arrayLength(int[] array) { return array.length; }
+    private static int arrayLength(long[] array) { return array.length; }
+    private static int arrayLength(float[] array) { return array.length; }
+    private static int arrayLength(double[] array) { return array.length; }
+    private static int arrayLength(Object[] array) { return array.length; }
 
     private static void checkTypeIsViewable(Class<?> componentType) {
         if (componentType == short.class ||
@@ -2399,7 +2422,19 @@ return mh1;
             }
         }
 
-        return new Transformers.ReferenceArrayElementGetter(arrayClass);
+        try {
+            // MethodHandle objects can be cached.
+            Method arrayElementGetter =
+                MethodHandles.class.getDeclaredMethod(
+                        "arrayElementGetter", Object[].class, int.class);
+
+            return new MethodHandleImpl(
+                    arrayElementGetter.getArtMethod(),
+                    MethodHandle.INVOKE_STATIC,
+                    MethodType.methodType(componentType, arrayClass, int.class));
+        } catch (NoSuchMethodException nsme) {
+            throw new AssertionError(nsme);
+        }
     }
 
     /** @hide */ public static byte arrayElementGetter(byte[] array, int i) { return array[i]; }
@@ -2410,6 +2445,7 @@ return mh1;
     /** @hide */ public static long arrayElementGetter(long[] array, int i) { return array[i]; }
     /** @hide */ public static float arrayElementGetter(float[] array, int i) { return array[i]; }
     /** @hide */ public static double arrayElementGetter(double[] array, int i) { return array[i]; }
+    private static Object arrayElementGetter(Object[] array, int i) { return array[i]; }
 
     /**
      * Produces a method handle giving write access to elements of an array.
@@ -2435,7 +2471,18 @@ return mh1;
             }
         }
 
-        return new Transformers.ReferenceArrayElementSetter(arrayClass);
+        try {
+            Method arrayElementSetter =
+                MethodHandles.class.getDeclaredMethod(
+                        "arrayElementSetter", Object[].class, int.class, Object.class);
+
+            return new MethodHandleImpl(
+                    arrayElementSetter.getArtMethod(),
+                    MethodHandle.INVOKE_STATIC,
+                    MethodType.methodType(void.class, arrayClass, int.class, componentType));
+        } catch (NoSuchMethodException nsme) {
+            throw new AssertionError(nsme);
+        }
     }
 
     /** @hide */
@@ -2454,6 +2501,7 @@ return mh1;
     public static void arrayElementSetter(float[] array, int i, float val) { array[i] = val; }
     /** @hide */
     public static void arrayElementSetter(double[] array, int i, double val) { array[i] = val; }
+    private static void arrayElementSetter(Object[] array, int i, Object val) { array[i] = val; }
 
     // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory methods.
     /**
@@ -3822,14 +3870,18 @@ assertEquals("[top, [[up, down, strange], charm], bottom]",
         MethodType targetType = target.type();
         MethodType filterType = filter.type();
         Class<?> rtype = filterType.returnType();
-        List<Class<?>> filterArgs = filterType.parameterList();
+        Class<?>[] filterArgs = filterType.ptypes();
+        if (pos < 0 || (rtype == void.class && pos > targetType.parameterCount()) ||
+                       (rtype != void.class && pos >= targetType.parameterCount())) {
+            throw newIllegalArgumentException("position is out of range for target", target, pos);
+        }
         if (rtype == void.class) {
             return targetType.insertParameterTypes(pos, filterArgs);
         }
         if (rtype != targetType.parameterType(pos)) {
             throw newIllegalArgumentException("target and filter types do not match", targetType, filterType);
         }
-        return targetType.dropParameterTypes(pos, pos+1).insertParameterTypes(pos, filterArgs);
+        return targetType.dropParameterTypes(pos, pos + 1).insertParameterTypes(pos, filterArgs);
     }
 
     /**
