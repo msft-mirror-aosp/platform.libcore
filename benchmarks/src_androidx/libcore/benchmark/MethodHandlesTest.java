@@ -38,12 +38,22 @@ public class MethodHandlesTest {
 
     private static final MethodHandle MH_1;
     private static final MethodHandle MH_0;
+    private static final MethodHandle FIELD_GETTER;
+    private static final MethodHandle FIELD_SETTER;
+    private static final MethodHandle STATIC_METHOD;
+
     static {
         try {
             MH_1 = MethodHandles.lookup()
                     .findVirtual(A.class, "identity", MethodType.methodType(int.class, int.class));
             MH_0 = MethodHandles.lookup()
                     .findVirtual(A.class, "constant", MethodType.methodType(int.class));
+            FIELD_GETTER = MethodHandles.lookup()
+                    .findGetter(A.class, "fField", long.class);
+            FIELD_SETTER = MethodHandles.lookup()
+                    .findSetter(A.class, "mField", long.class);
+            STATIC_METHOD = MethodHandles.lookup()
+                    .findStatic(A.class, "staticMethod", MethodType.methodType(int.class));
         } catch (ReflectiveOperationException ex) {
             throw new RuntimeException(ex);
         }
@@ -53,7 +63,7 @@ public class MethodHandlesTest {
     private int x1 = 10;
 
     @Test
-    public void directCall_noArguments() {
+    public void virtualCall_noArguments() {
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
             a.constant();
@@ -61,7 +71,7 @@ public class MethodHandlesTest {
     }
 
     @Test
-    public void directCall_singleArgument() {
+    public void virtualCall_singleArgument() {
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
             a.identity(x1);
@@ -69,22 +79,99 @@ public class MethodHandlesTest {
     }
 
     @Test
-    public void methodHandles_noArguments() throws Throwable {
+    public void staticCall() {
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
-            MH_0.invoke(a);
+            A.staticMethod();
         }
     }
 
     @Test
-    public void methodHandles_singleArgument() throws Throwable {
+    public void methodHandles_staticMethodCall() throws Throwable {
         final BenchmarkState state = benchmarkRule.getState();
         while (state.keepRunning()) {
-            MH_1.invoke(a, x1);
+            int ignored = (int) STATIC_METHOD.invokeExact();
+        }
+    }
+
+    @Test
+    public void methodHandles_virtualMethod_noArguments() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            int ignored = (int) MH_0.invokeExact(a);
+        }
+    }
+
+    @Test
+    public void methodHandles_virtualMethod_singleArgument() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            int ignored = (int) MH_1.invokeExact(a, x1);
+        }
+    }
+
+    @Test
+    public void methodHandles_finalFieldGetter() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            long ignored = (long) FIELD_GETTER.invokeExact(a);
+        }
+    }
+
+    @NeverInline
+    private long getter() {
+        return a.fField;
+    }
+
+    @Test
+    public void finalFieldGetter() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            getter();
+        }
+    }
+
+    @NeverInline
+    private void setterMh() throws Throwable {
+        FIELD_SETTER.invokeExact(a, 10L);
+    }
+
+    @Test
+    public void methodHandles_fieldSetter() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            setterMh();
+        }
+    }
+
+    @NeverInline
+    private void setter() {
+        a.mField = 10;
+    }
+
+    @Test
+    public void fieldSetter() throws Throwable {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            setter();
+        }
+    }
+
+    @NeverInline
+    private void noop() {}
+
+    @Test
+    public void testNoop() {
+        final BenchmarkState state = benchmarkRule.getState();
+        while (state.keepRunning()) {
+            noop();
         }
     }
 
     static class A {
+
+        final long fField = 42;
+        long mField = 0;
 
         @NeverInline
         public int constant() {
@@ -94,6 +181,11 @@ public class MethodHandlesTest {
         @NeverInline
         public int identity(int a) {
             return a;
+        }
+
+        @NeverInline
+        public static int staticMethod() {
+            return 1001;
         }
 
     }
