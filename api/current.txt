@@ -11568,6 +11568,7 @@ package java.time {
     method public long getSeconds();
     method public java.util.List<java.time.temporal.TemporalUnit> getUnits();
     method public boolean isNegative();
+    method @FlaggedApi("com.android.libcore.openjdk_21_v2_apis") public boolean isPositive();
     method public boolean isZero();
     method public java.time.Duration minus(java.time.Duration);
     method public java.time.Duration minus(long, java.time.temporal.TemporalUnit);
