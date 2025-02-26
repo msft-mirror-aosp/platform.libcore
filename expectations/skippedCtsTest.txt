@@ -65,6 +65,7 @@
     "description": "Test for internal APIs.",
     "names": [
       "libcore.jdk.internal.access.SharedSecretsTest",
+      "libcore.jdk.internal.misc.UnsafeTest",
       "libcore.libcore.icu.DateIntervalFormatTest",
       "libcore.libcore.icu.ICUTest",
       "libcore.libcore.icu.LocaleDataTest"
@@ -145,6 +146,19 @@
       "libcore.java.lang.reflect.OldAndroidClassTest#testClassGetMethodsNoDupes",
       "libcore.java.util.zip.ZipFileTest#test_FileNotFound",
       "org.apache.harmony.tests.java.util.zip.DeflaterTest#test_finalize"
+    ]
+  },
+  {
+    "bug": 398274273,
+    "description": "Installed tzdata version dependent tests",
+    "names": [
+      "libcore.java.util.TimeZoneTest#testPreHistoricInDaylightTime",
+      "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_formatLjava_util_DateLjava_lang_StringBufferLjava_text_FieldPosition",
+      "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_formatToCharacterIteratorLjava_lang_Object",
+      "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_format_time_zones",
+      "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_timeZoneFormatting",
+      "org.apache.harmony.tests.java.util.DateTest#test_parseLjava_lang_String",
+      "test.java.time.format.TestUnicodeExtension#test_shortTZID"
     ]
   }
 ]
