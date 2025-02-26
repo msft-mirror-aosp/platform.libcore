@@ -20,7 +20,6 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package test.java.nio.Buffer;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -197,7 +196,7 @@ public class EqualsCompareTest {
                 throw e;
             }
             catch (Throwable t) {
-                throw new Error(t);
+              throw new Error(t);
             }
         }
 
@@ -221,8 +220,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? ((Integer) o).byteValue()
-                        : o;
+                       ? ((Integer) o).byteValue()
+                       : o;
             }
         }
 
@@ -251,8 +250,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? (char) ((Integer) o).intValue()
-                        : o;
+                       ? (char) ((Integer) o).intValue()
+                       : o;
             }
 
             CharBuffer transformToStringBuffer(CharBuffer c) {
@@ -287,8 +286,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? ((Integer) o).shortValue()
-                        : o;
+                       ? ((Integer) o).shortValue()
+                       : o;
             }
         }
 
@@ -344,8 +343,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? ((Integer) o).floatValue()
-                        : o;
+                       ? ((Integer) o).floatValue()
+                       : o;
             }
 
             @Override
@@ -388,8 +387,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? ((Integer) o).longValue()
-                        : o;
+                       ? ((Integer) o).longValue()
+                       : o;
             }
         }
 
@@ -418,8 +417,8 @@ public class EqualsCompareTest {
             @Override
             Object convert(Object o) {
                 return o instanceof Integer
-                        ? ((Integer) o).doubleValue()
-                        : o;
+                       ? ((Integer) o).doubleValue()
+                       : o;
             }
 
             @Override
@@ -521,9 +520,10 @@ public class EqualsCompareTest {
 
     // Tests all primitive buffers
     @Test(dataProvider = "bufferTypesProvider")
-    public void testBuffers(BufferType<Buffer, Buffer> bufferType) {
+    <E>
+    void testBuffers(BufferType<Buffer, E> bufferType) {
         // Test with buffers of the same byte order (BE)
-        BiFunction<BufferType<Buffer, Buffer>, Integer, Buffer> constructor = (at, s) -> {
+        BiFunction<BufferType<Buffer, E>, Integer, Buffer> constructor = (at, s) -> {
             Buffer a = at.construct(s);
             for (int x = 0; x < s; x++) {
                 at.set(a, x, x % 8);
@@ -531,12 +531,14 @@ public class EqualsCompareTest {
             return a;
         };
 
+        testBufferType(bufferType, constructor, constructor);
+
         // Test with buffers of different byte order
         if (bufferType.elementType != byte.class &&
-                (bufferType.k == BufferKind.HEAP_VIEW ||
-                        bufferType.k == BufferKind.DIRECT)) {
+            (bufferType.k == BufferKind.HEAP_VIEW ||
+             bufferType.k == BufferKind.DIRECT)) {
 
-            BiFunction<BufferType<Buffer, Buffer>, Integer, Buffer> leConstructor = (at, s) -> {
+            BiFunction<BufferType<Buffer, E>, Integer, Buffer> leConstructor = (at, s) -> {
                 Buffer a = at.construct(s, ByteOrder.LITTLE_ENDIAN);
                 for (int x = 0; x < s; x++) {
                     at.set(a, x, x % 8);
@@ -583,12 +585,12 @@ public class EqualsCompareTest {
             return b;
         };
 
-        // Validation check
+        // Sanity check
         int size = arraySizeFor(bufferType.elementType);
         Assert.assertTrue(bufferType.pairWiseEquals(allAs.apply(bufferType, size),
-                allBs.apply(bufferType, size)));
+                                                    allBs.apply(bufferType, size)));
         Assert.assertTrue(bufferType.equals(allAs.apply(bufferType, size),
-                allBs.apply(bufferType, size)));
+                                            allBs.apply(bufferType, size)));
 
         testBufferType(bufferType, allAs, allBs);
         testBufferType(bufferType, allAs, halfBs);
@@ -615,8 +617,8 @@ public class EqualsCompareTest {
 
     <B extends Buffer, E, BT extends BufferType<B, E>>
     void testBufferType(BT bt,
-            BiFunction<BT, Integer, B> aConstructor,
-            BiFunction<BT, Integer, B> bConstructor) {
+                        BiFunction<BT, Integer, B> aConstructor,
+                        BiFunction<BT, Integer, B> bConstructor) {
         int n = arraySizeFor(bt.elementType);
 
         for (boolean dupOtherwiseSlice : new boolean[]{ false, true }) {
@@ -629,16 +631,16 @@ public class EqualsCompareTest {
                         int aLength = aTo - aFrom;
 
                         B as = aLength != s
-                                ? bt.slice(a, aFrom, aTo, dupOtherwiseSlice)
-                                : a;
+                               ? bt.slice(a, aFrom, aTo, dupOtherwiseSlice)
+                               : a;
 
                         for (int bFrom : ranges(0, s)) {
                             for (int bTo : ranges(bFrom, s)) {
                                 int bLength = bTo - bFrom;
 
                                 B bs = bLength != s
-                                        ? bt.slice(b, bFrom, bTo, dupOtherwiseSlice)
-                                        : b;
+                                       ? bt.slice(b, bFrom, bTo, dupOtherwiseSlice)
+                                       : b;
 
                                 boolean eq = bt.pairWiseEquals(as, bs);
                                 Assert.assertEquals(bt.equals(as, bs), eq);
@@ -664,30 +666,30 @@ public class EqualsCompareTest {
                                 }
                             }
                         }
-                        // TODO(b/271236407): fix this
-//                            if (aLength > 0 && !a.isReadOnly()) {
-//                                for (int i = aFrom; i < aTo; i++) {
-//                                    B c = aConstructor.apply(bt, a.capacity());
-//                                    B cs = aLength != s
-//                                            ? bt.slice(c, aFrom, aTo, dupOtherwiseSlice)
-//                                            : c;
-//
-//                                    // Create common prefix with a length of i - aFrom
-//                                    bt.set(c, i, -1);
-//
-//                                    Assert.assertFalse(bt.equals(c, a));
-//
-//                                    int cCa = bt.compare(cs, as);
-//                                    int aCc = bt.compare(as, cs);
-//                                    int v = Integer.signum(cCa) * Integer.signum(aCc);
-//                                    Assert.assertTrue(v == -1);
-//
-//                                    int cMa = bt.mismatch(cs, as);
-//                                    int aMc = bt.mismatch(as, cs);
-//                                    Assert.assertEquals(cMa, aMc);
-//                                    Assert.assertEquals(cMa, i - aFrom);
-//                                }
-//                            }
+
+                        if (aLength > 0 && !a.isReadOnly()) {
+                            for (int i = aFrom; i < aTo; i++) {
+                                B c = aConstructor.apply(bt, a.capacity());
+                                B cs = aLength != s
+                                       ? bt.slice(c, aFrom, aTo, dupOtherwiseSlice)
+                                       : c;
+
+                                // Create common prefix with a length of i - aFrom
+                                bt.set(c, i, -1);
+
+                                Assert.assertFalse(bt.equals(c, a));
+
+                                int cCa = bt.compare(cs, as);
+                                int aCc = bt.compare(as, cs);
+                                int v = Integer.signum(cCa) * Integer.signum(aCc);
+                                Assert.assertTrue(v == -1);
+
+                                int cMa = bt.mismatch(cs, as);
+                                int aMc = bt.mismatch(as, cs);
+                                Assert.assertEquals(cMa, aMc);
+                                Assert.assertEquals(cMa, i - aFrom);
+                            }
+                        }
                     }
                 }
             }
