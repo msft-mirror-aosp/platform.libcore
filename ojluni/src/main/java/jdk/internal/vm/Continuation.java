@@ -33,7 +33,6 @@ import sun.security.action.GetPropertyAction;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Supplier;
-import jdk.internal.access.JavaLangAccess;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.vm.annotation.Hidden;
 
