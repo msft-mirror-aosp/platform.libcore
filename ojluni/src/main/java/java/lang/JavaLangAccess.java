@@ -23,9 +23,11 @@
  * questions.
  */
 
-package jdk.internal.access;
+package java.lang;
 
-public interface JavaLangAccess {
+// Android-changed: Make JavaLangAccess a final class. http://b/399374716
+// public interface JavaLangAccess {
+public final class JavaLangAccess {
 
     // BEGIN Android-removed: Not used in Android.
     /*
@@ -83,7 +85,9 @@ public interface JavaLangAccess {
      * Class object does not represent an enum type;
      * the result is uncloned, cached, and shared by all callers.
      */
-    <E extends Enum<E>> E[] getEnumConstantsShared(Class<E> klass);
+    public <E extends Enum<E>> E[] getEnumConstantsShared(Class<E> klass) {
+        return klass.getEnumConstantsShared();
+    }
 
     // BEGIN Android-removed: Not used in Android.
     /*
@@ -562,6 +566,12 @@ public interface JavaLangAccess {
      * explicitly set otherwise <qualified-class-name> @<id>
      * /
     String getLoaderNameID(ClassLoader loader);
+
+    /**
+     * Is a security manager already set or allowed to be set
+     * (using -Djava.security.manager=allow)?
+     * /
+    boolean allowSecurityManager();
      */
-    // END Android-removed: Not used in Android.
+     // END Android-removed: Not used in Android.
 }
