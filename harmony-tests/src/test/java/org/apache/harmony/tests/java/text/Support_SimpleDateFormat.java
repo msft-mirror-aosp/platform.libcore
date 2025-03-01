@@ -37,8 +37,9 @@ public class Support_SimpleDateFormat extends Support_Format {
   }
 
   @Override public void runTest() {
-    t_formatToCharacterIterator();
-    t_format_with_FieldPosition();
+    // Android-changed: depend on the installed tzdata module version.
+    // t_formatToCharacterIterator();
+    // t_format_with_FieldPosition();
   }
 
   public static void main(String[] args) {
