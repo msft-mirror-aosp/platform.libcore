@@ -298,6 +298,8 @@ public class DateTest extends junit.framework.TestCase {
     /**
      * java.util.Date#parse(java.lang.String)
      */
+    // Android-removed: depends on the installed tzdata module.
+    /*
     public void test_parseLjava_lang_String() {
         // Test for method long java.util.Date.parse(java.lang.String)
         Date d = new Date(Date.parse("13 October 1998"));
@@ -343,6 +345,7 @@ public class DateTest extends junit.framework.TestCase {
         assertEquals("Assert 1: parse failure",
                 858600000, Date.parse("00:00:00 GMT +0130 Sat, 11 Jan 1970"));
     }
+    */
 
     /**
      * java.util.Date#setDate(int)
