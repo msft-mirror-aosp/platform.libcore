@@ -58,6 +58,8 @@ public class TimeZoneTest extends TestCase {
     }
 
     // http://code.google.com/p/android/issues/detail?id=14395
+    // Android-removed: depends on the installed tzdata module.
+    /*
     public void testPreHistoricInDaylightTime() {
         // A replacement for testPreHistoricInDaylightTime_old() using a zone that still lacks an
         // explicit transition at Integer.MIN_VALUE with zic 2019a and 2019a data.
@@ -71,6 +73,7 @@ public class TimeZoneTest extends TestCase {
         assertEquals(3600000L, tz.getOffset(beforeFirstTransitionTimeMillis));
         assertFalse(tz.inDaylightTime(new Date(beforeFirstTransitionTimeMillis)));
     }
+    */
 
     // http://code.google.com/p/android/issues/detail?id=14395
     public void testPreHistoricInDaylightTime_old() throws Exception {
