@@ -22,6 +22,7 @@
 package java.lang.invoke;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -37,7 +38,9 @@ import java.lang.reflect.Modifier;
  * @hide
  */
 public class MethodHandleImpl extends MethodHandle implements Cloneable {
+    private Field field;
     private Object targetClassOrMethodHandleInfo;
+    private long target;
 
     MethodHandleImpl(long artFieldOrMethod, int handleKind, MethodType type) {
         super(artFieldOrMethod, handleKind, type);
