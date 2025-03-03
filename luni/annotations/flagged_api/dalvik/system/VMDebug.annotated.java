@@ -125,6 +125,10 @@ public static class ExecutableMethodFileOffsets {
 public static VMDebug.ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
         @NonNull java.lang.reflect.Method javaMethod);
 
+@android.annotation.FlaggedApi(com.android.art.flags.Flags.FLAG_EXECUTABLE_METHOD_FILE_OFFSETS_V2)
+public static VMDebug.ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
+        @NonNull java.lang.reflect.Executable javaExecutable);
+
 public static final int KIND_ALL_COUNTS = -1; // 0xffffffff
 
 public static final int KIND_GLOBAL_ALLOCATED_BYTES = 2; // 0x2
