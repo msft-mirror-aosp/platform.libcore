@@ -1909,18 +1909,12 @@ static void Linux_madvise(JNIEnv* env, jobject, jlong address, jlong byteCount, 
 }
 
 static jobject Linux_memfd_create(JNIEnv* env, jobject, jstring javaName, jint flags) {
-#if defined(__BIONIC__)
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return NULL;
     }
-
-    int fd = throwIfMinusOne(env, "memfd_create", memfd_create(name.c_str(), flags));
+    int fd = throwIfMinusOne(env, "memfd_create", syscall(__NR_memfd_create, name.c_str(), flags));
     return createFileDescriptorIfOpen(env, fd);
-#else
-    UNUSED(env, javaName, flags);
-    return NULL;
-#endif
 }
 
 static void Linux_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, jbyteArray javaVector) {
