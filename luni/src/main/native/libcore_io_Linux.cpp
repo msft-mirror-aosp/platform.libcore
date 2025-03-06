@@ -2289,14 +2289,13 @@ static void Linux_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring java
 static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject javaInFd, jobject javaOffset, jlong byteCount) {
     int outFd = jniGetFDFromFileDescriptor(env, javaOutFd);
     int inFd = jniGetFDFromFileDescriptor(env, javaInFd);
-    off_t offset = 0;
-    off_t* offsetPtr = NULL;
+    off64_t offset = 0;
+    off64_t* offsetPtr = NULL;
     if (javaOffset != NULL) {
-        // TODO: fix bionic so we can have a 64-bit off_t!
         offset = env->GetLongField(javaOffset, int64RefValueFid);
         offsetPtr = &offset;
     }
-    jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile(outFd, inFd, offsetPtr, byteCount)));
+    jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile64(outFd, inFd, offsetPtr, byteCount)));
     if (result == -1) {
         return -1;
     }
