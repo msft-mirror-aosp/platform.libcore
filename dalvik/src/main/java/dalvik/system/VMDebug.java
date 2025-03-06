@@ -27,6 +27,7 @@ import libcore.util.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -454,7 +455,7 @@ public final class VMDebug {
     }
 
     private static native @Nullable ExecutableMethodFileOffsets
-        getExecutableMethodFileOffsetsNative(Method javaMethod);
+        getExecutableMethodFileOffsetsNative(Executable javaMethod);
 
     /**
      * Fetches offset information about the location of the native executable code within the
@@ -468,9 +469,27 @@ public final class VMDebug {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
+    @Deprecated
     public static @Nullable ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
             @NonNull Method javaMethod) {
         return getExecutableMethodFileOffsetsNative(javaMethod);
+    }
+
+    /**
+     * Fetches offset information about the location of the native executable code within the
+     * running process' memory.
+     *
+     * @param javaExecutable executable for which info is to be identified.
+     * @return {@link ExecutableMethodFileOffsets} containing offset information for the specified
+     *         method, or null if the method is not AOT compiled.
+     * @throws RuntimeException for unexpected failures in ART retrieval of info.
+     *
+     * @hide
+     */
+    @SystemApi(client = MODULE_LIBRARIES)
+    public static @Nullable ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
+            @NonNull Executable javaExecutable) {
+        return getExecutableMethodFileOffsetsNative(javaExecutable);
     }
 
     /**
