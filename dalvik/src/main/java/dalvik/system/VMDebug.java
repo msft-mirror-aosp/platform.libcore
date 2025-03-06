@@ -469,7 +469,6 @@ public final class VMDebug {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @Deprecated
     public static @Nullable ExecutableMethodFileOffsets getExecutableMethodFileOffsets(
             @NonNull Method javaMethod) {
         return getExecutableMethodFileOffsetsNative(javaMethod);
