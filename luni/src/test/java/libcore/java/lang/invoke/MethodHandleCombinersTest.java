@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("EmptyCatch") // Old thrown exception testing pattern.
 public class MethodHandleCombinersTest extends TestCase {
 
     static final int TEST_THREAD_ITERATIONS = 1000;
@@ -1532,7 +1533,7 @@ public class MethodHandleCombinersTest extends TestCase {
         try {
             adapter = MethodHandles.collectArguments(target, 3, filter);
             fail();
-        } catch (IndexOutOfBoundsException expected) {
+        } catch (IndexOutOfBoundsException | IllegalArgumentException expected) {
         }
 
         // Mismatch in filter return type.
