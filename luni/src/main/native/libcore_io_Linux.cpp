@@ -93,14 +93,6 @@ jfieldID int64RefValueFid;
 
 }  // namespace
 
-struct addrinfo_deleter {
-    void operator()(addrinfo* p) const {
-        if (p != NULL) { // bionic's freeaddrinfo(3) crashes when passed NULL.
-            freeaddrinfo(p);
-        }
-    }
-};
-
 struct c_deleter {
     void operator()(void* p) const {
         free(p);
@@ -1386,7 +1378,7 @@ static jobjectArray Linux_android_getaddrinfo(JNIEnv* env, jobject, jstring java
     addrinfo* addressList = NULL;
     errno = 0;
     int rc = android_getaddrinfofornet(node.c_str(), NULL, &hints, netId, 0, &addressList);
-    std::unique_ptr<addrinfo, addrinfo_deleter> addressListDeleter(addressList);
+    std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> addressListDeleter(addressList, freeaddrinfo);
     if (rc != 0) {
         throwGaiException(env, "android_getaddrinfo", rc);
         return NULL;
