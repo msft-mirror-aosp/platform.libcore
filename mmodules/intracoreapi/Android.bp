@@ -64,11 +64,19 @@ java_sdk_library {
     srcs: [
         ":art_module_api_files",
     ],
+    stub_only_libs: [
+        "stub-annotations",
+    ],
     api_dir: "api/intra",
     api_only: true,
+    annotations_enabled: true,
     droiddoc_options: [
         "--hide-annotation libcore.api.Hide",
         "--show-single-annotation libcore.api.IntraCoreApi",
+        // Exclude FlaggedApi as Metalava cannot resolve the flags reference
+        // because this is not given the flags library on the classpath as
+        // doing so creates a cycle.
+        "--exclude-annotation android.annotation.FlaggedApi",
     ],
 
     public: {

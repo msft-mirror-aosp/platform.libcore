@@ -285,8 +285,10 @@ public class InetAddressTest {
         for (InetAddress ia : inetAddresses) {
             // ICMP is not reliable, allow 5 attempts to each IP address before failing.
             // If any address is reachable then that's sufficient.
-            if (ia.isReachableByICMP(5 * 1000 /* ICMP timeout */)) {
-                return;
+            for (int i = 0; i < 5; i++) {
+                if (ia.isReachableByICMP(25 * 1000 /* ICMP timeout */)) {
+                    return;
+                }
             }
         }
         fail("Addresses not reachable by ICMP: " + Arrays.toString(inetAddresses));

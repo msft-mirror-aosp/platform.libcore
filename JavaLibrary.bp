@@ -213,6 +213,9 @@ java_library {
         ":core_libart_java_files",
         // framework-api-annotations contain API annotations, e.g. @SystemApi.
         ":framework-api-annotations",
+        // framework-metalava-annotations contain annotations output by Metalava
+        // in stubs, e.g. @android.annotation.Nullable.
+        ":framework-metalava-annotations",
         ":openjdk_lambda_stub_files",
         ":app-compat-annotations-source",
 
