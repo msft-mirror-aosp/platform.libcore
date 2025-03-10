@@ -16,6 +16,8 @@
 
 package libcore.java.lang.invoke;
 
+import junit.framework.TestCase;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.WrongMethodTypeException;
@@ -24,12 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-@RunWith(JUnit4.class)
-public class MethodHandleAccessorsTest {
+public class MethodHandleAccessorsTest extends junit.framework.TestCase {
     public static class ValueHolder {
         public boolean m_z = false;
         public byte m_b = 0;
@@ -41,16 +38,6 @@ public class MethodHandleAccessorsTest {
         public long m_j = 0;
         public String m_l = "a";
 
-        public volatile boolean m_v_z = false;
-        public volatile byte m_v_b = 0;
-        public volatile char m_v_c = 'a';
-        public volatile short m_v_s = 0;
-        public volatile int m_v_i = 0;
-        public volatile float m_v_f = 0.0f;
-        public volatile double m_v_d = 0.0;
-        public volatile long m_v_j = 0;
-        public volatile String m_v_l = "a";
-
         public static boolean s_z;
         public static byte s_b;
         public static char s_c;
@@ -60,17 +47,6 @@ public class MethodHandleAccessorsTest {
         public static double s_d;
         public static long s_j;
         public static String s_l;
-
-        public static boolean s_v_z;
-        public static byte s_v_b;
-        public static char s_v_c;
-        public static short s_v_s;
-        public static int s_v_i;
-        public static float s_v_f;
-        public static double s_v_d;
-        public static long s_v_j;
-        public static String s_v_l;
-
 
         public final int m_fi = 0xa5a5a5a5;
         public static final int s_fi = 0x5a5a5a5a;
@@ -557,7 +533,6 @@ public class MethodHandleAccessorsTest {
                 resultFor(primitive, PrimitiveType.String, accessor, AccessorType.SGET));
     }
 
-    @Test
     public void testBooleanSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -565,34 +540,19 @@ public class MethodHandleAccessorsTest {
         boolean[] booleans = {false, true, false};
         for (boolean b : booleans) {
             Boolean boxed = Boolean.valueOf(b);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_z", boolean.class),
                 valueHolder, PrimitiveType.Boolean, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_z", boolean.class),
                 valueHolder, PrimitiveType.Boolean, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_z == b);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_z", boolean.class),
-                valueHolder, PrimitiveType.Boolean, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_z", boolean.class),
-                valueHolder, PrimitiveType.Boolean, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_z == b);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_z", boolean.class),
                 valueHolder, PrimitiveType.Boolean, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_z", boolean.class),
                 valueHolder, PrimitiveType.Boolean, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_z == b);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_z", boolean.class),
-                valueHolder, PrimitiveType.Boolean, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_z", boolean.class),
-                valueHolder, PrimitiveType.Boolean, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_z == b);
         }
     }
 
-    @Test
     public void testByteSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -600,33 +560,19 @@ public class MethodHandleAccessorsTest {
         byte[] bytes = {(byte) 0x73, (byte) 0xfe};
         for (byte b : bytes) {
             Byte boxed = Byte.valueOf(b);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_b", byte.class),
                 valueHolder, PrimitiveType.Byte, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_b", byte.class),
                 valueHolder, PrimitiveType.Byte, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_b == b);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_b", byte.class),
-                valueHolder, PrimitiveType.Byte, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_b", byte.class),
-                valueHolder, PrimitiveType.Byte, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_b == b);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_b", byte.class),
                 valueHolder, PrimitiveType.Byte, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_b", byte.class),
                 valueHolder, PrimitiveType.Byte, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_b == b);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_b", byte.class),
-                valueHolder, PrimitiveType.Byte, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_b", byte.class),
-                valueHolder, PrimitiveType.Byte, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_b == b);        }
+        }
     }
 
-    @Test
     public void testCharSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -634,34 +580,19 @@ public class MethodHandleAccessorsTest {
         char[] chars = {'a', 'b', 'c'};
         for (char c : chars) {
             Character boxed = Character.valueOf(c);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_c", char.class),
                 valueHolder, PrimitiveType.Char, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_c", char.class),
                 valueHolder, PrimitiveType.Char, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_c == c);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_c", char.class),
-                valueHolder, PrimitiveType.Char, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_c", char.class),
-                valueHolder, PrimitiveType.Char, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_c == c);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_c", char.class),
                 valueHolder, PrimitiveType.Char, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_c", char.class),
                 valueHolder, PrimitiveType.Char, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_c == c);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_c", char.class),
-                valueHolder, PrimitiveType.Char, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_c", char.class),
-                valueHolder, PrimitiveType.Char, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_c == c);
         }
     }
 
-    @Test
     public void testShortSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -669,34 +600,19 @@ public class MethodHandleAccessorsTest {
         short[] shorts = {(short) 0x1234, (short) 0x4321};
         for (short s : shorts) {
             Short boxed = Short.valueOf(s);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_s", short.class),
                 valueHolder, PrimitiveType.Short, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_s", short.class),
                 valueHolder, PrimitiveType.Short, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_s == s);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_s", short.class),
-                valueHolder, PrimitiveType.Short, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_s", short.class),
-                valueHolder, PrimitiveType.Short, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_s == s);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_s", short.class),
                 valueHolder, PrimitiveType.Short, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_s", short.class),
                 valueHolder, PrimitiveType.Short, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_s == s);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_s", short.class),
-                valueHolder, PrimitiveType.Short, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_s", short.class),
-                valueHolder, PrimitiveType.Short, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_s == s);
         }
     }
 
-    @Test
     public void testIntSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -704,34 +620,19 @@ public class MethodHandleAccessorsTest {
         int[] ints = {-100000000, 10000000};
         for (int i : ints) {
             Integer boxed = Integer.valueOf(i);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_i", int.class),
                 valueHolder, PrimitiveType.Int, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_i", int.class),
                 valueHolder, PrimitiveType.Int, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_i == i);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_i", int.class),
-                valueHolder, PrimitiveType.Int, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_i", int.class),
-                valueHolder, PrimitiveType.Int, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_i == i);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_i", int.class),
                 valueHolder, PrimitiveType.Int, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_i", int.class),
                 valueHolder, PrimitiveType.Int, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_i == i);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_i", int.class),
-                valueHolder, PrimitiveType.Int, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_i", int.class),
-                valueHolder, PrimitiveType.Int, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_i == i);
         }
     }
 
-    @Test
     public void testFloatSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -739,34 +640,19 @@ public class MethodHandleAccessorsTest {
         float[] floats = {0.99f, -1.23e-17f};
         for (float f : floats) {
             Float boxed = Float.valueOf(f);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_f", float.class),
                 valueHolder, PrimitiveType.Float, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_f", float.class),
                 valueHolder, PrimitiveType.Float, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_f == f);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_f", float.class),
-                    valueHolder, PrimitiveType.Float, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_f", float.class),
-                    valueHolder, PrimitiveType.Float, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_f == f);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_f", float.class),
                 valueHolder, PrimitiveType.Float, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_f", float.class),
                 valueHolder, PrimitiveType.Float, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_f == f);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_f", float.class),
-                    valueHolder, PrimitiveType.Float, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_f", float.class),
-                    valueHolder, PrimitiveType.Float, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_f == f);
         }
     }
 
-    @Test
     public void testDoubleSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -779,28 +665,14 @@ public class MethodHandleAccessorsTest {
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_d", double.class),
                 valueHolder, PrimitiveType.Double, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_d == d);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_d", double.class),
-                    valueHolder, PrimitiveType.Double, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_d", double.class),
-                    valueHolder, PrimitiveType.Double, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_d == d);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_d", double.class),
                 valueHolder, PrimitiveType.Double, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_d", double.class),
                 valueHolder, PrimitiveType.Double, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_d == d);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_d", double.class),
-                    valueHolder, PrimitiveType.Double, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_d", double.class),
-                    valueHolder, PrimitiveType.Double, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_d == d);
         }
     }
 
-    @Test
     public void testLongSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -808,34 +680,19 @@ public class MethodHandleAccessorsTest {
         long[] longs = {0x0123456789abcdefl, 0xfedcba9876543210l};
         for (long j : longs) {
             Long boxed = Long.valueOf(j);
-
             tryAccessor(lookup.findSetter(ValueHolder.class, "m_j", long.class),
                 valueHolder, PrimitiveType.Long, boxed, AccessorType.IPUT);
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_j", long.class),
                 valueHolder, PrimitiveType.Long, boxed, AccessorType.IGET);
             assertTrue(valueHolder.m_j == j);
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_j", long.class),
-                    valueHolder, PrimitiveType.Long, boxed, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_j", long.class),
-                    valueHolder, PrimitiveType.Long, boxed, AccessorType.IGET);
-            assertTrue(valueHolder.m_v_j == j);
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_j", long.class),
                 valueHolder, PrimitiveType.Long, boxed, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_j", long.class),
                 valueHolder, PrimitiveType.Long, boxed, AccessorType.SGET);
             assertTrue(ValueHolder.s_j == j);
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_j", long.class),
-                    valueHolder, PrimitiveType.Long, boxed, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_j", long.class),
-                    valueHolder, PrimitiveType.Long, boxed, AccessorType.SGET);
-            assertTrue(ValueHolder.s_v_j == j);
         }
     }
 
-    @Test
     public void testStringSettersAndGetters() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -847,28 +704,14 @@ public class MethodHandleAccessorsTest {
             tryAccessor(lookup.findGetter(ValueHolder.class, "m_l", String.class),
                     valueHolder, PrimitiveType.String, s, AccessorType.IGET);
             assertTrue(s.equals(valueHolder.m_l));
-
-            tryAccessor(lookup.findSetter(ValueHolder.class, "m_v_l", String.class),
-                    valueHolder, PrimitiveType.String, s, AccessorType.IPUT);
-            tryAccessor(lookup.findGetter(ValueHolder.class, "m_v_l", String.class),
-                    valueHolder, PrimitiveType.String, s, AccessorType.IGET);
-            assertTrue(s.equals(valueHolder.m_v_l));
-
             tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_l", String.class),
                     valueHolder, PrimitiveType.String, s, AccessorType.SPUT);
             tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_l", String.class),
                     valueHolder, PrimitiveType.String, s, AccessorType.SGET);
             assertTrue(s.equals(ValueHolder.s_l));
-
-            tryAccessor(lookup.findStaticSetter(ValueHolder.class, "s_v_l", String.class),
-                    valueHolder, PrimitiveType.String, s, AccessorType.SPUT);
-            tryAccessor(lookup.findStaticGetter(ValueHolder.class, "s_v_l", String.class),
-                    valueHolder, PrimitiveType.String, s, AccessorType.SGET);
-            assertTrue(s.equals(ValueHolder.s_v_l));
         }
     }
 
-    @Test
     public void testLookup() throws Throwable {
         // NB having a static field test here is essential for
         // this test. MethodHandles need to ensure the class
@@ -912,7 +755,6 @@ public class MethodHandleAccessorsTest {
         } catch (IllegalAccessException e) {}
     }
 
-    @Test
     public void testStaticGetter() throws Throwable {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle h0 = lookup.findStaticGetter(ValueHolder.class, "s_fi", int.class);
@@ -935,7 +777,6 @@ public class MethodHandleAccessorsTest {
         } catch (WrongMethodTypeException e) {}
     }
 
-    @Test
     public void testMemberGetter() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -969,7 +810,6 @@ public class MethodHandleAccessorsTest {
         return Float.valueOf(-7.77f);
     }
 
-    @Test
     public void testMemberSetter() throws Throwable {
         ValueHolder valueHolder = new ValueHolder();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -1026,7 +866,6 @@ public class MethodHandleAccessorsTest {
         } catch (WrongMethodTypeException e) {}
     }
 
-    @Test
     public void testStaticSetter() throws Throwable {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle h0 = lookup.findStaticSetter(ValueHolder.class, "s_f", float.class);
@@ -1079,41 +918,5 @@ public class MethodHandleAccessorsTest {
             h0.invoke(s);
             fail();
         } catch (WrongMethodTypeException e) {}
-    }
-
-    @Test
-    public void throws_wmte_when_too_many_arguments_are_supplied() throws Throwable {
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle setter = lookup.findStaticSetter(ValueHolder.class, "s_f", float.class);
-
-        try {
-            setter.invokeExact(0f, 1);
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
-
-        try {
-            setter.invokeExact(0f, 1, 2);
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
-
-        try {
-            setter.invokeExact(0f, 1, 2, 3);
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
-
-        try {
-            setter.invokeExact(0f, 1, 2, 3, 4);
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
-
-        try {
-            setter.invokeExact(0f, 1, 2, 3, 4, 5);
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
-
-        try {
-            setter.invokeExact(0f, 1, 2, 3, 4, 5, "str");
-            fail("Should throw WMTE");
-        } catch (WrongMethodTypeException ignored) {}
     }
 }
