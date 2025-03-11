@@ -26,6 +26,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 // Android-changed: Android specific implementation.
 // The whole class was implemented from scratch for the Android runtime based
@@ -38,13 +40,71 @@ import java.lang.reflect.Modifier;
  * @hide
  */
 public class MethodHandleImpl extends MethodHandle implements Cloneable {
-    private Field field;
+    // TODO(b/297147201): create separate AccessorMethodHandle class and move target and field
+    // into it.
+    // Used by runtime only.
+    private final long target;
     private Object targetClassOrMethodHandleInfo;
-    private long target;
+    Field field;
 
     MethodHandleImpl(long artFieldOrMethod, int handleKind, MethodType type) {
         super(artFieldOrMethod, handleKind, type);
         this.targetClassOrMethodHandleInfo = getMemberInternal().getDeclaringClass();
+        this.target = 0;
+    }
+
+    MethodHandleImpl(Field field, int handleKind, MethodType type) {
+        super(field.getArtField(), handleKind, type);
+        // To make sure that we won't operate on uninitialized fields.
+        // TODO (b/399619087): make initialization lazy.
+        MethodHandleStatics.UNSAFE.ensureClassInitialized(field.getDeclaringClass());
+        this.targetClassOrMethodHandleInfo = getMemberInternal().getDeclaringClass();
+        this.field = field;
+        this.target = resolveTarget(handleKind, field);
+    }
+
+    private static long resolveTarget(int handleKind, Field field) {
+        StringBuilder name = new StringBuilder();
+
+        if (handleKind == MethodHandle.SGET || handleKind == MethodHandle.IGET) {
+            name.append("get");
+        } else if (handleKind == MethodHandle.SPUT || handleKind == MethodHandle.IPUT) {
+            name.append("put");
+        } else {
+            throw new AssertionError("Unexpected handleKind: " + handleKind);
+        }
+
+        Class<?> type = field.getType();
+
+        if (type.isPrimitive()) {
+            String fieldTypeName = type.getName();
+            name.append(Character.toUpperCase(fieldTypeName.charAt(0)));
+            name.append(fieldTypeName.substring(1));
+        } else {
+            name.append("Reference");
+        }
+
+        if (Modifier.isVolatile(field.getModifiers())) {
+            name.append("Volatile");
+        }
+
+        List<Class<?>> signature = new ArrayList<>(3);
+        if (!Modifier.isStatic(field.getModifiers())) {
+            signature.add(Object.class);
+        }
+        if (handleKind == MethodHandle.SPUT || handleKind == MethodHandle.IPUT) {
+            if (type.isPrimitive()) {
+                signature.add(type);
+            } else {
+                signature.add(Object.class);
+            }
+        }
+        signature.add(MethodHandleImpl.class);
+        Method target = DirectMethodHandle.getImplementation(name.toString(), signature);
+        if (target == null) {
+            throw new InternalError("DirectMethodHandle$Holder is missing a method");
+        }
+        return target.getArtMethod();
     }
 
     @Override
