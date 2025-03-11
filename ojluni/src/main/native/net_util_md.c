@@ -39,9 +39,6 @@
 #ifndef MAXINT
 #define MAXINT INT_MAX
 #endif
-#ifdef __BIONIC__
-#include <linux/ipv6_route.h>
-#endif
 
 #ifdef __solaris__
 #include <sys/sockio.h>
