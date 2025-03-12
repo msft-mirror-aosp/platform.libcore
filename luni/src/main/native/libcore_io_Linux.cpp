@@ -93,14 +93,6 @@ jfieldID int64RefValueFid;
 
 }  // namespace
 
-struct addrinfo_deleter {
-    void operator()(addrinfo* p) const {
-        if (p != NULL) { // bionic's freeaddrinfo(3) crashes when passed NULL.
-            freeaddrinfo(p);
-        }
-    }
-};
-
 struct c_deleter {
     void operator()(void* p) const {
         free(p);
@@ -1386,7 +1378,7 @@ static jobjectArray Linux_android_getaddrinfo(JNIEnv* env, jobject, jstring java
     addrinfo* addressList = NULL;
     errno = 0;
     int rc = android_getaddrinfofornet(node.c_str(), NULL, &hints, netId, 0, &addressList);
-    std::unique_ptr<addrinfo, addrinfo_deleter> addressListDeleter(addressList);
+    std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> addressListDeleter(addressList, freeaddrinfo);
     if (rc != 0) {
         throwGaiException(env, "android_getaddrinfo", rc);
         return NULL;
@@ -1909,18 +1901,12 @@ static void Linux_madvise(JNIEnv* env, jobject, jlong address, jlong byteCount, 
 }
 
 static jobject Linux_memfd_create(JNIEnv* env, jobject, jstring javaName, jint flags) {
-#if defined(__BIONIC__)
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return NULL;
     }
-
-    int fd = throwIfMinusOne(env, "memfd_create", memfd_create(name.c_str(), flags));
+    int fd = throwIfMinusOne(env, "memfd_create", syscall(__NR_memfd_create, name.c_str(), flags));
     return createFileDescriptorIfOpen(env, fd);
-#else
-    UNUSED(env, javaName, flags);
-    return NULL;
-#endif
 }
 
 static void Linux_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, jbyteArray javaVector) {
@@ -2289,14 +2275,13 @@ static void Linux_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring java
 static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject javaInFd, jobject javaOffset, jlong byteCount) {
     int outFd = jniGetFDFromFileDescriptor(env, javaOutFd);
     int inFd = jniGetFDFromFileDescriptor(env, javaInFd);
-    off_t offset = 0;
-    off_t* offsetPtr = NULL;
+    off64_t offset = 0;
+    off64_t* offsetPtr = NULL;
     if (javaOffset != NULL) {
-        // TODO: fix bionic so we can have a 64-bit off_t!
         offset = env->GetLongField(javaOffset, int64RefValueFid);
         offsetPtr = &offset;
     }
-    jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile(outFd, inFd, offsetPtr, byteCount)));
+    jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile64(outFd, inFd, offsetPtr, byteCount)));
     if (result == -1) {
         return -1;
     }
