@@ -149,8 +149,8 @@
     ]
   },
   {
-    "bug": 398274273,
-    "description": "Installed tzdata version dependent tests",
+    "bug": 383977133,
+    "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
     "names": [
       "libcore.java.util.TimeZoneTest#testPreHistoricInDaylightTime",
       "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_formatLjava_util_DateLjava_lang_StringBufferLjava_text_FieldPosition",
@@ -159,6 +159,15 @@
       "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_timeZoneFormatting",
       "org.apache.harmony.tests.java.util.DateTest#test_parseLjava_lang_String",
       "test.java.time.format.TestUnicodeExtension#test_shortTZID"
+    ]
+  },
+  {
+    "bug": 401130471,
+    "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
+    "names": [
+      "libcore.java.lang.invoke.MethodHandlesTest#test_findConstructor",
+      "libcore.java.util.TimeZoneTest#testCustomZoneIds",
+      "libcore.libcore.io.BlockGuardOsTest#test_checkNewMethodsInPosix"
     ]
   }
 ]
