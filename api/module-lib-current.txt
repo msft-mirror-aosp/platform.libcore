@@ -276,6 +276,7 @@ package dalvik.system {
     method public static void dumpReferenceTables();
     method public static int getAllocCount(int);
     method @FlaggedApi("com.android.art.flags.executable_method_file_offsets") @Nullable public static dalvik.system.VMDebug.ExecutableMethodFileOffsets getExecutableMethodFileOffsets(@NonNull java.lang.reflect.Method);
+    method @FlaggedApi("com.android.art.flags.executable_method_file_offsets_v2") @Nullable public static dalvik.system.VMDebug.ExecutableMethodFileOffsets getExecutableMethodFileOffsets(@NonNull java.lang.reflect.Executable);
     method public static int getLoadedClassCount();
     method public static int getMethodTracingMode();
     method public static String getRuntimeStat(String);
