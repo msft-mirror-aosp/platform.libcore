@@ -58,6 +58,10 @@ import libcore.io.BlockGuardOs;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.io.Os;
+import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
 
 import dalvik.system.BlockGuard;
 
@@ -225,6 +229,7 @@ public class BlockGuardOsTest {
      * calls to BlockGuard (if the calls can block).
      */
     @Test
+    @NonCts(bug = 401130471, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_checkNewMethodsInPosix() {
         List<String> methodsNotRequireBlockGuardChecks = Arrays.asList(
                 "android_fdsan_exchange_owner_tag(java.io.FileDescriptor,long,long)",
