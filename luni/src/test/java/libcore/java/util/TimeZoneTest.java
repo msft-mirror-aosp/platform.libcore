@@ -213,6 +213,7 @@ public class TimeZoneTest extends TestCaseWithRules {
     }
 
     // http://b.corp.google.com/issue?id=6556561
+    @NonCts(bug = 401130471, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void testCustomZoneIds() throws Exception {
         // These are all okay (and equivalent).
         assertEquals("GMT+05:00", TimeZone.getTimeZone("GMT+05:00").getID());

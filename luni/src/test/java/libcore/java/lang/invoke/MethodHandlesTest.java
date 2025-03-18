@@ -38,6 +38,9 @@ import java.util.Vector;
 import static java.lang.invoke.MethodHandles.Lookup.*;
 import static java.lang.invoke.MethodType.methodType;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 public class MethodHandlesTest extends TestCase {
     private static final int ALL_LOOKUP_MODES = (PUBLIC | PRIVATE | PACKAGE | PROTECTED);
 
@@ -176,6 +179,7 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
+    @NonCts(bug = 401130471, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_findConstructor() throws Exception {
         MethodHandles.Lookup defaultLookup = MethodHandles.lookup();
 

@@ -16,7 +16,6 @@
 
 package libcore.java.lang;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -25,17 +24,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import libcore.io.Streams;
 
 import dalvik.system.InMemoryDexClassLoader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import static java.util.stream.Collectors.toList;
 
 @RunWith(JUnit4.class)
 public class StackWalkerTest {
@@ -107,6 +115,84 @@ public class StackWalkerTest {
             }
         }
         fail("fail to find " + expected + " in " + Arrays.toString(options));
+    }
+
+    public interface ProxiedInterface {
+        void run();
+    }
+
+    // regression test for b/404180956
+    @Test
+    public void testProxy_withTestInterface() {
+        String[][] expectedFrame = new String[][] {
+                new String[] {MyInvocationHandler.class.getName(), "invoke"},
+                // The new RI doesn't have this java.lang.reflect.Proxy frame.
+                new String[] {"java.lang.reflect.Proxy", "invoke"},
+                // Ensure that the interface name isn't returned.
+                new String[] {"~" + ProxiedInterface.class.getName(), "run"},
+                new String[] {StackWalkerTest.class.getName(), "testProxy_withTestInterface"},
+
+        };
+        InvocationHandler handler = new MyInvocationHandler(expectedFrame);
+
+        ProxiedInterface proxy = (ProxiedInterface) Proxy.newProxyInstance(
+                ProxiedInterface.class.getClassLoader(),
+                new Class[] {ProxiedInterface.class}, handler);
+        proxy.run();
+    }
+
+    @Test
+    public void testProxy_withRunnable() {
+        String[][] expectedFrame = new String[][] {
+                new String[] {MyInvocationHandler.class.getName(), "invoke"},
+                // The new RI doesn't have this java.lang.reflect.Proxy frame.
+                new String[] {"java.lang.reflect.Proxy", "invoke"},
+                // Ensure that the interface name isn't returned.
+                new String[] {"~" + Runnable.class.getName(), "run"},
+                new String[] {StackWalkerTest.class.getName(), "testProxy_withRunnable"},
+
+        };
+        InvocationHandler handler = new MyInvocationHandler(expectedFrame);
+
+        Runnable proxy = (Runnable) Proxy.newProxyInstance(Runnable.class.getClassLoader(),
+                new Class[] {Runnable.class}, handler);
+        proxy.run();
+    }
+
+    private static class MyInvocationHandler implements InvocationHandler {
+
+        private final String[][] expectedTopClassAndMethodNames;
+
+        public MyInvocationHandler(String[][] expectedTopClassAndMethodNames) {
+            this.expectedTopClassAndMethodNames = expectedTopClassAndMethodNames;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (!"run".equals(method.getName())) {
+                throw new AssertionError("Only run() method can be invoked.");
+            }
+
+            // The bottom frames are not verified, but reading all frames ensures not crashing.
+            List<StackFrame> frames = StackWalker.getInstance().walk(
+                    stackFrameStream -> stackFrameStream.collect(toList()));
+
+            for (int i = 0; i < expectedTopClassAndMethodNames.length; i++) {
+                String[] classAndMethodName = expectedTopClassAndMethodNames[i];
+                assertTrue("stack size should be larger than " + i, frames.size() > i);
+                StackFrame frame = frames.get(i);
+                assertNotNull("The frame is null at index " + i, frame);
+                String expectedClassName = classAndMethodName[0];
+                if (expectedClassName.startsWith("~")) {
+                    String unexpectedClassName = expectedClassName.substring(1);
+                    assertNotEquals(unexpectedClassName, frame.getClassName());
+                } else {
+                    assertEquals(expectedClassName, frame.getClassName());
+                }
+                assertEquals(classAndMethodName[1], frame.getMethodName());
+            }
+            return null;
+        }
     }
 
 }
