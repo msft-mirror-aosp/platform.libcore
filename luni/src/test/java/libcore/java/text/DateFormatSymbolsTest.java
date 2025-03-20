@@ -16,6 +16,9 @@
 
 package libcore.java.text;
 
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonMtsReasons;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -156,6 +159,7 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
     }
 
     // http://b/7955614
+    @NonMts(reason = NonMtsReasons.ICU_VERSION_DEPENDENCY)
     public void test_getZoneStrings_Apia() {
         String[][] array = DateFormatSymbols.getInstance(Locale.US).getZoneStrings();
 
@@ -165,9 +169,9 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
             // "GMT" strings for the short names.
             if (row[0].equals("Pacific/Apia")) {
                 TimeZone apiaTz = TimeZone.getTimeZone("Pacific/Apia");
-                assertEquals("Apia Standard Time", row[1]);
+                assertEquals("Samoa Standard Time", row[1]);
                 assertEquals(formattedStandardTimeOffset(apiaTz), row[2]);
-                assertEquals("Apia Daylight Time", row[3]);
+                assertEquals("Samoa Daylight Time", row[3]);
                 assertEquals(formattedDstOffset(apiaTz), row[4]);
             }
         }
