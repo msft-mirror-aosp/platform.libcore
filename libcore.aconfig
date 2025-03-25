@@ -135,3 +135,14 @@ flag {
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
+
+flag {
+    namespace: "core_libraries"
+    name: "niceness_api"
+    is_exported: true
+    description: "Java APIs get/set niceness"
+    bug: "389104950"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
+

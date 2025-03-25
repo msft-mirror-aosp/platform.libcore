@@ -1545,7 +1545,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
                 default:
                     throw new IllegalArgumentException("Invalid kind " + kind);
             }
-            return new MethodHandleImpl(field.getArtField(), kind, methodType);
+            return new MethodHandleImpl(field, kind, methodType);
         }
 
         /**

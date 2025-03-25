@@ -33,7 +33,7 @@ final class StaticFieldVarHandle extends FieldVarHandle {
 
     static StaticFieldVarHandle create(Field staticField) {
         assert Modifier.isStatic(staticField.getModifiers());
-        // TODO(b/379259800): should this be handled at the invocation?
+        // TODO(b/399619087): Make initialization lazy.
         MethodHandleStatics.UNSAFE.ensureClassInitialized(staticField.getDeclaringClass());
         return new StaticFieldVarHandle(staticField);
     }
