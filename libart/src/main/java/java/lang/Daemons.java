@@ -125,8 +125,7 @@ public final class Daemons {
                 // Thread.start() will call SetNativePriority and overwrite the desired native
                 // priority. We (may) use a native priority that doesn't have a corresponding
                 // java.lang.Thread-level priority (native priorities are more coarse-grained.)
-                Thread.currentThread().setPosixNicenessInternal(
-                    VMRuntime.getRuntime().getSystemDaemonNiceness());
+                VMRuntime.getRuntime().setSystemDaemonThreadPriority();
             }
             zygoteStartLatch.countDown();
             try {
