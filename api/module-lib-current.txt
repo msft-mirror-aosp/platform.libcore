@@ -338,7 +338,6 @@ package dalvik.system {
     method public static String getInstructionSet(String);
     method public static dalvik.system.VMRuntime getRuntime();
     method public int getTargetSdkVersion();
-    method @FlaggedApi("com.android.libcore.niceness_api") public int getThreadNiceness(Thread);
     method public boolean is64Bit();
     method public static boolean is64BitAbi(String);
     method public static boolean is64BitInstructionSet(String);
@@ -367,7 +366,6 @@ package dalvik.system {
     method public static void setProcessDataDirectory(String);
     method public static void setProcessPackageName(String);
     method public void setTargetSdkVersion(int);
-    method @FlaggedApi("com.android.libcore.niceness_api") public boolean setThreadNiceness(Thread, int);
     method public void updateProcessState(int);
     method public String vmInstructionSet();
     method public String vmLibrary();

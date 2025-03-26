@@ -183,15 +183,7 @@ public class Thread implements java.lang.Runnable {
         throw new RuntimeException("Stub!");
     }
 
-    public final int setPosixNicenessInternal(int newNiceness) {
-        throw new RuntimeException("Stub!");
-    }
-
     public final int getPriority() {
-        throw new RuntimeException("Stub!");
-    }
-
-    public final int getPosixNicenessInternal() {
         throw new RuntimeException("Stub!");
     }
 
@@ -327,13 +319,7 @@ public class Thread implements java.lang.Runnable {
         throw new RuntimeException("Stub!");
     }
 
-    native void setPriority0(int newPriority);
-
-    private native int setNiceness0(int niceness);
-
-    public static native int priorityForNiceness(int niceness);
-
-    public static native int nicenessForPriority(int priority);
+    private native void setPriority0(int newPriority);
 
     private native void interrupt0();
 
@@ -415,8 +401,6 @@ public class Thread implements java.lang.Runnable {
 
     @UnsupportedAppUsage
     private volatile long nativePeer;
-
-    private int niceness;
 
     @UnsupportedAppUsage
     volatile java.lang.Object parkBlocker;
