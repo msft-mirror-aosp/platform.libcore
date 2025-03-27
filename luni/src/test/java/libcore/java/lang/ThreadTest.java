@@ -179,7 +179,6 @@ public final class ThreadTest {
         Thread thread = new Thread("starting thread") {
             @Override public void run() { try { latch.await(); } catch (Exception e) { } }
         };
-        assertEquals(Thread.currentThread().getPriority(), thread.getPriority());
         // priority set while thread was not started should carry over to started thread
         int priority = thread.getPriority() + 1;
         if (priority > Thread.MAX_PRIORITY) {

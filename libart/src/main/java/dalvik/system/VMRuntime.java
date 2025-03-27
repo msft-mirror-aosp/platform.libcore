@@ -28,7 +28,6 @@ import android.compat.annotation.UnsupportedAppUsage;
 import com.android.libcore.Flags;
 
 import dalvik.annotation.compat.VersionCodes;
-import dalvik.annotation.optimization.CriticalNative;
 import dalvik.annotation.optimization.FastNative;
 
 import java.lang.ref.FinalizerReference;
@@ -802,43 +801,6 @@ public final class VMRuntime {
     }
 
     /**
-     * Returns t's Posix niceness, as cached by {@code Thread}. Only reflects values
-     * set via java's Thread API, or via {@code setThreadNiceness()} below. Does not reflect
-     * values set directly using Posix calls in JNI code or by another process.
-     *
-     * @param t the threaad being queried
-     * @return Linux niceness value for t
-     *
-     * @hide
-     */
-    @android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_NICENESS_API)
-    @SystemApi(client = MODULE_LIBRARIES)
-    public int getThreadNiceness(Thread t) {
-      return t.getPosixNicenessInternal();
-    }
-
-    /**
-     * Sets t's Posix niceness, updating {@code Thread}'s cache. Subsequently t's
-     * Java thread priority will appear to be the nearest corresponding Java thread priority.
-     *
-     * @param t the thread whose niceness is to be set
-     * @param newNiceness new Linux niceness value, in the range of -20 to 19
-     * @return true on success. Attempts to set niceness on unstarted threads succeed
-     *         even if the deferred system call later fails.         .
-     *
-     * @hide
-     */
-    @android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_NICENESS_API)
-    @SystemApi(client = MODULE_LIBRARIES)
-    public boolean setThreadNiceness(Thread t, int newNiceness) {
-      if (newNiceness < -20 || newNiceness > 19) {
-        return false;
-      }
-      return t.setPosixNicenessInternal(newNiceness) == 0;
-    }
-
-
-    /**
      * Request that a garbage collection gets started on a different thread.
      *
      * @hide
@@ -1063,8 +1025,7 @@ public final class VMRuntime {
      *
      * @hide
      */
-    @CriticalNative
-    public static native int getSystemDaemonNiceness();
+    public static native void setSystemDaemonThreadPriority();
 
     /**
      * Sets a callback that the runtime can call whenever a usage of a non SDK API is detected.
