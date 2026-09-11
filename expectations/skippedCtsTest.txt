@@ -229,6 +229,20 @@
     ]
   },
   {
+    "bug": 484273835,
+    "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
+    "names": [
+      "tck.java.time.TCKZoneId#test_constant_OLD_IDS_POST_2024b",
+      "tck.java.time.temporal.TCKIsoFields#test_nonisofields_getFrom",
+      "tck.java.time.temporal.TCKIsoFields#test_nonisofields_rangerefinedby",
+      "test.java.time.TestZoneOffset#test_immutable",
+      "test.java.time.format.TestDateTimeFormatterBuilder#test_appendPattern_valid",
+      "test.java.time.temporal.TestIsoWeekFields#test_Unit_isSupportedBy_ISO",
+      "test.java.time.temporal.TestIsoWeekFields#test_WBY_isSupportedBy_ISO",
+      "test.java.time.temporal.TestIsoWeekFields#test_WOWBY_isSupportedBy_fieldsDiffer"
+    ]
+  },
+  {
     "bug": 487931212,
     "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
     "names": [
@@ -249,6 +263,13 @@
     "description": "British Columbia moved to permanent GMT-7",
     "names": [
       "org.apache.harmony.tests.java.util.TimeZoneTest#test_getAvailableIDs_I_16947622"
+    ]
+  },
+  {
+    "bug": 559021222,
+    "description": "Test for internal APIs.",
+    "names": [
+      "libcore.java.nio.charset.StandardCharsetsEncoderTest#testCharset"
     ]
   }
 ]
