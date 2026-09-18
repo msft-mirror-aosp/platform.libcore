@@ -40,6 +40,8 @@ import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
+import libcore.test.annotation.NonCts;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -76,6 +78,7 @@ public class StandardCharsetsEncoderTest {
      */
     @Parameters(method = "getStandardCharsets")
     @Test
+    @NonCts(bug = 559021222, reason = "Test for internal APIs.") // This test uses reflection.
     public void testCharset(Charset charset) throws Exception {
         String fileName = createFileName(charset);
         CharsetEncoder encoder = charset.newEncoder();
