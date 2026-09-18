@@ -271,5 +271,19 @@
     "names": [
       "libcore.java.nio.charset.StandardCharsetsEncoderTest#testCharset"
     ]
+  },
+  {
+    "bug": 559406140,
+    "description": "Test for internal APIs.",
+    "names": [
+      "test.java.security.spec.TestNamedParameterSpec#main"
+    ]
+  },
+  {
+    "bug": 559406140,
+    "description": "Test was renamed",
+    "names": [
+      "tck.java.time.TCKZoneId#test_constant_OLD_IDS_POST_2005"
+    ]
   }
 ]
