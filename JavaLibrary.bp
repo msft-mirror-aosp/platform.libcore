@@ -467,6 +467,7 @@ java_library_static {
     name: "core-test-rules",
     visibility: [
         "//art/build/sdk",
+        "//cts/tests/core/runner-axt",
         "//cts/tests/tests/util",
         "//external/conscrypt",
         "//external/conscrypt/apex/tests",
@@ -481,7 +482,10 @@ java_library_static {
         "dalvik/test-rules/src/main/**/*.java",
         "test-rules/src/main/**/*.java",
     ],
-    static_libs: ["junit"],
+    static_libs: [
+        "junit",
+        "platform-test-annotations",
+    ],
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
@@ -733,6 +737,7 @@ java_test {
     ],
 
     static_libs: [
+        "core-test-rules",
         "junit",
         "testng",
     ],
@@ -800,6 +805,7 @@ java_test {
     system_modules: "core-all-system-modules",
     libs: [
         "bouncycastle",
+        "core-test-rules",
         "junit",
         "okhttp",
         "testng",
