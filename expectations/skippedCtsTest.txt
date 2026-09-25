@@ -269,7 +269,7 @@
     "bug": 559021222,
     "description": "Test for internal APIs.",
     "names": [
-      "libcore.java.nio.charset.StandardCharsetsEncoderTest#testCharset"
+      "libcore.java.nio.charset.StandardCharsetsEncoderTest"
     ]
   },
   {
